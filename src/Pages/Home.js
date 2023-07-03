@@ -1,7 +1,20 @@
+import React, { useState } from "react";
 import { DynamicWidget } from "@dynamic-labs/sdk-react";
 
 
 export default function Home() {
+
+  const [ticketCount, setTicketCount] = useState(1);
+
+  const handleIncrease = () => {
+    setTicketCount(ticketCount + 1);
+  };
+
+  const handleDecrease = () => {
+    if (ticketCount > 1) {
+      setTicketCount(ticketCount - 1);
+    }
+  };
 
   return (
     <>
@@ -69,11 +82,27 @@ export default function Home() {
                 </div>
               </div>
               <div className="flex flew-row gap-11 w-full justify-between">
-                <input
+                <div className="flex items-center rounded-lg border border-gray-600">
+                  <button className="w-10 h-14 rounded-l-lg bg-secondary text-white text-2xl" onClick={() => handleDecrease()}>
+                    -
+                  </button>
+                  <input
+                    type="number"
+                    className="w-16 h-14 rounded-none bg-secondary text-white text-xl text-center"
+                    defaultValue={1}
+                    min={1}
+                    value={ticketCount}
+                    onChange={(e) => setTicketCount(parseInt(e.target.value))}
+                  />
+                  <button className="w-10 h-14 rounded-r-lg bg-secondary text-white text-2xl" onClick={() => handleIncrease()}>
+                    +
+                  </button>
+                </div>
+                {/* <input
                   type="number"
                   className="w-1/4 h-14 rounded-lg bg-secondary text-white text-xl text-center border border-gray-600"
                   placeholder="1"
-                />
+                /> */}
                 <button className="w-2/4 h-14 rounded-lg text-2xl bg-light font-bold text-black">Buy Tickets</button>
                 <p className="w-1/4 flex items-center text-xl text-white">Your tickets:<span className="ml-1 text-light">150</span>
                 </p>
