@@ -3,13 +3,26 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
+    "@dynamic-labs/sdk-react": "^0.16.10",
+    "@dynamic-labs/wagmi-connector": "^0.16.10",
+    "@fortawesome/react-fontawesome": "^0.2.0",
+    "@headlessui/react": "^1.7.15",
+    "@heroicons/react": "^2.0.18",
+    "@tailwindcss/aspect-ratio": "^0.4.2",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
     "react": "^18.2.0",
+    "react-countdown": "^2.3.5",
     "react-dom": "^18.2.0",
+    "react-icons": "^4.9.0",
+    "react-lazy-load-image-component": "^1.5.6",
+    "react-modal": "^3.16.1",
+    "react-router-dom": "^6.13.0",
     "react-scripts": "5.0.1",
-    "web-vitals": "^2.1.4"
+    "tailwind": "^4.0.0",
+    "wagmi": "^0.10.3"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -34,5 +47,12 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "description": "This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).",
+  "main": "index.js",
+  "author": "LoLo-Labs",
+  "license": "ISC",
+  "devDependencies": {
+    "tailwindcss": "^3.3.2"
   }
 }
