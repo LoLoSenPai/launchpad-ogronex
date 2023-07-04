@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { DynamicWidget } from "@dynamic-labs/sdk-react";
+import CountdownComponent from "../Components/Countdown";
 
 
 export default function Home() {
@@ -47,9 +48,9 @@ export default function Home() {
               <div className="flex flex-row p-4">
                 <h1 className="text-6xl font-bold text-white">OG Teddies</h1>
                 <div className="flex items-center ml-5 mt-4 gap-3">
-                  <a href="https://discord.gg/fRgWtfj2wd" target="_blank" rel="noreferrer"><i className="fab fa-discord text-lg text-gray-500"></i></a>
-                  <a href="https://twitter.com/OryonMerch" target="_blank" rel="noreferrer"><i className="fab fa-twitter text-lg text-gray-500"></i></a>
-                  <a href="https://twitter.com/OryonMerch" target="_blank" rel="noreferrer"><i className="fas fa-globe text-lg text-gray-500"></i></a>
+                  <a href="https://discord.gg/ogronexnft" target="_blank" rel="noreferrer"><i className="fab fa-discord text-lg text-gray-500"></i></a>
+                  <a href="https://twitter.com/Ogronex" target="_blank" rel="noreferrer"><i className="fab fa-twitter text-lg text-gray-500"></i></a>
+                  <a href="https://ogronex.com/" target="_blank" rel="noreferrer"><i className="fas fa-globe text-lg text-gray-500"></i></a>
                 </div>
               </div>
               <div className="flex flex-row px-4">
@@ -60,7 +61,7 @@ export default function Home() {
                 </p>
               </div>
               <div className="flex flex-row p-4 bg-secondary rounded-lg justify-center gap-7 border border-gray-600 bg-opacity-60">
-                <p className="text-xl font-bold text-white">Mint price:<span className="ml-1 text-light">FREE</span><span className="ml-1 text-gray-400 text-sm">+ 1 MATIC ticket fee</span>
+                <p className="text-xl font-bold text-white">Mint price:<span className="ml-1 text-md text-light">FREE</span><span className="ml-1 text-gray-400 text-sm">+ 1 MATIC ticket fee</span>
                 </p>
                 <p className="text-xl font-bold text-white">Winners:<span className="ml-1 text-light">333</span>
                 </p>
@@ -78,7 +79,9 @@ export default function Home() {
                 <p className="text-xl font-bold text-white">Public<span className="ml-3 text-light border border-light rounded-full px-2 text-sm">i</span>
                 </p>
                 <div className="flex flex-col justify-end ml-5">
-                  <p className="text-md text-gray-400 bg-secondary py-2 px-6 rounded-lg border border-gray-600 bg-opacity-60">Live in<span className="text-white pl-2 text-xl">2:15:32</span></p>
+                  <p className="text-md text-gray-400 bg-secondary py-2 px-6 rounded-lg border border-gray-600 bg-opacity-60">
+                    Live in<span className="text-white pl-2 text-xl"><CountdownComponent /></span>
+                  </p>
                 </div>
               </div>
               <div className="flex flew-row gap-11 w-full justify-between">
