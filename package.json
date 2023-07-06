@@ -5,6 +5,7 @@
   "dependencies": {
     "@dynamic-labs/sdk-react": "^0.16.10",
     "@dynamic-labs/wagmi-connector": "^0.16.10",
+    "@fortawesome/fontawesome-free": "^6.4.0",
     "@headlessui/react": "^1.7.15",
     "@heroicons/react": "^2.0.18",
     "@tailwindcss/aspect-ratio": "^0.4.2",
@@ -48,6 +49,9 @@
   "author": "LoLo-Labs",
   "license": "ISC",
   "devDependencies": {
+    "css-loader": "^6.8.1",
+    "postcss-loader": "^7.3.3",
+    "source-map-loader": "^4.0.1",
     "tailwindcss": "^3.3.2"
   }
 }

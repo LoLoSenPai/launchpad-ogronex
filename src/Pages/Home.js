@@ -41,7 +41,7 @@ export default function Home() {
 
         <main className="relative">
           <div className="flex flex-row justify-center">
-            <div className="flex flex-col justify-center items-center w-[900px] h-auto pt-7">
+            <div className="flex flex-col justify-center items-center w-[650px] h-auto">
               <img className="" src="./Images/prize-maschine.png" alt="" />
             </div>
             <div className="flex flex-col mt-10 max-w-[700px] gap-6">
@@ -72,7 +72,7 @@ export default function Home() {
                 <p className="text-xl font-bold text-white">Guaranteed mint<span className="ml-3 text-light border border-light rounded-full px-2 text-sm">i</span>
                 </p>
                 <div className="flex flex-col justify-end ml-5">
-                  <p className="text-xl font-bold text-white bg-secondary py-2 px-6 rounded-lg border border-gray-600 bg-opacity-60"><i className="fas fa-circle pr-2 text-light text-sm"></i>Live</p>
+                  <p className="text-xl font-bold text-white bg-secondary py-2 px-6 rounded-lg border border-gray-600 bg-opacity-60"><i className="fas fa-circle pr-2 text-light text-sm animate-pulse"></i>Live</p>
                 </div>
               </div>
               <div className="flex flex-row items-center p-4 bg-four rounded-lg border border-gray-600 justify-between">

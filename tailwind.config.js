@@ -28,12 +28,23 @@ module.exports = {
         green: "#02ffa7",
       },
       animation: {
-        'background-shine': 'background-shine 4s linear infinite'
+        'background-shine': 'background-shine 4s linear infinite',
+        'pulse': 'pulse 2s linear infinite',
+        wave: 'wave 1.5s linear infinite',
       },
       keyframes: {
         'background-shine': {
           '0%': { 'backgroundPosition': '0 0' },
           '100%': { 'backgroundPosition': '-170% 0' }
+        },
+        'pulse': {
+          '0%, 100%': { transform: 'scale(1)' },
+          '50%': { transform: 'scale(1.2)' },
+        },
+        wave: {
+          '0%': { transform: 'scale(0.5)', opacity: 0 },
+          '50%': { transform: 'scale(1)', opacity: 1 },
+          '100%': { transform: 'scale(0.5)', opacity: 0 },
         }
       }
     },
