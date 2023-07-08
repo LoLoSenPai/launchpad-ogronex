@@ -151,14 +151,12 @@ export default function Home() {
                 </p>
                 <div className="flex flex-col justify-end ml-5">
                   <p className="text-md text-gray-400 bg-secondary py-2 px-6 rounded-lg border border-gray-600 bg-opacity-60">
-                    {endTimeBool ? (
                       <>
                         Live in
                         <span className="text-white pl-2 text-xl">
-                          <CountdownComponent deadline={endTime} />
+                        {endTimeBool ? (<CountdownComponent deadline={endTime} />) : null}
                         </span>
                       </>
-                    ) : null}
                   </p>
                 </div>
               </div>
