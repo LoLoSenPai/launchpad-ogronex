@@ -24,9 +24,11 @@ export default function Home() {
 
   const [ticketsSold, setTicketsSold] = useState(0);
   const [ticketsBought, setTicketsBought] = useState(0);
+  const [endTime, setEndTime] = useState(0);
 
   useEffect(() => {
     if(isConnected){
+      getDeadline();
       getTicketsSold();
       getTicketsBought();
     }
@@ -63,14 +65,23 @@ async function buyTickets(){
     const ticketsSold = await contractRaffle.nbTicketSell();
     setTicketsSold(ticketsSold.toNumber());
   };
+  const getDeadline = async () => {
+    if (!contractRaffle) return;
+    const deadline = await contractRaffle.deadline();
+    console.log(deadline.toNumber());
+    setEndTime(deadline.toNumber());
+  };
 
   const getTicketsBought = async () => {
     if (!address) return;
     try {
       const idPlayer = await contractRaffle.idByAddress(address);
       const player = await contractRaffle.playersList(idPlayer);
-      const ticketsBought = player.ticketsBought;
-      setTicketsBought(ticketsBought.toNumber());
+      if (player.addressPlayer === address){
+        console.log(player);
+        const ticketsBought = player.ticketsBought;
+        setTicketsBought(ticketsBought.toNumber());
+      }
     } catch (error) {
       console.error("Error getting tickets bought:", error);
     }
@@ -138,7 +149,7 @@ async function buyTickets(){
                 </p>
                 <div className="flex flex-col justify-end ml-5">
                   <p className="text-md text-gray-400 bg-secondary py-2 px-6 rounded-lg border border-gray-600 bg-opacity-60">
-                    Live in<span className="text-white pl-2 text-xl"><CountdownComponent /></span>
+                    Live in<span className="text-white pl-2 text-xl"><CountdownComponent time={endTime}/></span>
                   </p>
                 </div>
               </div>
