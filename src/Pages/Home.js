@@ -9,13 +9,18 @@ const contractRaffleAddress = "0xe572A0fC14b83b1a2BA0b86A2b1637E481Aa5283";
 
 export default function Home() {
 
+  const ticketPrice = 0.01
   const provider = new ethers.providers.Web3Provider(window.ethereum);
   const signer = provider.getSigner();
   const contractRaffle = new ethers.Contract(contractRaffleAddress, RaffleABI.abi, signer);
 
-  const { address } = useAccount();
+  const { address, isConnected } = useAccount();
 
   const [ticketCount, setTicketCount] = useState(1);
+  const [successBuy, setSuccessBuy] = useState(false);
+  const [waitingBuy, setWaitingBuy] = useState(false);
+  const [errorBuy, setErrorBuy] = useState(false);
+
 
   const handleIncrease = () => {
     setTicketCount(ticketCount + 1);
@@ -26,6 +31,22 @@ export default function Home() {
       setTicketCount(ticketCount - 1);
     }
   };
+
+async function buyTickets(){
+  if(isConnected){
+    try {
+      setWaitingBuy(true);
+      await contractRaffle.buyTicket(ticketCount, { value: ethers.utils.parseEther((ticketCount * ticketPrice).toString()) });
+      setWaitingBuy(false);
+      setSuccessBuy(true);      
+    } catch (error) {
+      setWaitingBuy(false);
+      setSuccessBuy(false);  
+      setErrorBuy(true);  
+    }
+  }
+}
+
 
   return (
     <>
@@ -116,7 +137,7 @@ export default function Home() {
                   className="w-1/4 h-14 rounded-lg bg-secondary text-white text-xl text-center border border-gray-600"
                   placeholder="1"
                 /> */}
-                <button className="w-2/4 h-14 rounded-lg text-2xl bg-light font-bold text-black">Buy Tickets</button>
+                <button className="w-2/4 h-14 rounded-lg text-2xl bg-light font-bold text-black" onClick={() => buyTickets()}>Buy Tickets</button>
                 <p className="w-1/4 flex items-center text-xl text-white">Your tickets:<span className="ml-1 text-light">150</span>
                 </p>
               </div>
