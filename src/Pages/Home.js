@@ -1,9 +1,19 @@
 import React, { useState } from "react";
 import { DynamicWidget } from "@dynamic-labs/sdk-react";
+import { useAccount } from "wagmi";
+import { ethers } from "ethers";
 import CountdownComponent from "../Components/Countdown";
+import RaffleABI from "../ABI/RaffleG_0.json";
 
+const contractRaffleAddress = "0xe572A0fC14b83b1a2BA0b86A2b1637E481Aa5283";
 
 export default function Home() {
+
+  const provider = new ethers.providers.Web3Provider(window.ethereum);
+  const signer = provider.getSigner();
+  const contractRaffle = new ethers.Contract(contractRaffleAddress, RaffleABI.abi, signer);
+
+  const { address } = useAccount();
 
   const [ticketCount, setTicketCount] = useState(1);
 
