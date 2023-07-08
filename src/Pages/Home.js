@@ -25,39 +25,40 @@ export default function Home() {
   const [ticketsSold, setTicketsSold] = useState(0);
   const [ticketsBought, setTicketsBought] = useState(0);
   const [endTime, setEndTime] = useState(0);
+  const [endTimeBool, setEndTimeBool] = useState(false);
 
   useEffect(() => {
-    if(isConnected){
+    if (isConnected) {
       getDeadline();
       getTicketsSold();
       getTicketsBought();
     }
   }, [address]);
-  
+
   const handleIncrease = () => {
     setTicketCount(ticketCount + 1);
   };
-  
+
   const handleDecrease = () => {
     if (ticketCount > 1) {
       setTicketCount(ticketCount - 1);
     }
   };
 
-async function buyTickets(){
-  if(isConnected){
-    try {
-      setWaitingBuy(true);
-      await contractRaffle.buyTicket(ticketCount, { value: ethers.utils.parseEther((ticketCount * ticketPrice).toString()) });
-      setWaitingBuy(false);
-      setSuccessBuy(true);      
-    } catch (error) {
-      setWaitingBuy(false);
-      setSuccessBuy(false);  
-      setErrorBuy(true);  
+  async function buyTickets() {
+    if (isConnected) {
+      try {
+        setWaitingBuy(true);
+        await contractRaffle.buyTicket(ticketCount, { value: ethers.utils.parseEther((ticketCount * ticketPrice).toString()) });
+        setWaitingBuy(false);
+        setSuccessBuy(true);
+      } catch (error) {
+        setWaitingBuy(false);
+        setSuccessBuy(false);
+        setErrorBuy(true);
+      }
     }
   }
-}
 
 
   const getTicketsSold = async () => {
@@ -70,6 +71,7 @@ async function buyTickets(){
     const deadline = await contractRaffle.deadline();
     console.log(deadline.toNumber());
     setEndTime(deadline.toNumber());
+    setEndTimeBool(true);
   };
 
   const getTicketsBought = async () => {
@@ -77,7 +79,7 @@ async function buyTickets(){
     try {
       const idPlayer = await contractRaffle.idByAddress(address);
       const player = await contractRaffle.playersList(idPlayer);
-      if (player.addressPlayer === address){
+      if (player.addressPlayer === address) {
         console.log(player);
         const ticketsBought = player.ticketsBought;
         setTicketsBought(ticketsBought.toNumber());
@@ -149,7 +151,14 @@ async function buyTickets(){
                 </p>
                 <div className="flex flex-col justify-end ml-5">
                   <p className="text-md text-gray-400 bg-secondary py-2 px-6 rounded-lg border border-gray-600 bg-opacity-60">
-                    Live in<span className="text-white pl-2 text-xl"><CountdownComponent time={endTime}/></span>
+                    {endTimeBool ? (
+                      <>
+                        Live in
+                        <span className="text-white pl-2 text-xl">
+                          <CountdownComponent deadline={endTime} />
+                        </span>
+                      </>
+                    ) : null}
                   </p>
                 </div>
               </div>
