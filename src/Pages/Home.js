@@ -26,11 +26,10 @@ export default function Home() {
   const [ticketsBought, setTicketsBought] = useState(0);
 
   useEffect(() => {
-    getTicketsSold();
-  }, []);
-  
-  useEffect(() => {
-    getTicketsBought();
+    if(isConnected){
+      getTicketsSold();
+      getTicketsBought();
+    }
   }, [address]);
   
   const handleIncrease = () => {
