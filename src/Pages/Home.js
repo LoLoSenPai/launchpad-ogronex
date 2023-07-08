@@ -21,38 +21,40 @@ export default function Home() {
   const [ticketsBought, setTicketsBought] = useState(0);
 
   useEffect(() => {
-    const getTicketsSold = async () => {
-      if (!contractRaffle) return;
-      const ticketsSold = await contractRaffle.nbTicketSell();
-      setTicketsSold(ticketsSold.toNumber());
-    };
     getTicketsSold();
-  }, [contractRaffle]);
-
+  }, []);
+  
   useEffect(() => {
-    const getTicketsBought = async () => {
-      if (!contractRaffle || !address) return;
-      try {
-        const player = await contractRaffle.playersList(address);
-        const ticketsBought = player.ticketsBought;
-        setTicketsBought(ticketsBought.toNumber());
-      } catch (error) {
-        console.error("Error getting tickets bought:", error);
-      }
-    };
     getTicketsBought();
-  }, [contractRaffle, address]);
-
+  }, [address]);
+  
   const handleIncrease = () => {
     setTicketCount(ticketCount + 1);
   };
-
+  
   const handleDecrease = () => {
     if (ticketCount > 1) {
       setTicketCount(ticketCount - 1);
     }
   };
 
+  const getTicketsSold = async () => {
+    if (!contractRaffle) return;
+    const ticketsSold = await contractRaffle.nbTicketSell();
+    setTicketsSold(ticketsSold.toNumber());
+  };
+
+  const getTicketsBought = async () => {
+    if (!address) return;
+    try {
+      const idPlayer = await contractRaffle.idByAddress(address);
+      const player = await contractRaffle.playersList(idPlayer);
+      const ticketsBought = player.ticketsBought;
+      setTicketsBought(ticketsBought.toNumber());
+    } catch (error) {
+      console.error("Error getting tickets bought:", error);
+    }
+  };
   return (
     <>
       <div className="homepage py-10 px-20 md:px-40 lg:px-60">
