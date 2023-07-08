@@ -101,11 +101,6 @@ export default function Home() {
                     +
                   </button>
                 </div>
-                {/* <input
-                  type="number"
-                  className="w-1/4 h-14 rounded-lg bg-secondary text-white text-xl text-center border border-gray-600"
-                  placeholder="1"
-                /> */}
                 <button className="w-2/4 h-14 rounded-lg text-2xl bg-light font-bold text-black">Buy Tickets</button>
                 <p className="w-1/4 flex items-center text-xl text-white">Your tickets:<span className="ml-1 text-light">150</span>
                 </p>
