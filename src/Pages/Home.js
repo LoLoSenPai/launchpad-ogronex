@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { DynamicWidget } from "@dynamic-labs/sdk-react";
 import { useAccount } from "wagmi";
 import { ethers } from "ethers";
@@ -11,11 +11,37 @@ export default function Home() {
 
   const provider = new ethers.providers.Web3Provider(window.ethereum);
   const signer = provider.getSigner();
-  const contractRaffle = new ethers.Contract(contractRaffleAddress, RaffleABI.abi, signer);
-
+  const contractRaffle = useMemo(() => {
+    return new ethers.Contract(contractRaffleAddress, RaffleABI.abi, signer);
+  }, [signer]);
   const { address } = useAccount();
 
   const [ticketCount, setTicketCount] = useState(1);
+  const [ticketsSold, setTicketsSold] = useState(0);
+  const [ticketsBought, setTicketsBought] = useState(0);
+
+  useEffect(() => {
+    const getTicketsSold = async () => {
+      if (!contractRaffle) return;
+      const ticketsSold = await contractRaffle.nbTicketSell();
+      setTicketsSold(ticketsSold.toNumber());
+    };
+    getTicketsSold();
+  }, [contractRaffle]);
+
+  useEffect(() => {
+    const getTicketsBought = async () => {
+      if (!contractRaffle || !address) return;
+      try {
+        const player = await contractRaffle.playersList(address);
+        const ticketsBought = player.ticketsBought;
+        setTicketsBought(ticketsBought.toNumber());
+      } catch (error) {
+        console.error("Error getting tickets bought:", error);
+      }
+    };
+    getTicketsBought();
+  }, [contractRaffle, address]);
 
   const handleIncrease = () => {
     setTicketCount(ticketCount + 1);
@@ -75,7 +101,7 @@ export default function Home() {
                 </p>
                 <p className="text-xl font-bold text-white">Winners:<span className="ml-1 text-light">333</span>
                 </p>
-                <p className="text-xl font-bold text-white">Tickets sold:<span className="ml-1 text-light">1520</span><span className="ml-1 text-gray-400 text-sm">/ &#8734;</span>
+                <p className="text-xl font-bold text-white">Tickets sold:<span className="ml-1 text-light">{ticketsSold}</span><span className="ml-1 text-gray-400 text-sm">/ &#8734;</span>
                 </p>
               </div>
               <div className="flex flex-row items-center p-4 bg-four rounded-lg border border-gray-600 justify-between">
@@ -117,7 +143,7 @@ export default function Home() {
                   placeholder="1"
                 /> */}
                 <button className="w-2/4 h-14 rounded-lg text-2xl bg-light font-bold text-black">Buy Tickets</button>
-                <p className="w-1/4 flex items-center text-xl text-white">Your tickets:<span className="ml-1 text-light">150</span>
+                <p className="w-1/4 flex items-center text-xl text-white">Your tickets:<span className="ml-1 text-light">{ticketsBought}</span>
                 </p>
               </div>
               <div className="flex flex-row justify-end mt-20">
