@@ -2,12 +2,31 @@ import React, { useState, useEffect, useMemo } from "react";
 import { DynamicWidget } from "@dynamic-labs/sdk-react";
 import { useAccount } from "wagmi";
 import { ethers } from "ethers";
+import { Network, Alchemy } from 'alchemy-sdk';
 import CountdownComponent from "../Components/Countdown";
 import RaffleABI from "../ABI/RaffleG_0.json";
 
 const contractRaffleAddress = "0xe572A0fC14b83b1a2BA0b86A2b1637E481Aa5283";
 
 export default function Home() {
+
+  const settings = {
+    apiKey: "4OV2g4TrNiCkA9wIc8OjGZzovYl_dx2r",
+    network: Network.MATIC_MUMBAI,
+};
+
+const alchemy = new Alchemy(settings);
+
+async function getAlchemyProvider(){
+  const maticProvider = await alchemy.config.getProvider();
+  const contractRaffleBeforeConnection =new ethers.Contract(contractRaffleAddress, RaffleABI.abi, maticProvider);
+  const ticketsSold = await contractRaffleBeforeConnection.nbTicketSell();
+  const deadline = await contractRaffleBeforeConnection.deadline();
+  setEndTime(deadline.toNumber());
+  setEndTimeBool(true);
+  setTicketsSold(ticketsSold.toNumber());
+
+ }
 
   const ticketPrice = 0.01
   const provider = new ethers.providers.Web3Provider(window.ethereum);
@@ -28,6 +47,7 @@ export default function Home() {
   const [endTimeBool, setEndTimeBool] = useState(false);
 
   useEffect(() => {
+    getAlchemyProvider();
     if (isConnected) {
       getDeadline();
       getTicketsSold();
@@ -60,12 +80,12 @@ export default function Home() {
     }
   }
 
-
   const getTicketsSold = async () => {
     if (!contractRaffle) return;
     const ticketsSold = await contractRaffle.nbTicketSell();
     setTicketsSold(ticketsSold.toNumber());
   };
+
   const getDeadline = async () => {
     if (!contractRaffle) return;
     const deadline = await contractRaffle.deadline();
@@ -75,7 +95,7 @@ export default function Home() {
   };
 
   const getTicketsBought = async () => {
-    if (!address) return;
+    if (!isConnected) return;
     try {
       const idPlayer = await contractRaffle.idByAddress(address);
       const player = await contractRaffle.playersList(idPlayer);
@@ -103,7 +123,7 @@ export default function Home() {
                 />
               </a>
             </div>
-            <div className="flex flex-row items-center gap-8">
+            <div className="flex flex-row items-center gap-8 z-30">
               <a href="#1" className="text-xl font-bold text-gray-400">Terms and conditions</a>
               <DynamicWidget variant='dropdown' />
             </div>
@@ -152,7 +172,7 @@ export default function Home() {
                 <div className="flex flex-col justify-end ml-5">
                   <p className="text-md text-gray-400 bg-secondary py-2 px-6 rounded-lg border border-gray-600 bg-opacity-60">
                       <>
-                        Live in
+                        End in
                         <span className="text-white pl-2 text-xl">
                         {endTimeBool ? (<CountdownComponent deadline={endTime} />) : null}
                         </span>
