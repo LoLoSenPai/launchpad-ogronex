@@ -6,7 +6,7 @@ import { Network, Alchemy } from 'alchemy-sdk';
 import CountdownComponent from "../Components/Countdown";
 import RaffleABI from "../ABI/RaffleG_0.json";
 
-const contractRaffleAddress = "0xe572A0fC14b83b1a2BA0b86A2b1637E481Aa5283";
+const contractRaffleAddress = "0x3D81a95945C5b67D3874aC0D92Fe5b108db0372B";
 
 export default function Home() {
 
@@ -17,15 +17,22 @@ export default function Home() {
 
 const alchemy = new Alchemy(settings);
 
-async function getAlchemyProvider(){
+async function getAlchemyProviderAndData(){
   const maticProvider = await alchemy.config.getProvider();
+  const block = await maticProvider.getBlock();
+  console.log("block : ", block.timestamp);
   const contractRaffleBeforeConnection =new ethers.Contract(contractRaffleAddress, RaffleABI.abi, maticProvider);
   const ticketsSold = await contractRaffleBeforeConnection.nbTicketSell();
   const deadline = await contractRaffleBeforeConnection.deadline();
-  setEndTime(deadline.toNumber());
-  setEndTimeBool(true);
+  const startTime = await contractRaffleBeforeConnection.startDate();
+  if(block.timestamp < startTime){
+    setStartTimeBool(true);
+    setStartTime(startTime.toNumber());
+  }else{
+    setEndTime(deadline.toNumber());
+    setEndTimeBool(true);
+  }
   setTicketsSold(ticketsSold.toNumber());
-
  }
 
   const ticketPrice = 0.01
@@ -44,13 +51,15 @@ async function getAlchemyProvider(){
   const [ticketsSold, setTicketsSold] = useState(0);
   const [ticketsBought, setTicketsBought] = useState(0);
   const [endTime, setEndTime] = useState(0);
+  const [startTime, setStartTime] = useState(0);
+  const [startTimeBool, setStartTimeBool] = useState(false);
   const [endTimeBool, setEndTimeBool] = useState(false);
 
   useEffect(() => {
-    getAlchemyProvider();
+    getAlchemyProviderAndData();
     if (isConnected) {
-      getDeadline();
-      getTicketsSold();
+      // getDeadline();
+      // getTicketsSold();
       getTicketsBought();
     }
   }, [address]);
@@ -171,12 +180,18 @@ async function getAlchemyProvider(){
                 </p>
                 <div className="flex flex-col justify-end ml-5">
                   <p className="text-md text-gray-400 bg-secondary py-2 px-6 rounded-lg border border-gray-600 bg-opacity-60">
-                      <>
+                  {endTimeBool ? ( <>
                         End in
                         <span className="text-white pl-2 text-xl">
-                        {endTimeBool ? (<CountdownComponent deadline={endTime} />) : null}
+                        <CountdownComponent deadline={endTime} />
                         </span>
-                      </>
+                      </>) : null}
+                  {startTimeBool ? ( <>
+                        Live in
+                        <span className="text-white pl-2 text-xl">
+                        <CountdownComponent deadline={startTime} />
+                        </span>
+                      </>) : null}
                   </p>
                 </div>
               </div>
