@@ -6,7 +6,7 @@ import { Network, Alchemy } from 'alchemy-sdk';
 import CountdownComponent from "../Components/Countdown";
 import RaffleABI from "../ABI/RaffleG_0.json";
 
-const contractRaffleAddress = "0x3D81a95945C5b67D3874aC0D92Fe5b108db0372B";
+const contractRaffleAddress = "0xBA73277276e86b325767A745617A601E05Ba4DD4";
 
 export default function Home() {
 
