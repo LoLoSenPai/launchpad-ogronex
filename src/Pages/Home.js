@@ -17,10 +17,48 @@ export default function Home() {
 
 const alchemy = new Alchemy(settings);
 
+const ticketPrice = 0.01
+const provider = new ethers.providers.Web3Provider(window.ethereum);
+const signer = provider.getSigner();
+const contractRaffle = useMemo(() => {
+  return new ethers.Contract(contractRaffleAddress, RaffleABI.abi, signer);
+}, [signer]);
+const { address, isConnected } = useAccount();
+
+const [ticketCount, setTicketCount] = useState(1);
+const [successBuy, setSuccessBuy] = useState(false);
+const [waitingBuy, setWaitingBuy] = useState(false);
+const [errorBuy, setErrorBuy] = useState(false);
+
+const [ticketsSold, setTicketsSold] = useState(0);
+const [ticketsBought, setTicketsBought] = useState(0);
+const [endTime, setEndTime] = useState(0);
+const [startTime, setStartTime] = useState(0);
+const [startTimeBool, setStartTimeBool] = useState(false);
+const [endTimeBool, setEndTimeBool] = useState(false);
+
+useEffect(() => {
+  getAlchemyProviderAndData();
+  if (isConnected) {
+    // getDeadline();
+    // getTicketsSold();
+    getTicketsBought();
+  }
+}, [address]);
+
+const handleIncrease = () => {
+  setTicketCount(ticketCount + 1);
+};
+
+const handleDecrease = () => {
+  if (ticketCount > 1) {
+    setTicketCount(ticketCount - 1);
+  }
+};
+
 async function getAlchemyProviderAndData(){
   const maticProvider = await alchemy.config.getProvider();
   const block = await maticProvider.getBlock();
-  console.log("block : ", block.timestamp);
   const contractRaffleBeforeConnection =new ethers.Contract(contractRaffleAddress, RaffleABI.abi, maticProvider);
   const ticketsSold = await contractRaffleBeforeConnection.nbTicketSell();
   const deadline = await contractRaffleBeforeConnection.deadline();
@@ -35,47 +73,8 @@ async function getAlchemyProviderAndData(){
   setTicketsSold(ticketsSold.toNumber());
  }
 
-  const ticketPrice = 0.01
-  const provider = new ethers.providers.Web3Provider(window.ethereum);
-  const signer = provider.getSigner();
-  const contractRaffle = useMemo(() => {
-    return new ethers.Contract(contractRaffleAddress, RaffleABI.abi, signer);
-  }, [signer]);
-  const { address, isConnected } = useAccount();
-
-  const [ticketCount, setTicketCount] = useState(1);
-  const [successBuy, setSuccessBuy] = useState(false);
-  const [waitingBuy, setWaitingBuy] = useState(false);
-  const [errorBuy, setErrorBuy] = useState(false);
-
-  const [ticketsSold, setTicketsSold] = useState(0);
-  const [ticketsBought, setTicketsBought] = useState(0);
-  const [endTime, setEndTime] = useState(0);
-  const [startTime, setStartTime] = useState(0);
-  const [startTimeBool, setStartTimeBool] = useState(false);
-  const [endTimeBool, setEndTimeBool] = useState(false);
-
-  useEffect(() => {
-    getAlchemyProviderAndData();
-    if (isConnected) {
-      // getDeadline();
-      // getTicketsSold();
-      getTicketsBought();
-    }
-  }, [address]);
-
-  const handleIncrease = () => {
-    setTicketCount(ticketCount + 1);
-  };
-
-  const handleDecrease = () => {
-    if (ticketCount > 1) {
-      setTicketCount(ticketCount - 1);
-    }
-  };
-
-  async function buyTickets() {
-    if (isConnected) {
+async function buyTickets() {
+  if (isConnected) {
       try {
         setWaitingBuy(true);
         await contractRaffle.buyTicket(ticketCount, { value: ethers.utils.parseEther((ticketCount * ticketPrice).toString()) });
