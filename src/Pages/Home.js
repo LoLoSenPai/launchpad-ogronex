@@ -11,40 +11,6 @@ const contractRaffleAddress = "0xBA73277276e86b325767A745617A601E05Ba4DD4";
 
 export default function Home() {
 
-  const settings = {
-    apiKey: "4OV2g4TrNiCkA9wIc8OjGZzovYl_dx2r",
-    network: Network.MATIC_MUMBAI,
-  };
-
-  const alchemy = new Alchemy(settings);
-
-  async function getAlchemyProviderAndData() {
-    const maticProvider = await alchemy.config.getProvider();
-    const block = await maticProvider.getBlock();
-    console.log("block : ", block.timestamp);
-    const contractRaffleBeforeConnection = new ethers.Contract(contractRaffleAddress, RaffleABI.abi, maticProvider);
-    const ticketsSold = await contractRaffleBeforeConnection.nbTicketSell();
-    const deadline = await contractRaffleBeforeConnection.deadline();
-    const startTime = await contractRaffleBeforeConnection.startDate();
-
-    if (block.timestamp < startTime) {
-      setStartTimeBool(true);
-      setEndTimeBool(false);
-      setStartTime(startTime);
-    } else if (block.timestamp >= startTime && block.timestamp <= deadline) {
-      setStartTimeBool(false);
-      setEndTimeBool(true);
-      setEndTime(deadline);
-    }
-    else {
-      setStartTimeBool(false);
-      setEndTimeBool(false);
-    }
-
-    setTicketsSold(ticketsSold.toNumber());
-  }
-
-  const ticketPrice = 0.01
   const provider = new ethers.providers.Web3Provider(window.ethereum);
   const signer = provider.getSigner();
   const contractRaffle = useMemo(() => {
@@ -65,83 +31,38 @@ export default function Home() {
   const [endTimeBool, setEndTimeBool] = useState(false);
 
   useEffect(() => {
-    getAlchemyProviderAndData();
-    if (isConnected) {
-      getTicketsBought();
-    }
-  }, [address]);
+    const getTicketsSold = async () => {
+      if (!contractRaffle) return;
+      const ticketsSold = await contractRaffle.nbTicketSell();
+      setTicketsSold(ticketsSold.toNumber());
+    };
+    getTicketsSold();
+  }, [contractRaffle]);
 
-  const isWhitelisted = (address) => {
-    return whitelist.some(item => item.address === address);
-  }
-
-  const getSaleStatus = () => {
-    const now = Date.now() / 1000;
-
-    if (now < startTime) {
-      return "Not Started";
-    } else if (now >= startTime && now <= endTime) {
-      return "Live";
-    } else if (now > endTime) {
-      return "Ended";
-    }
-  };
-
-  const saleStatus = getSaleStatus();
+  useEffect(() => {
+    const getTicketsBought = async () => {
+      if (!contractRaffle || !address) return;
+      try {
+        const player = await contractRaffle.playersList(address);
+        const ticketsBought = player.ticketsBought;
+        setTicketsBought(ticketsBought.toNumber());
+      } catch (error) {
+        console.error("Error getting tickets bought:", error);
+      }
+    };
+    getTicketsBought();
+  }, [contractRaffle, address]);
 
   const handleIncrease = () => {
     setTicketCount(ticketCount + 1);
   };
-
+  
   const handleDecrease = () => {
     if (ticketCount > 1) {
       setTicketCount(ticketCount - 1);
     }
   };
 
-  async function buyTickets() {
-    if (isConnected) {
-      try {
-        setWaitingBuy(true);
-        await contractRaffle.buyTicket(ticketCount, { value: ethers.utils.parseEther((ticketCount * ticketPrice).toString()) });
-        setWaitingBuy(false);
-        setSuccessBuy(true);
-      } catch (error) {
-        setWaitingBuy(false);
-        setSuccessBuy(false);
-        setErrorBuy(true);
-      }
-    }
-  }
-
-  const getTicketsSold = async () => {
-    if (!contractRaffle) return;
-    const ticketsSold = await contractRaffle.nbTicketSell();
-    setTicketsSold(ticketsSold.toNumber());
-  };
-
-  const getDeadline = async () => {
-    if (!contractRaffle) return;
-    const deadline = await contractRaffle.deadline();
-    console.log(deadline.toNumber());
-    setEndTime(deadline.toNumber());
-    setEndTimeBool(true);
-  };
-
-  const getTicketsBought = async () => {
-    if (!isConnected) return;
-    try {
-      const idPlayer = await contractRaffle.idByAddress(address);
-      const player = await contractRaffle.playersList(idPlayer);
-      if (player.addressPlayer === address) {
-        console.log(player);
-        const ticketsBought = player.ticketsBought;
-        setTicketsBought(ticketsBought.toNumber());
-      }
-    } catch (error) {
-      console.error("Error getting tickets bought:", error);
-    }
-  };
   return (
     <>
       <div className="homepage py-10 px-20 md:px-40 lg:px-60">
@@ -240,8 +161,12 @@ export default function Home() {
                     +
                   </button>
                 </div>
-                <button className="w-2/4 h-14 rounded-lg text-2xl bg-light font-bold text-black" onClick={() => buyTickets()}>{isWhitelisted(address) ? 'Mint' : 'Buy Tickets'}
-                </button>
+                {/* <input
+                  type="number"
+                  className="w-1/4 h-14 rounded-lg bg-secondary text-white text-xl text-center border border-gray-600"
+                  placeholder="1"
+                /> */}
+                <button className="w-2/4 h-14 rounded-lg text-2xl bg-light font-bold text-black">Buy Tickets</button>
                 <p className="w-1/4 flex items-center text-xl text-white">Your tickets:<span className="ml-1 text-light">{ticketsBought}</span>
                 </p>
               </div>
