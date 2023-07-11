@@ -6,6 +6,7 @@ import { Network, Alchemy } from 'alchemy-sdk';
 import CountdownComponent from "../Components/Countdown";
 import RaffleABI from "../ABI/RaffleG_0.json";
 import whitelist from './whitelist.json';
+import { ClipLoader } from "react-spinners";
 
 const contractRaffleAddress = "0xBA73277276e86b325767A745617A601E05Ba4DD4";
 
@@ -103,9 +104,11 @@ export default function Home() {
     if (isConnected) {
       try {
         setWaitingBuy(true);
-        await contractRaffle.buyTicket(ticketCount, { value: ethers.utils.parseEther((ticketCount * ticketPrice).toString()) });
+        const tx = await contractRaffle.buyTicket(ticketCount, { value: ethers.utils.parseEther((ticketCount * ticketPrice).toString()) });
+        await provider.waitForTransaction(tx.hash);
         setWaitingBuy(false);
         setSuccessBuy(true);
+        getTicketsBought();
       } catch (error) {
         setWaitingBuy(false);
         setSuccessBuy(false);
@@ -142,6 +145,14 @@ export default function Home() {
       console.error("Error getting tickets bought:", error);
     }
   };
+
+  let buttonText;
+  if (waitingBuy) {
+    buttonText = <ClipLoader color="#000" />;
+  } else {
+    buttonText = isWhitelisted(address) ? 'Mint' : 'Buy Tickets';
+  }
+
   return (
     <>
       <div className="homepage py-10 px-20 md:px-40 lg:px-60">
@@ -240,7 +251,8 @@ export default function Home() {
                     +
                   </button>
                 </div>
-                <button className="w-2/4 h-14 rounded-lg text-2xl bg-light font-bold text-black" onClick={() => buyTickets()}>{isWhitelisted(address) ? 'Mint' : 'Buy Tickets'}
+                <button className="w-2/4 h-14 rounded-lg text-2xl bg-light font-bold text-black" onClick={() => buyTickets()}>
+                  {buttonText}
                 </button>
                 <p className="w-1/4 flex items-center text-xl text-white">Your tickets:<span className="ml-1 text-light">{ticketsBought}</span>
                 </p>

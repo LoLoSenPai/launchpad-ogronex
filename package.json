@@ -19,6 +19,7 @@
     "react-modal": "^3.16.1",
     "react-router-dom": "^6.13.0",
     "react-scripts": "5.0.1",
+    "react-spinners": "^0.13.8",
     "tailwind": "^4.0.0",
     "wagmi": "^0.10.3"
   },
