@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { DynamicWidget } from "@dynamic-labs/sdk-react";
 import { useAccount } from "wagmi";
 import { ethers } from "ethers";
@@ -35,7 +35,7 @@ export default function Home() {
 
   const alchemy = new Alchemy(settings);
 
-  async function getAlchemyProviderAndData() {
+  const getAlchemyProviderAndData = useCallback(async () => {
     const maticProvider = await alchemy.config.getProvider();
     const block = await maticProvider.getBlock();
     console.log("block : ", block.timestamp);
@@ -59,7 +59,7 @@ export default function Home() {
     }
 
     setTicketsSold(ticketsSold.toNumber());
-  }
+  }, [alchemy.config]);
 
   const ticketPrice = 0.01
   const provider = new ethers.providers.Web3Provider(window.ethereum);
@@ -110,7 +110,7 @@ export default function Home() {
     setEndTimeBool(true);
   };
 
-  const getTicketsBought = async () => {
+  const getTicketsBought = useCallback(async () => {
     if (!isConnected) return;
     try {
       const idPlayer = await contractRaffle.idByAddress(address);
@@ -123,7 +123,7 @@ export default function Home() {
     } catch (error) {
       console.error("Error getting tickets bought:", error);
     }
-  };
+  }, [address, isConnected, contractRaffle]);
 
   async function buyTickets() {
     if (isConnected) {
@@ -149,14 +149,14 @@ export default function Home() {
     if (isConnected) {
       getTicketsBought();
     }
-  }, [address]);
+  }, [address, isConnected, getAlchemyProviderAndData, getTicketsBought]);
 
   let buttonText;
   if (waitingBuy) {
     buttonText = (
       <div className="flex justify-center items-center h-full">
         <PuffLoader
-        color="#000" />
+          color="#000" />
       </div>
     );
   } else {
@@ -165,7 +165,10 @@ export default function Home() {
 
   return (
     <>
-      <ToastContainer position="bottom-center" theme="dark" />
+      <ToastContainer
+        position="bottom-center"
+        theme="dark"
+      />
       <div className="homepage py-10 px-20 md:px-40 lg:px-60">
         <header className="navbar">
           <nav className="flex justify-center justify-between">
