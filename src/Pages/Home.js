@@ -6,11 +6,27 @@ import { Network, Alchemy } from 'alchemy-sdk';
 import CountdownComponent from "../Components/Countdown";
 import RaffleABI from "../ABI/RaffleG_0.json";
 import whitelist from './whitelist.json';
-import { ClipLoader } from "react-spinners";
+import { PuffLoader } from "react-spinners";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 
 const contractRaffleAddress = "0xBA73277276e86b325767A745617A601E05Ba4DD4";
 
 export default function Home() {
+
+  const { address, isConnected } = useAccount();
+  const [ticketCount, setTicketCount] = useState(1);
+  const [successBuy, setSuccessBuy] = useState(false);
+  const [waitingBuy, setWaitingBuy] = useState(false);
+  const [errorBuy, setErrorBuy] = useState(false);
+
+  const [ticketsSold, setTicketsSold] = useState(0);
+  const [ticketsBought, setTicketsBought] = useState(0);
+  const [endTime, setEndTime] = useState(0);
+  const [startTime, setStartTime] = useState(0);
+  const [startTimeBool, setStartTimeBool] = useState(false);
+  const [endTimeBool, setEndTimeBool] = useState(false);
 
   const settings = {
     apiKey: "4OV2g4TrNiCkA9wIc8OjGZzovYl_dx2r",
@@ -51,26 +67,6 @@ export default function Home() {
   const contractRaffle = useMemo(() => {
     return new ethers.Contract(contractRaffleAddress, RaffleABI.abi, signer);
   }, [signer]);
-  const { address, isConnected } = useAccount();
-
-  const [ticketCount, setTicketCount] = useState(1);
-  const [successBuy, setSuccessBuy] = useState(false);
-  const [waitingBuy, setWaitingBuy] = useState(false);
-  const [errorBuy, setErrorBuy] = useState(false);
-
-  const [ticketsSold, setTicketsSold] = useState(0);
-  const [ticketsBought, setTicketsBought] = useState(0);
-  const [endTime, setEndTime] = useState(0);
-  const [startTime, setStartTime] = useState(0);
-  const [startTimeBool, setStartTimeBool] = useState(false);
-  const [endTimeBool, setEndTimeBool] = useState(false);
-
-  useEffect(() => {
-    getAlchemyProviderAndData();
-    if (isConnected) {
-      getTicketsBought();
-    }
-  }, [address]);
 
   const isWhitelisted = (address) => {
     return whitelist.some(item => item.address === address);
@@ -99,23 +95,6 @@ export default function Home() {
       setTicketCount(ticketCount - 1);
     }
   };
-
-  async function buyTickets() {
-    if (isConnected) {
-      try {
-        setWaitingBuy(true);
-        const tx = await contractRaffle.buyTicket(ticketCount, { value: ethers.utils.parseEther((ticketCount * ticketPrice).toString()) });
-        await provider.waitForTransaction(tx.hash);
-        setWaitingBuy(false);
-        setSuccessBuy(true);
-        getTicketsBought();
-      } catch (error) {
-        setWaitingBuy(false);
-        setSuccessBuy(false);
-        setErrorBuy(true);
-      }
-    }
-  }
 
   const getTicketsSold = async () => {
     if (!contractRaffle) return;
@@ -146,15 +125,47 @@ export default function Home() {
     }
   };
 
+  async function buyTickets() {
+    if (isConnected) {
+      try {
+        setWaitingBuy(true);
+        const tx = await contractRaffle.buyTicket(ticketCount, { value: ethers.utils.parseEther((ticketCount * ticketPrice).toString()) });
+        await provider.waitForTransaction(tx.hash);
+        setWaitingBuy(false);
+        setSuccessBuy(true);
+        toast.success("You're in the game! Good luck with the draw!");
+        getTicketsBought();
+        getTicketsSold();
+      } catch (error) {
+        setWaitingBuy(false);
+        setSuccessBuy(false);
+        setErrorBuy(true);
+        toast.error("Transaction error! But don't worry, even the best stumble sometimes!");
+      }
+    }
+  }
+  useEffect(() => {
+    getAlchemyProviderAndData();
+    if (isConnected) {
+      getTicketsBought();
+    }
+  }, [address]);
+
   let buttonText;
   if (waitingBuy) {
-    buttonText = <ClipLoader color="#000" />;
+    buttonText = (
+      <div className="flex justify-center items-center h-full">
+        <PuffLoader
+        color="#000" />
+      </div>
+    );
   } else {
     buttonText = isWhitelisted(address) ? 'Mint' : 'Buy Tickets';
   }
 
   return (
     <>
+      <ToastContainer position="bottom-center" theme="dark" />
       <div className="homepage py-10 px-20 md:px-40 lg:px-60">
         <header className="navbar">
           <nav className="flex justify-center justify-between">
