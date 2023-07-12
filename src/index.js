@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { DynamicContextProvider, SortWallets } from '@dynamic-labs/sdk-react';
 import { DynamicWagmiConnector } from "@dynamic-labs/wagmi-connector";
+import { Analytics } from "@vercel/analytics/react";
 import App from './App';
 import './Styles/globals.css';
 
@@ -53,6 +54,7 @@ root.render(
       >
         <DynamicWagmiConnector>
           <App />
+          <Analytics />
         </DynamicWagmiConnector>
       </DynamicContextProvider>
     </>
