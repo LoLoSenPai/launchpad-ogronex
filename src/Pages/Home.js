@@ -20,13 +20,13 @@ export default function Home() {
   const [successBuy, setSuccessBuy] = useState(false);
   const [waitingBuy, setWaitingBuy] = useState(false);
   const [errorBuy, setErrorBuy] = useState(false);
-
   const [ticketsSold, setTicketsSold] = useState(0);
   const [ticketsBought, setTicketsBought] = useState(0);
   const [endTime, setEndTime] = useState(0);
   const [startTime, setStartTime] = useState(0);
   const [startTimeBool, setStartTimeBool] = useState(false);
   const [endTimeBool, setEndTimeBool] = useState(false);
+  const [blockTimestamp, setBlockTimestamp] = useState(0);
 
   const settings = {
     apiKey: "4OV2g4TrNiCkA9wIc8OjGZzovYl_dx2r",
@@ -39,25 +39,9 @@ export default function Home() {
     const maticProvider = await alchemy.config.getProvider();
     const block = await maticProvider.getBlock();
     console.log("block : ", block.timestamp);
+    setBlockTimestamp(block.timestamp);
     const contractRaffleBeforeConnection = new ethers.Contract(contractRaffleAddress, RaffleABI.abi, maticProvider);
     const ticketsSold = await contractRaffleBeforeConnection.nbTicketSell();
-    const deadline = await contractRaffleBeforeConnection.deadline();
-    const startTime = await contractRaffleBeforeConnection.startDate();
-
-    if (block.timestamp < startTime) {
-      setStartTimeBool(true);
-      setEndTimeBool(false);
-      setStartTime(startTime);
-    } else if (block.timestamp >= startTime && block.timestamp <= deadline) {
-      setStartTimeBool(false);
-      setEndTimeBool(true);
-      setEndTime(deadline);
-    }
-    else {
-      setStartTimeBool(false);
-      setEndTimeBool(false);
-    }
-
     setTicketsSold(ticketsSold.toNumber());
   }, [alchemy.config]);
 
@@ -144,12 +128,48 @@ export default function Home() {
       }
     }
   }
+
+  useEffect(() => {
+    const checkTime = async () => {
+      try {
+        const maticProvider = await alchemy.config.getProvider();
+        const block = await maticProvider.getBlock();
+        console.log("block : ", block.timestamp);
+        setBlockTimestamp(block.timestamp);
+        const contractRaffleBeforeConnection = new ethers.Contract(contractRaffleAddress, RaffleABI.abi, maticProvider);
+        const deadline = await contractRaffleBeforeConnection.deadline();
+        const startTime = await contractRaffleBeforeConnection.startDate();
+
+        if (block.timestamp < startTime) {
+          setStartTimeBool(true);
+          setEndTimeBool(false);
+          setStartTime(startTime);
+        } else if (block.timestamp >= startTime && block.timestamp <= deadline) {
+          setStartTimeBool(false);
+          setEndTimeBool(true);
+          setEndTime(deadline);
+        } else {
+          setStartTimeBool(false);
+          setEndTimeBool(false);
+        }
+      } catch (error) {
+        console.error("An error occurred while checking the time:", error);
+      }
+    };
+
+    checkTime();
+  }, []);
+
+
   useEffect(() => {
     getAlchemyProviderAndData();
+  }, [address, getAlchemyProviderAndData]);
+
+  useEffect(() => {
     if (isConnected) {
       getTicketsBought();
     }
-  }, [address, isConnected, getAlchemyProviderAndData, getTicketsBought]);
+  }, [isConnected, getTicketsBought]);
 
   let buttonText;
   if (waitingBuy) {
@@ -169,7 +189,7 @@ export default function Home() {
         position="bottom-center"
         theme="dark"
       />
-      <div className="homepage py-10 px-20 md:px-40 lg:px-60">
+      <div className="homepage py-10 px-5 md:pr-20 xl:px-40">
         <header className="navbar">
           <nav className="flex justify-center justify-between">
             <div className="">
@@ -190,11 +210,11 @@ export default function Home() {
         </header>
 
         <main className="relative">
-          <div className="flex flex-row justify-center">
-            <div className="flex flex-col justify-center items-center w-[650px] h-auto">
-              <img className="" src="./Images/prize-maschine.png" alt="" />
+          <div className="flex flex-col-reverse md:flex-row justify-center">
+            <div className="flex flex-col justify-center items-center w-full lg:w-2/4 h-auto">
+              <img className="w-full" src="./Images/prize-maschine.png" alt="" />
             </div>
-            <div className="flex flex-col mt-10 max-w-[700px] gap-6">
+            <div className="flex flex-col mt-10 w-full md:w-2/4 md:max-w-[700px] gap-6">
               <div className="flex flex-row p-4">
                 <h1 className="text-6xl font-bold text-white">OG Teddies</h1>
                 <div className="flex items-center ml-5 mt-4 gap-3">
@@ -231,7 +251,7 @@ export default function Home() {
               <div className="flex flex-row items-center p-4 bg-four rounded-lg border border-gray-600 justify-between">
                 <p className="text-xl font-bold text-white">Public<span className="ml-3 text-light border border-light rounded-full px-2 text-sm">i</span>
                 </p>
-                <div className="flex flex-col justify-end ml-5">
+                <div className="flex flex-col justify-end ml-5 min-w-[230px]">
                   <p className="text-md text-gray-400 bg-secondary py-2 px-6 rounded-lg border border-gray-600 bg-opacity-60">
                     {endTimeBool ? (<>
                       Ends in
@@ -271,11 +291,11 @@ export default function Home() {
                 <p className="w-1/4 flex items-center text-xl text-white">Your tickets:<span className="ml-1 text-light">{ticketsBought}</span>
                 </p>
               </div>
-              <div className="flex flex-row justify-end mt-20">
-                <p className="text-xl font-bold text-gray-400">Powered by <span className="text-light">Ogronex</span>
-                </p>
-              </div>
             </div>
+          </div>
+          <div className="flex flex-row justify-end mt-20 lg:-mt-40">
+            <p className="text-xl font-bold text-gray-400">Powered by <span className="text-light">Ogronex</span>
+            </p>
           </div>
         </main>
       </div>
