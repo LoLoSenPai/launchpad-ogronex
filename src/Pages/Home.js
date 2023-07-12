@@ -230,15 +230,15 @@ export default function Home() {
                   bear enthusiasts.
                 </p>
               </div>
-              <div className="flex flex-row p-4 bg-secondary rounded-lg justify-around md:justify-center gap-3 sm:gap-7 border border-gray-600 bg-opacity-60">
-                <p className="flex flex-col lg:flex-row text-md lg:text-xl font-bold text-white">Mint price:<span className="ml-1 text-sm lg:text-md text-light">FREE</span><span className="ml-1 text-gray-400 text-xs sm:text-sm">+ 1 MATIC ticket fee</span>
+              <div className="flex flex-row p-4 bg-secondary rounded-lg justify-around gap-3 sm:gap-7 border border-gray-600 bg-opacity-60">
+                <p className="flex flex-col lg:flex-row text-md lg:text-xl font-bold text-white">Mint price:<span className="ml-1 text-sm md:text-md lg:text-xl text-light">FREE</span><span className="ml-1 text-gray-400 text-xs lg:text-sm">+ 1 MATIC ticket fee</span>
                 </p>
                 <p className="flex flex-col lg:flex-row text-md lg:text-xl font-bold text-white">Supply:<span className="ml-1 text-light">333</span>
                 </p>
                 <p className="flex flex-col lg:flex-row text-md lg:text-xl font-bold text-white">Tickets sold:
                   <div className="flex">
                     <span className="ml-1 text-light">{ticketsSold}</span>
-                    <span className="ml-1 text-gray-400 text-sm">/ &#8734;</span>
+                    <span className="ml-1 text-gray-400 text-md">/ &#8734;</span>
                   </div>
                 </p>
               </div>
@@ -255,8 +255,8 @@ export default function Home() {
               <div className="flex flex-row items-center p-4 bg-four rounded-lg border border-gray-600 justify-between">
                 <p className="text-xl font-bold text-white">Public<span className="ml-3 text-light border border-light rounded-full px-2 text-sm">i</span>
                 </p>
-                <div className="flex flex-col justify-end ml-2 xs:ml-5 min-w-[160px] xs:min-w-[230px]">
-                  <p className="text-md text-gray-400 bg-secondary py-2 px-6 rounded-lg border border-gray-600 bg-opacity-60">
+                <div className="flex flex-col justify-end ml-2 xs:ml-5 min-w-[160px] sm:min-w-[233px]">
+                  <div className="text-md text-gray-400 bg-secondary py-2 px-6 rounded-lg border border-gray-600 bg-opacity-60">
                     {endTimeBool ? (<>
                       Ends in
                       <span className="text-white pl-2 text-xl">
@@ -269,7 +269,7 @@ export default function Home() {
                         <CountdownComponent deadline={startTime} />
                       </span>
                     </>) : null}
-                  </p>
+                  </div>
                 </div>
               </div>
               <div className="grid grid-cols-3 lg:flex flew-row gap-2 md:gap-4 lg:gap-8 xl:gap-11 w-full justify-between">
@@ -293,7 +293,7 @@ export default function Home() {
                   {buttonText}
                 </button>
                 <div className="mt-5 sm:mt-0">
-                  <p className="flex items-center text-xl text-white">Your tickets:<span className="ml-1 text-light">{ticketsBought}</span>
+                  <p className="flex items-center text-xl text-white">Your tickets:<span className="ml-1 text-light pr-4">{ticketsBought}</span>
                   </p>
                 </div>
               </div>
