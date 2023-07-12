@@ -189,8 +189,8 @@ export default function Home() {
         position="bottom-center"
         theme="dark"
       />
-      <div className="homepage py-10 px-5 md:pr-20 xl:px-40">
-        <header className="navbar">
+      <div className="homepage py-10 px-5 md:pr-20 lg:px-30 xl:px-20">
+        <header className="navbar sm:px-10 md:px-0">
           <nav className="flex justify-center justify-between">
             <div className="">
               <a href="#1" className="">
@@ -203,7 +203,7 @@ export default function Home() {
               </a>
             </div>
             <div className="flex flex-row items-center gap-8 z-30">
-              <a href="#1" className="text-xl font-bold text-gray-400">Terms and conditions</a>
+              <a href="#1" className="text-xs sm:text-xl font-bold text-gray-400">Terms and conditions</a>
               <DynamicWidget variant='dropdown' />
             </div>
           </nav>
@@ -212,37 +212,41 @@ export default function Home() {
         <main className="relative">
           <div className="flex flex-col-reverse md:flex-row justify-center">
             <div className="flex flex-col justify-center items-center w-full lg:w-2/4 h-auto">
-              <img className="w-full" src="./Images/prize-maschine.png" alt="" />
+              <img className="w-full lg:max-w-[800px] xl:max-w-[650px]" src="./Images/prize-maschine.png" alt="" />
             </div>
             <div className="flex flex-col mt-10 w-full md:w-2/4 md:max-w-[700px] gap-6">
               <div className="flex flex-row p-4">
                 <h1 className="text-6xl font-bold text-white">OG Teddies</h1>
-                <div className="flex items-center ml-5 mt-4 gap-3">
+                <div className="md:flex items-center ml-5 mt-4 gap-3">
                   <a href="https://discord.gg/ogronexnft" target="_blank" rel="noreferrer"><i className="fab fa-discord text-lg text-gray-500"></i></a>
                   <a href="https://twitter.com/Ogronex" target="_blank" rel="noreferrer"><i className="fab fa-twitter text-lg text-gray-500"></i></a>
                   <a href="https://ogronex.com/" target="_blank" rel="noreferrer"><i className="fas fa-globe text-lg text-gray-500"></i></a>
                 </div>
               </div>
               <div className="flex flex-row px-4">
-                <p className="text-xl font-bold text-gray-500">Introducing "Teddy Bear Treasures," an NFT project featuring 333 unique and
+                <p className="text-justify text-xl font-bold text-gray-500">Introducing "Teddy Bear Treasures," an NFT project featuring 333 unique and
                   lovable teddy bears. Own a digital representation of these adorable companions,
                   unlock exclusive benefits, and immerse yourself in a vibrant community of teddy
                   bear enthusiasts.
                 </p>
               </div>
-              <div className="flex flex-row p-4 bg-secondary rounded-lg justify-center gap-7 border border-gray-600 bg-opacity-60">
-                <p className="text-xl font-bold text-white">Mint price:<span className="ml-1 text-md text-light">FREE</span><span className="ml-1 text-gray-400 text-sm">+ 1 MATIC ticket fee</span>
+              <div className="flex flex-row p-4 bg-secondary rounded-lg justify-around md:justify-center gap-3 sm:gap-7 border border-gray-600 bg-opacity-60">
+                <p className="flex flex-col lg:flex-row text-md lg:text-xl font-bold text-white">Mint price:<span className="ml-1 text-sm lg:text-md text-light">FREE</span><span className="ml-1 text-gray-400 text-xs sm:text-sm">+ 1 MATIC ticket fee</span>
                 </p>
-                <p className="text-xl font-bold text-white">Supply:<span className="ml-1 text-light">333</span>
+                <p className="flex flex-col lg:flex-row text-md lg:text-xl font-bold text-white">Supply:<span className="ml-1 text-light">333</span>
                 </p>
-                <p className="text-xl font-bold text-white">Tickets sold:<span className="ml-1 text-light">{ticketsSold}</span><span className="ml-1 text-gray-400 text-sm">/ &#8734;</span>
+                <p className="flex flex-col lg:flex-row text-md lg:text-xl font-bold text-white">Tickets sold:
+                  <div className="flex">
+                    <span className="ml-1 text-light">{ticketsSold}</span>
+                    <span className="ml-1 text-gray-400 text-sm">/ &#8734;</span>
+                  </div>
                 </p>
               </div>
               <div className="flex flex-row items-center p-4 bg-four rounded-lg border border-gray-600 justify-between">
                 <p className="text-xl font-bold text-white">Guaranteed mint<span className="ml-3 text-light border border-light rounded-full px-2 text-sm">i</span>
                 </p>
-                <div className="flex flex-col justify-end ml-5">
-                  <p className={"text-xl font-bold text-white bg-secondary py-2 px-6 rounded-lg border border-gray-600 bg-opacity-60"}>
+                <div className="flex flex-col justify-end ml-3 xs:ml-5">
+                  <p className={"text-xl font-bold text-white bg-secondary py-2 px-6 rounded-lg border border-gray-600 bg-opacity-60 min-w-[130px]"}>
                     <i className={`fas fa-circle pr-2 text-light text-sm animate-pulse ${saleStatus === 'Live' ? 'text-green-500' : 'text-red-500'}`}></i>
                     {saleStatus}
                   </p>
@@ -251,7 +255,7 @@ export default function Home() {
               <div className="flex flex-row items-center p-4 bg-four rounded-lg border border-gray-600 justify-between">
                 <p className="text-xl font-bold text-white">Public<span className="ml-3 text-light border border-light rounded-full px-2 text-sm">i</span>
                 </p>
-                <div className="flex flex-col justify-end ml-5 min-w-[230px]">
+                <div className="flex flex-col justify-end ml-2 xs:ml-5 min-w-[160px] xs:min-w-[230px]">
                   <p className="text-md text-gray-400 bg-secondary py-2 px-6 rounded-lg border border-gray-600 bg-opacity-60">
                     {endTimeBool ? (<>
                       Ends in
@@ -268,32 +272,34 @@ export default function Home() {
                   </p>
                 </div>
               </div>
-              <div className="flex flew-row gap-11 w-full justify-between">
-                <div className="flex items-center rounded-lg border border-gray-600">
-                  <button className="w-10 h-14 rounded-l-lg bg-secondary text-white text-2xl" onClick={() => handleDecrease()}>
+              <div className="grid grid-cols-3 lg:flex flew-row gap-2 md:gap-4 lg:gap-8 xl:gap-11 w-full justify-between">
+                <div className="flex justify-around items-center rounded-lg border border-gray-600 bg-secondary">
+                  <button className="w-10 h-14 rounded-l-lg text-white text-2xl" onClick={() => handleDecrease()}>
                     -
                   </button>
                   <input
                     type="number"
-                    className="w-16 h-14 rounded-none bg-secondary text-white text-xl text-center"
+                    className="w-4 md:w-6 lg:w-16 h-14 rounded-none bg-secondary text-white text-xl text-center"
                     defaultValue={1}
                     min={1}
                     value={ticketCount}
                     onChange={(e) => setTicketCount(parseInt(e.target.value))}
                   />
-                  <button className="w-10 h-14 rounded-r-lg bg-secondary text-white text-2xl" onClick={() => handleIncrease()}>
+                  <button className="w-10 h-14 rounded-r-lg text-white text-2xl" onClick={() => handleIncrease()}>
                     +
                   </button>
                 </div>
-                <button className="w-2/4 h-14 rounded-lg text-2xl bg-light font-bold text-black" onClick={() => buyTickets()}>
+                <button className="w-full lg:w-2/4 h-14 rounded-lg text-2xl bg-light font-bold text-black col-span-2" onClick={() => buyTickets()}>
                   {buttonText}
                 </button>
-                <p className="w-1/4 flex items-center text-xl text-white">Your tickets:<span className="ml-1 text-light">{ticketsBought}</span>
-                </p>
+                <div className="mt-5 sm:mt-0">
+                  <p className="flex items-center text-xl text-white">Your tickets:<span className="ml-1 text-light">{ticketsBought}</span>
+                  </p>
+                </div>
               </div>
             </div>
           </div>
-          <div className="flex flex-row justify-end mt-20 lg:-mt-40">
+          <div className="flex flex-row justify-end mt-10">
             <p className="text-xl font-bold text-gray-400">Powered by <span className="text-light">Ogronex</span>
             </p>
           </div>
