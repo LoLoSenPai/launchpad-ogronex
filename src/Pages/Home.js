@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { DynamicWidget } from "@dynamic-labs/sdk-react";
-import { useAccount } from "wagmi";
-import { ethers } from "ethers";
+import { useAccount, useBalance } from "wagmi";
+import { BigNumber, ethers } from "ethers";
 import { Network, Alchemy } from 'alchemy-sdk';
 import CountdownComponent from "../Components/Countdown";
 import RaffleABI from "../ABI/RaffleG_0.json";
@@ -16,6 +16,7 @@ const contractRaffleAddress = "0xBA73277276e86b325767A745617A601E05Ba4DD4";
 export default function Home() {
 
   const { address, isConnected } = useAccount();
+  const balance = useBalance({ address: address });
   const [ticketCount, setTicketCount] = useState(1);
   const [successBuy, setSuccessBuy] = useState(false);
   const [waitingBuy, setWaitingBuy] = useState(false);
@@ -26,7 +27,8 @@ export default function Home() {
   const [startTime, setStartTime] = useState(0);
   const [startTimeBool, setStartTimeBool] = useState(false);
   const [endTimeBool, setEndTimeBool] = useState(false);
-  const [blockTimestamp, setBlockTimestamp] = useState(0);
+  const [hasBalance, setHasBalance] = useState(false);
+  const [showTooltip, setShowTooltip] = useState(false);
 
   const settings = {
     apiKey: "4OV2g4TrNiCkA9wIc8OjGZzovYl_dx2r",
@@ -39,7 +41,6 @@ export default function Home() {
     const maticProvider = await alchemy.config.getProvider();
     const block = await maticProvider.getBlock();
     console.log("block : ", block.timestamp);
-    setBlockTimestamp(block.timestamp);
     const contractRaffleBeforeConnection = new ethers.Contract(contractRaffleAddress, RaffleABI.abi, maticProvider);
     const ticketsSold = await contractRaffleBeforeConnection.nbTicketSell();
     setTicketsSold(ticketsSold.toNumber());
@@ -70,6 +71,14 @@ export default function Home() {
 
   const saleStatus = getSaleStatus();
 
+  const handleMouseEnter = () => {
+    setShowTooltip(true);
+  };
+
+  const handleMouseLeave = () => {
+    setShowTooltip(false);
+  };
+
   const handleIncrease = () => {
     setTicketCount(ticketCount + 1);
   };
@@ -86,13 +95,13 @@ export default function Home() {
     setTicketsSold(ticketsSold.toNumber());
   };
 
-  const getDeadline = async () => {
-    if (!contractRaffle) return;
-    const deadline = await contractRaffle.deadline();
-    console.log(deadline.toNumber());
-    setEndTime(deadline.toNumber());
-    setEndTimeBool(true);
-  };
+  // const getDeadline = async () => {
+  //   if (!contractRaffle) return;
+  //   const deadline = await contractRaffle.deadline();
+  //   console.log(deadline.toNumber());
+  //   setEndTime(deadline.toNumber());
+  //   setEndTimeBool(true);
+  // };
 
   const getTicketsBought = useCallback(async () => {
     if (!isConnected) return;
@@ -135,7 +144,6 @@ export default function Home() {
         const maticProvider = await alchemy.config.getProvider();
         const block = await maticProvider.getBlock();
         console.log("block : ", block.timestamp);
-        setBlockTimestamp(block.timestamp);
         const contractRaffleBeforeConnection = new ethers.Contract(contractRaffleAddress, RaffleABI.abi, maticProvider);
         const deadline = await contractRaffleBeforeConnection.deadline();
         const startTime = await contractRaffleBeforeConnection.startDate();
@@ -170,6 +178,19 @@ export default function Home() {
       getTicketsBought();
     }
   }, [isConnected, getTicketsBought]);
+
+  useEffect(() => {
+    if (
+      balance &&
+      ticketCount > 0 &&
+      (balance.data?.value.toBigInt().toString() / 10**18) >= ticketCount * ticketPrice
+    )
+    {
+      setHasBalance(true);
+    } else {
+      setHasBalance(false);
+    }
+  }, [balance, ticketCount]);
 
   let buttonText;
   if (waitingBuy) {
@@ -243,7 +264,19 @@ export default function Home() {
                 </p>
               </div>
               <div className="flex flex-row items-center p-4 bg-four rounded-lg border border-gray-600 justify-between">
-                <p className="text-xl font-bold text-white">Guaranteed mint<span className="ml-3 text-light border border-light rounded-full px-2 text-sm">i</span>
+                <p className="text-xl font-bold text-white">Guaranteed mint
+                  <span
+                    className="ml-3 text-light border border-light rounded-full px-2 text-sm"
+                    onMouseEnter={handleMouseEnter}
+                    onMouseLeave={handleMouseLeave}
+                  >
+                    i
+                  </span>
+                  {showTooltip && (
+                    <div className="tooltip absolute left-1/2 top-full -translate-x-1/2 transform whitespace-nowrap rounded bg-secondary bg-opacity-80 p-2 text-white">
+                      OG MFER
+                    </div>
+                  )}
                 </p>
                 <div className="flex flex-col justify-end ml-3 xs:ml-5">
                   <p className={"text-xl font-bold text-white bg-secondary py-2 px-6 rounded-lg border border-gray-600 bg-opacity-60 min-w-[130px]"}>
@@ -253,7 +286,19 @@ export default function Home() {
                 </div>
               </div>
               <div className="flex flex-row items-center p-4 bg-four rounded-lg border border-gray-600 justify-between">
-                <p className="text-xl font-bold text-white">Public<span className="ml-3 text-light border border-light rounded-full px-2 text-sm">i</span>
+                <p className="text-xl font-bold text-white">Public
+                  <span
+                    className="ml-3 text-light border border-light rounded-full px-2 text-sm"
+                    onMouseEnter={handleMouseEnter}
+                    onMouseLeave={handleMouseLeave}
+                  >
+                    i
+                  </span>
+                  {showTooltip && (
+                    <div className="tooltip absolute left-1/2 top-full -translate-x-1/2 transform whitespace-nowrap rounded bg-secondary bg-opacity-80 p-2 text-white">
+                      OG MFER
+                    </div>
+                  )}
                 </p>
                 <div className="flex flex-col justify-end ml-2 xs:ml-5 min-w-[160px] sm:min-w-[233px]">
                   <div className="text-md text-gray-400 bg-secondary py-2 px-6 rounded-lg border border-gray-600 bg-opacity-60">
@@ -289,7 +334,10 @@ export default function Home() {
                     +
                   </button>
                 </div>
-                <button className="w-full lg:w-2/4 h-14 rounded-lg text-2xl bg-light font-bold text-black col-span-2" onClick={() => buyTickets()}>
+                <button
+                  className="w-full lg:w-2/4 h-14 rounded-lg text-2xl bg-light font-bold text-black col-span-2"
+                  onClick={() => buyTickets()}
+                >
                   {buttonText}
                 </button>
                 <div className="mt-5 sm:mt-0">
