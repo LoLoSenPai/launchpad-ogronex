@@ -5,12 +5,13 @@ import { ethers } from "ethers";
 import { Network, Alchemy } from 'alchemy-sdk';
 import CountdownComponent from "../Components/Countdown";
 import RaffleABI from "../ABI/RaffleG_0.json";
+import NftABI from "../ABI/TBT_NFT.json";
 import whitelist from './whitelist.json';
 import { PuffLoader } from "react-spinners";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-
+const contractNftAddress = "0x70ee55cc52F32908461F2c4F70c6051274a4c2C5"
 const contractRaffleAddress = "0xBA73277276e86b325767A745617A601E05Ba4DD4";
 
 export default function Home() {
@@ -27,6 +28,10 @@ export default function Home() {
   const [startTimeBool, setStartTimeBool] = useState(false);
   const [endTimeBool, setEndTimeBool] = useState(false);
   const [blockTimestamp, setBlockTimestamp] = useState(0);
+
+
+  const [dateStartGuarranted, setDateStartGuarranted] = useState(0);
+  const [dateEndGuarranted, setDateEndGuarranted] = useState(0);
 
   const settings = {
     apiKey: "4OV2g4TrNiCkA9wIc8OjGZzovYl_dx2r",
@@ -50,6 +55,9 @@ export default function Home() {
   const signer = provider.getSigner();
   const contractRaffle = useMemo(() => {
     return new ethers.Contract(contractRaffleAddress, RaffleABI.abi, signer);
+  }, [signer]);
+  const contractNft = useMemo(() => {
+    return new ethers.Contract(contractNftAddress, NftABI.abi, signer);
   }, [signer]);
 
   const isWhitelisted = (address) => {
@@ -84,6 +92,14 @@ export default function Home() {
     if (!contractRaffle) return;
     const ticketsSold = await contractRaffle.nbTicketSell();
     setTicketsSold(ticketsSold.toNumber());
+  };
+
+  const getDateNft = async () => {
+    if (!contractNft) return;
+    const dateStartNft = await contractNft.saleStartTime();
+    const dateEndtNftGuarranted = await contractNft.endTimeGuarranted();
+    setDateStartGuarranted(dateStartNft.toNumber());
+    setDateEndGuarranted(dateEndtNftGuarranted.toNumber());
   };
 
   const getDeadline = async () => {
@@ -170,6 +186,12 @@ export default function Home() {
       getTicketsBought();
     }
   }, [isConnected, getTicketsBought]);
+
+  useEffect(() => {
+    if (isConnected) {
+      getDateNft();
+    }
+  }, [isConnected, getDateNft]);
 
   let buttonText;
   if (waitingBuy) {
