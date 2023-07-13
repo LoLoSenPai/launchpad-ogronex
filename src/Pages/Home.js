@@ -29,6 +29,8 @@ export default function Home() {
   const [startTimeBool, setStartTimeBool] = useState(false);
   const [endTimeBool, setEndTimeBool] = useState(false);
   const [blockTimestamp, setBlockTimestamp] = useState(0);
+  const [showTooltip, setShowTooltip] = useState(false);
+  const [hasBalance, setHasBalance] = useState(false);
 
 
   const [dateStartGuarranted, setDateStartGuarranted] = useState(0);
@@ -44,7 +46,6 @@ export default function Home() {
   const getAlchemyProviderAndData = useCallback(async () => {
     const maticProvider = await alchemy.config.getProvider();
     const block = await maticProvider.getBlock();
-    console.log("block : ", block.timestamp);
     const contractRaffleBeforeConnection = new ethers.Contract(contractRaffleAddress, RaffleABI.abi, maticProvider);
     const ticketsSold = await contractRaffleBeforeConnection.nbTicketSell();
     setTicketsSold(ticketsSold.toNumber());
@@ -113,7 +114,6 @@ export default function Home() {
   const getDeadline = async () => {
     if (!contractRaffle) return;
     const deadline = await contractRaffle.deadline();
-    console.log(deadline.toNumber());
     setEndTime(deadline.toNumber());
     setEndTimeBool(true);
   };
@@ -124,7 +124,6 @@ export default function Home() {
       const idPlayer = await contractRaffle.idByAddress(address);
       const player = await contractRaffle.playersList(idPlayer);
       if (player.addressPlayer === address) {
-        console.log(player);
         const ticketsBought = player.ticketsBought;
         setTicketsBought(ticketsBought.toNumber());
       }
@@ -158,7 +157,6 @@ export default function Home() {
       try {
         const maticProvider = await alchemy.config.getProvider();
         const block = await maticProvider.getBlock();
-        console.log("block : ", block.timestamp);
         const contractRaffleBeforeConnection = new ethers.Contract(contractRaffleAddress, RaffleABI.abi, maticProvider);
         const deadline = await contractRaffleBeforeConnection.deadline();
         const startTime = await contractRaffleBeforeConnection.startDate();
