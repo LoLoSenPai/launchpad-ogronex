@@ -6,7 +6,7 @@ import { Network, Alchemy } from 'alchemy-sdk';
 import CountdownComponent from "../Components/Countdown";
 import RaffleABI from "../ABI/RaffleG_0.json";
 import NftABI from "../ABI/TBT_NFT.json";
-import whitelist from './whitelist.json';
+import whitelist from '../Whitelist/whitelist.json';
 import { PuffLoader } from "react-spinners";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -151,6 +151,27 @@ export default function Home() {
       }
     }
   }
+  async function whiteListMint() {
+    if(!isConnected) return // conditionner aussi a la phase guarranteed Mint
+    try {
+      let addressWl;
+      let proofWl;
+      const result = whitelist.map((data) => {
+        if (data.address === address){
+          console.log("ouiiiiiiii");
+          addressWl = data.address;
+          proofWl = data.proof;
+        }
+      });
+      const tx = await contractNft.whitelistMint(proofWl);
+      await provider.waitForTransaction(tx.hash);
+      toast.success("Success Mint !");
+
+    }catch (error) {
+      toast.error("Transaction error! But don't worry, even the best stumble sometimes!")
+    }
+  }
+
 
   useEffect(() => {
     const checkTime = async () => {
