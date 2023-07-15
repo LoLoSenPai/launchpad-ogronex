@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { DynamicWidget } from "@dynamic-labs/sdk-react";
 import { useAccount, useBalance } from "wagmi";
-import { BigNumber, ethers } from "ethers";
+import { ethers } from "ethers";
 import { Network, Alchemy } from 'alchemy-sdk';
 import CountdownComponent from "../Components/Countdown";
 import RaffleABI from "../ABI/RaffleG_0.json";
@@ -18,21 +18,27 @@ export default function Home() {
 
   const { address, isConnected } = useAccount();
   const balance = useBalance({ address: address });
+
   const [ticketCount, setTicketCount] = useState(1);
-  const [successBuy, setSuccessBuy] = useState(false);
-  const [waitingBuy, setWaitingBuy] = useState(false);
-  const [errorBuy, setErrorBuy] = useState(false);
-  const [ticketsSold, setTicketsSold] = useState(0);
   const [ticketsBought, setTicketsBought] = useState(0);
-  const [endTime, setEndTime] = useState(0);
+  const [ticketsSold, setTicketsSold] = useState(0);
+  const [waitingBuy, setWaitingBuy] = useState(false);
+
+  const [dateStartGuaranteed, setDateStartGuaranteed] = useState(0);
+  const [dateEndGuaranteed, setDateEndGuaranteed] = useState(0);
+  const [notStartedGuaranteedTimeBool, setGuaranteedNotStartedTimeBool] = useState(false);
+  const [startGuaranteedTimeBool, setGuaranteedStartTimeBool] = useState(false);
+  const [endGuaranteedTimeBool, setGuaranteedEndTimeBool] = useState(false);
+
   const [startTime, setStartTime] = useState(0);
+  const [endTime, setEndTime] = useState(0);
+  const [notStartedTimeBool, setNotStartedTimeBool] = useState(false);
   const [startTimeBool, setStartTimeBool] = useState(false);
   const [endTimeBool, setEndTimeBool] = useState(false);
-  const [blockTimestamp, setBlockTimestamp] = useState(0);
 
-
-  const [dateStartGuarranted, setDateStartGuarranted] = useState(0);
-  const [dateEndGuarranted, setDateEndGuarranted] = useState(0);
+  const [showTooltipOG, setShowTooltipOG] = useState(false);
+  const [showTooltipPublic, setShowTooltipPublic] = useState(false);
+  const [hasBalance, setHasBalance] = useState(false);
 
   const settings = {
     apiKey: "4OV2g4TrNiCkA9wIc8OjGZzovYl_dx2r",
@@ -41,14 +47,13 @@ export default function Home() {
 
   const alchemy = new Alchemy(settings);
 
-  const getAlchemyProviderAndData = useCallback(async () => {
+  const getAlchemyProviderAndData = async () => {
     const maticProvider = await alchemy.config.getProvider();
-    const block = await maticProvider.getBlock();
-    console.log("block : ", block.timestamp);
+    // const block = await maticProvider.getBlock();
     const contractRaffleBeforeConnection = new ethers.Contract(contractRaffleAddress, RaffleABI.abi, maticProvider);
     const ticketsSold = await contractRaffleBeforeConnection.nbTicketSell();
     setTicketsSold(ticketsSold.toNumber());
-  }, [alchemy.config]);
+  };
 
   const ticketPrice = 0.01
   const provider = new ethers.providers.Web3Provider(window.ethereum);
@@ -64,28 +69,23 @@ export default function Home() {
     return whitelist.some(item => item.address === address);
   }
 
-  const getSaleStatus = () => {
-    const now = Date.now() / 1000;
-
-    if (now < startTime) {
-      return "Not Started";
-    } else if (now >= startTime && now <= endTime) {
-      return "Live";
-    } else if (now > endTime) {
-      return "Ended";
-    }
-  };
-
-  const saleStatus = getSaleStatus();
-
+  // Tooltip for i icon
   const handleMouseEnter = () => {
-    setShowTooltip(true);
+    setShowTooltipOG(true);
   };
 
   const handleMouseLeave = () => {
-    setShowTooltip(false);
+    setShowTooltipOG(false);
+  };
+  const handleMouseEnterPublic = () => {
+    setShowTooltipPublic(true);
   };
 
+  const handleMouseLeavePublic = () => {
+    setShowTooltipPublic(false);
+  };
+
+  // Countdown
   const handleIncrease = () => {
     setTicketCount(ticketCount + 1);
   };
@@ -102,18 +102,9 @@ export default function Home() {
     setTicketsSold(ticketsSold.toNumber());
   };
 
-  const getDateNft = async () => {
-    if (!contractNft) return;
-    const dateStartNft = await contractNft.saleStartTime();
-    const dateEndtNftGuarranted = await contractNft.endTimeGuarranted();
-    setDateStartGuarranted(dateStartNft.toNumber());
-    setDateEndGuarranted(dateEndtNftGuarranted.toNumber());
-  };
-
   const getDeadline = async () => {
     if (!contractRaffle) return;
     const deadline = await contractRaffle.deadline();
-    console.log(deadline.toNumber());
     setEndTime(deadline.toNumber());
     setEndTimeBool(true);
   };
@@ -124,14 +115,14 @@ export default function Home() {
       const idPlayer = await contractRaffle.idByAddress(address);
       const player = await contractRaffle.playersList(idPlayer);
       if (player.addressPlayer === address) {
-        console.log(player);
         const ticketsBought = player.ticketsBought;
         setTicketsBought(ticketsBought.toNumber());
       }
     } catch (error) {
       console.error("Error getting tickets bought:", error);
     }
-  }, [address, isConnected, contractRaffle]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [address]);
 
   async function buyTickets() {
     if (isConnected) {
@@ -139,41 +130,84 @@ export default function Home() {
         setWaitingBuy(true);
         const tx = await contractRaffle.buyTicket(ticketCount, { value: ethers.utils.parseEther((ticketCount * ticketPrice).toString()) });
         await provider.waitForTransaction(tx.hash);
-        setWaitingBuy(false);
-        setSuccessBuy(true);
         toast.success("You're in the game! Good luck with the draw!");
         getTicketsBought();
         getTicketsSold();
       } catch (error) {
-        setWaitingBuy(false);
-        setSuccessBuy(false);
-        setErrorBuy(true);
         toast.error("Transaction error! But don't worry, even the best stumble sometimes!");
       }
     }
   }
+
+  // Guaranteed sale status
+  const getGuaranteedSaleStatus = () => {
+    if (notStartedGuaranteedTimeBool) {
+      return "Not Started";
+    } else if (startGuaranteedTimeBool) {
+      return "Live";
+    } else if (endGuaranteedTimeBool) {
+      return "Ended";
+    }
+  };
+  const saleGuaranteedStatus = getGuaranteedSaleStatus();
+
+  // Public sale status
+  const getPublicSaleStatus = () => {
+    if (notStartedTimeBool) {
+      return "Not Started";
+    } else if (startTimeBool) {
+      return "Live";
+    } else if (endTimeBool) {
+      return "Ended";
+    }
+  };
+  const salePublicStatus = getPublicSaleStatus();
 
   useEffect(() => {
     const checkTime = async () => {
       try {
         const maticProvider = await alchemy.config.getProvider();
         const block = await maticProvider.getBlock();
-        console.log("block : ", block.timestamp);
         const contractRaffleBeforeConnection = new ethers.Contract(contractRaffleAddress, RaffleABI.abi, maticProvider);
+        const dateStartNft = await contractNft.saleStartTime();
+        const dateEndtNftGuaranteed = await contractNft.endTimeGuarranted(); // to do: change endTimeGuarranted to endTimeGuaranteed
+        const startTime = 1689871513;
         const deadline = await contractRaffleBeforeConnection.deadline();
-        const startTime = await contractRaffleBeforeConnection.startDate();
+        // console.log("dateStartNft", dateStartNft.toNumber());
+        // console.log("dateEndtNftGuaranteed", dateEndtNftGuaranteed.toNumber());
+        // console.log("startTime", startTime);
+        // console.log("deadline", deadline.toNumber());
+
+        if (block.timestamp < dateStartNft.toNumber()) {
+          setGuaranteedNotStartedTimeBool(true);
+          setGuaranteedStartTimeBool(false);
+          setGuaranteedEndTimeBool(false);
+          setDateStartGuaranteed(dateStartNft.toNumber());
+        } else if (block.timestamp >= dateStartNft.toNumber() && block.timestamp <= dateEndtNftGuaranteed.toNumber()) {
+          setGuaranteedNotStartedTimeBool(false);
+          setGuaranteedStartTimeBool(true);
+          setGuaranteedEndTimeBool(false);
+          setDateEndGuaranteed(dateEndtNftGuaranteed.toNumber());
+        } else if (block.timestamp > dateEndtNftGuaranteed.toNumber()) {
+          setGuaranteedNotStartedTimeBool(false);
+          setGuaranteedStartTimeBool(false);
+          setGuaranteedEndTimeBool(true);
+        }
 
         if (block.timestamp < startTime) {
-          setStartTimeBool(true);
+          setNotStartedTimeBool(true);
+          setStartTimeBool(false);
           setEndTimeBool(false);
           setStartTime(startTime);
-        } else if (block.timestamp >= startTime && block.timestamp <= deadline) {
+        } else if (block.timestamp >= startTime && block.timestamp <= deadline.toNumber()) {
+          setNotStartedTimeBool(false);
+          setStartTimeBool(true);
+          setEndTimeBool(false);
+          setEndTime(deadline.toNumber());
+        } else if (block.timestamp > deadline.toNumber()) {
+          setNotStartedTimeBool(false);
           setStartTimeBool(false);
           setEndTimeBool(true);
-          setEndTime(deadline);
-        } else {
-          setStartTimeBool(false);
-          setEndTimeBool(false);
         }
       } catch (error) {
         console.error("An error occurred while checking the time:", error);
@@ -181,37 +215,28 @@ export default function Home() {
     };
 
     checkTime();
-  }, []);
-
+  }, [notStartedTimeBool, startTimeBool, endTimeBool, notStartedGuaranteedTimeBool, startGuaranteedTimeBool, endGuaranteedTimeBool]);
 
   useEffect(() => {
-    getAlchemyProviderAndData();
-  }, [address, getAlchemyProviderAndData]);
+    (async function fetchProviderAndData() {
+      await getAlchemyProviderAndData();
+    })();
+  }, [address]);
 
   useEffect(() => {
     if (isConnected) {
       getTicketsBought();
     }
-  }, [isConnected, getTicketsBought]);
+  }, [isConnected, getTicketsBought, address]);
 
   useEffect(() => {
-    if (
-      balance &&
-      ticketCount > 0 &&
-      (balance.data?.value.toBigInt().toString() / 10**18) >= ticketCount * ticketPrice
-    )
-    {
-      setHasBalance(true);
-    } else {
-      setHasBalance(false);
-    }
+    setHasBalance(prevHasBalance => {
+      if (balance && ticketCount > 0 && (balance.data?.value.toBigInt().toString() / 10 ** 18) >= ticketCount * ticketPrice) {
+        return true;
+      }
+      return prevHasBalance;
+    });
   }, [balance, ticketCount]);
-
-  useEffect(() => {
-    if (isConnected) {
-      getDateNft();
-    }
-  }, [isConnected, getDateNft]);
 
   let buttonText;
   if (waitingBuy) {
@@ -233,7 +258,7 @@ export default function Home() {
       />
       <div className="homepage py-10 px-5 md:pr-20 lg:px-30 xl:px-20">
         <header className="navbar sm:px-10 md:px-0">
-          <nav className="flex justify-center justify-between">
+          <nav className="flex justify-center justify-between gap-8 md:gap-0">
             <div className="">
               <a href="#1" className="">
                 <span className="sr-only">Ogronex</span>
@@ -244,8 +269,8 @@ export default function Home() {
                 />
               </a>
             </div>
-            <div className="flex flex-row items-center gap-8 z-30">
-              <a href="#1" className="text-xs sm:text-xl font-bold text-gray-400">Terms and conditions</a>
+            <div className="flex flex-row items-center md:gap-8 z-30">
+              <a href="./" className="text-sm sm:text-xl font-bold text-gray-400">Terms and conditions</a>
               <DynamicWidget variant='dropdown' />
             </div>
           </nav>
@@ -265,49 +290,28 @@ export default function Home() {
                   <a href="https://ogronex.com/" target="_blank" rel="noreferrer"><i className="fas fa-globe text-lg text-gray-500"></i></a>
                 </div>
               </div>
-              <div className="flex flex-row px-4">
-                <p className="text-justify text-xl font-bold text-gray-500">Introducing "Teddy Bear Treasures," an NFT project featuring 333 unique and
+              <div className="flex flex-row xl:px-4">
+                <p className="text-justify text-lg xl:text-xl font-bold text-gray-500">Introducing "Teddy Bear Treasures," an NFT project featuring 333 unique and
                   lovable teddy bears. Own a digital representation of these adorable companions,
                   unlock exclusive benefits, and immerse yourself in a vibrant community of teddy
                   bear enthusiasts.
                 </p>
               </div>
               <div className="flex flex-row p-4 bg-secondary rounded-lg justify-around gap-3 sm:gap-7 border border-gray-600 bg-opacity-60">
-                <p className="flex flex-col lg:flex-row text-md lg:text-xl font-bold text-white">Mint price:<span className="ml-1 text-sm md:text-md lg:text-xl text-light">FREE</span><span className="ml-1 text-gray-400 text-xs lg:text-sm">+ 1 MATIC ticket fee</span>
+                <p className="flex flex-col xl:flex-row text-md lg:text-lg xl:text-xl font-bold text-white">Mint price:<span className="ml-1 text-sm md:text-md lg:text-lg xl:text-xl text-light">FREE</span><span className="ml-1 text-gray-400 text-xs lg:text-sm">+ 1 MATIC ticket fee</span>
                 </p>
-                <p className="flex flex-col lg:flex-row text-md lg:text-xl font-bold text-white">Supply:<span className="ml-1 text-light">333</span>
+                <p className="flex flex-col xl:flex-row text-md lg:text-lg xl:text-xl font-bold text-white">Supply:<span className="text-center ml-1 text-light">333</span>
                 </p>
-                <p className="flex flex-col lg:flex-row text-md lg:text-xl font-bold text-white">Tickets sold:
+                <div className="flex flex-col xl:flex-row text-md lg:text-lg xl:text-xl font-bold text-white">
+                  Tickets sold:
                   <div className="flex">
                     <span className="ml-1 text-light">{ticketsSold}</span>
                     <span className="ml-1 text-gray-400 text-md">/ &#8734;</span>
                   </div>
-                </p>
-              </div>
-              <div className="flex flex-row items-center p-4 bg-four rounded-lg border border-gray-600 justify-between">
-                <p className="text-xl font-bold text-white">Guaranteed mint
-                  <span
-                    className="ml-3 text-light border border-light rounded-full px-2 text-sm"
-                    onMouseEnter={handleMouseEnter}
-                    onMouseLeave={handleMouseLeave}
-                  >
-                    i
-                  </span>
-                  {showTooltip && (
-                    <div className="tooltip absolute left-1/2 top-full -translate-x-1/2 transform whitespace-nowrap rounded bg-secondary bg-opacity-80 p-2 text-white">
-                      OG MFER
-                    </div>
-                  )}
-                </p>
-                <div className="flex flex-col justify-end ml-3 xs:ml-5">
-                  <p className={"text-xl font-bold text-white bg-secondary py-2 px-6 rounded-lg border border-gray-600 bg-opacity-60 min-w-[130px]"}>
-                    <i className={`fas fa-circle pr-2 text-light text-sm animate-pulse ${saleStatus === 'Live' ? 'text-green-500' : 'text-red-500'}`}></i>
-                    {saleStatus}
-                  </p>
                 </div>
               </div>
-              <div className="flex flex-row items-center p-4 bg-four rounded-lg border border-gray-600 justify-between">
-                <p className="text-xl font-bold text-white">Public
+              <div className="flex flex-col md:flex-row items-center gap-4 md:gap-0 p-4 bg-four rounded-lg border border-gray-600 justify-between">
+                <div className="relative lg:text-lg xl:text-xl font-bold text-white">Guaranteed mint
                   <span
                     className="ml-3 text-light border border-light rounded-full px-2 text-sm"
                     onMouseEnter={handleMouseEnter}
@@ -315,26 +319,88 @@ export default function Home() {
                   >
                     i
                   </span>
-                  {showTooltip && (
+                  {showTooltipOG &&
                     <div className="tooltip absolute left-1/2 top-full -translate-x-1/2 transform whitespace-nowrap rounded bg-secondary bg-opacity-80 p-2 text-white">
-                      OG MFER
+                      One mint per wallet
+                    </div>
+                  }
+                </div>
+                <div className="flex px-3">
+                  <p className={"lg:text-lg xl:text-xl font-bold text-white bg-secondary py-2 px-6 lg:px-4 xl:px-6 rounded-lg border border-gray-600 bg-opacity-60 lg:min-w-[110px] xl:min-w-[130px]"}>
+                    <i className={`fas fa-circle pr-2 text-light text-sm animate-pulse ${saleGuaranteedStatus === 'Live' ? 'text-green-500' : 'text-red-500'}`}></i>
+                    {saleGuaranteedStatus}
+                  </p>
+                </div>
+                <div className="flex flex-col justify-end xl:ml-2 md:min-w-[110px] lg:min-w-[160px] xl:min-w-[233px]">
+                  <div className="text-md text-gray-400 bg-secondary py-2 px-6 rounded-lg border border-gray-600 bg-opacity-60">
+                    {notStartedGuaranteedTimeBool &&
+                      <>
+                        Live in
+                        <span className="text-white pl-2 xl:text-xl">
+                          <CountdownComponent deadline={dateStartGuaranteed} />
+                        </span>
+                      </>
+                    }
+                    {endGuaranteedTimeBool &&
+                      <>
+                        Finished
+                      </>
+                    }
+                    {startGuaranteedTimeBool &&
+                      <>
+                        Ends in
+                        <span className="text-white pl-2 xl:text-xl">
+                          <CountdownComponent deadline={dateEndGuaranteed} />
+                        </span>
+                      </>
+                    }
+                  </div>
+                </div>
+              </div>
+              <div className="flex flex-col md:flex-row items-center p-4 bg-four rounded-lg border border-gray-600 gap-4 md:gap-0 justify-between">
+                <p className="relative lg:text-lg xl:text-xl font-bold text-white">Public
+                  <span
+                    className="ml-3 text-light border border-light rounded-full px-2 text-sm"
+                    onMouseEnter={handleMouseEnterPublic}
+                    onMouseLeave={handleMouseLeavePublic}
+                  >
+                    i
+                  </span>
+                  {showTooltipPublic && (
+                    <div className="tooltip absolute left-1/2 top-full -translate-x-1/2 transform whitespace-nowrap rounded bg-secondary bg-opacity-80 p-2 text-white">
+                      All winners will be drawn directly at the end of the sale.
                     </div>
                   )}
                 </p>
-                <div className="flex flex-col justify-end ml-2 xs:ml-5 min-w-[160px] sm:min-w-[233px]">
+                <div className="flex ml-3 xs:ml-5 xl:ml-28">
+                  <div className={"lg:text-lg xl:text-xl font-bold text-white bg-secondary py-2 px-4 xl:px-6 rounded-lg border border-gray-600 bg-opacity-60 lg:min-w-[110px] xl:min-w-[130px]"}>
+                    <i className={`fas fa-circle pr-2 text-light text-sm animate-pulse ${salePublicStatus === 'Live' ? 'text-green-500' : 'text-red-500'}`}></i>
+                    {salePublicStatus}
+                  </div>
+                </div>
+                <div className="flex flex-col justify-end ml-2 xs:ml-5 md:min-w-[110px] lg:min-w-[160px] xl:min-w-[233px]">
                   <div className="text-md text-gray-400 bg-secondary py-2 px-6 rounded-lg border border-gray-600 bg-opacity-60">
-                    {endTimeBool ? (<>
-                      Ends in
-                      <span className="text-white pl-2 text-xl">
-                        <CountdownComponent deadline={endTime} />
-                      </span>
-                    </>) : null}
-                    {startTimeBool ? (<>
-                      Live in
-                      <span className="text-white pl-2 text-xl">
-                        <CountdownComponent deadline={startTime} />
-                      </span>
-                    </>) : null}
+                    {notStartedTimeBool &&
+                      <>
+                        Live in
+                        <span className="text-white pl-2 xl:text-xl">
+                          <CountdownComponent deadline={1689871513} />
+                        </span>
+                      </>
+                    }
+                    {endTimeBool &&
+                      <>
+                        Finished
+                      </>
+                    }
+                    {startTimeBool &&
+                      <>
+                        Ends in
+                        <span className="text-white pl-2 xl:text-xl">
+                          <CountdownComponent deadline={endTime} />
+                        </span>
+                      </>
+                    }
                   </div>
                 </div>
               </div>
@@ -346,7 +412,6 @@ export default function Home() {
                   <input
                     type="number"
                     className="w-4 md:w-6 lg:w-16 h-14 rounded-none bg-secondary text-white text-xl text-center"
-                    defaultValue={1}
                     min={1}
                     value={ticketCount}
                     onChange={(e) => setTicketCount(parseInt(e.target.value))}
