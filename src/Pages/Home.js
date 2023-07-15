@@ -31,6 +31,11 @@ export default function Home() {
   const [blockTimestamp, setBlockTimestamp] = useState(0);
   const [showTooltip, setShowTooltip] = useState(false);
   const [hasBalance, setHasBalance] = useState(false);
+  //winner state
+  const [isWinnerRaffle, setIsWinnerRaffle] = useState(false);
+  const [winnerNbMint, setWinnerNbMint] = useState(0);
+
+
 
 
   const [dateStartGuarranted, setDateStartGuarranted] = useState(0);
@@ -151,6 +156,7 @@ export default function Home() {
       }
     }
   }
+  
   async function whiteListMint() {
     if(!isConnected) return // conditionner aussi a la phase guarranteed Mint
     try {
@@ -169,6 +175,33 @@ export default function Home() {
 
     }catch (error) {
       toast.error("Transaction error! But don't worry, even the best stumble sometimes!")
+    }
+  }
+
+  async function winnerRaffleMint() {
+    if(!isConnected && !isWinnerRaffle) return // conditionner aussi a la phase winner Mint
+    try {
+      const tx = await contractNft.winnerRaffleSaleMint();
+      await provider.waitForTransaction(tx.hash);
+      toast.success("Success Mint !");
+
+    }catch (error) {
+      toast.error("Transaction error! But don't worry, even the best stumble sometimes!")
+    }
+  }
+
+  async function checkWinner () {
+    if(!isConnected) return // conditionner aussi a la phase winner Mint
+    try{
+      const winnerData = await contractNft.winnerByAddress(address);
+      if (winnerData.addressWinner === address && winnerData.numberOfWin > 0){
+        setIsWinnerRaffle(true);
+        setWinnerNbMint(winnerData.numberOfWin.toNumber());
+        toast.success("YOU ARE WINNER ! GO MINT");
+      }
+      toast.error("YOU ARE NOT WINNER... but dont worry ;) go to Magic Eden to explore collection !");
+    }catch(error){
+      console.log(error);
     }
   }
 
@@ -204,8 +237,8 @@ export default function Home() {
 
 
   useEffect(() => {
-    getAlchemyProviderAndData();
-  }, [address, getAlchemyProviderAndData]);
+    getAlchemyProviderAndData();  
+  }, []);
 
   useEffect(() => {
     if (isConnected) {
