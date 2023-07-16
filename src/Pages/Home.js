@@ -173,10 +173,6 @@ export default function Home() {
         const dateEndtNftGuaranteed = await contractNft.endTimeGuarranted(); // to do: change endTimeGuarranted to endTimeGuaranteed
         const startTime = 1689871513;
         const deadline = await contractRaffleBeforeConnection.deadline();
-        // console.log("dateStartNft", dateStartNft.toNumber());
-        // console.log("dateEndtNftGuaranteed", dateEndtNftGuaranteed.toNumber());
-        // console.log("startTime", startTime);
-        // console.log("deadline", deadline.toNumber());
 
         if (block.timestamp < dateStartNft.toNumber()) {
           setGuaranteedNotStartedTimeBool(true);
@@ -260,7 +256,7 @@ export default function Home() {
         <header className="navbar sm:px-10 md:px-0">
           <nav className="flex justify-center justify-between gap-8 md:gap-0">
             <div className="">
-              <a href="#1" className="">
+              <a href="./" className="">
                 <span className="sr-only">Ogronex</span>
                 <img
                   className="h-14 w-auto"
@@ -332,7 +328,7 @@ export default function Home() {
                   </p>
                 </div>
                 <div className="flex flex-col justify-end xl:ml-2 md:min-w-[110px] lg:min-w-[160px] xl:min-w-[233px]">
-                  <div className="text-md text-gray-400 bg-secondary py-2 px-6 rounded-lg border border-gray-600 bg-opacity-60">
+                  <div className="flex flex-col text-center text-md text-gray-400 bg-secondary py-2 px-6 rounded-lg border border-gray-600 bg-opacity-60">
                     {notStartedGuaranteedTimeBool &&
                       <>
                         Live in
@@ -379,7 +375,7 @@ export default function Home() {
                   </div>
                 </div>
                 <div className="flex flex-col justify-end ml-2 xs:ml-5 md:min-w-[110px] lg:min-w-[160px] xl:min-w-[233px]">
-                  <div className="text-md text-gray-400 bg-secondary py-2 px-6 rounded-lg border border-gray-600 bg-opacity-60">
+                  <div className="flex flex-col text-center text-md text-gray-400 bg-secondary py-2 xl:py-2.5 px-6 rounded-lg border border-gray-600 bg-opacity-60">
                     {notStartedTimeBool &&
                       <>
                         Live in
