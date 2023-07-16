@@ -44,9 +44,6 @@ export default function Home() {
   const [isWinnerRaffle, setIsWinnerRaffle] = useState(false);
   const [winnerNbMint, setWinnerNbMint] = useState(0);
 
-  const [dateStartGuarranted, setDateStartGuarranted] = useState(0);
-  const [dateEndGuarranted, setDateEndGuarranted] = useState(0);
-
   const settings = {
     apiKey: "4OV2g4TrNiCkA9wIc8OjGZzovYl_dx2r",
     network: Network.MATIC_MUMBAI,
