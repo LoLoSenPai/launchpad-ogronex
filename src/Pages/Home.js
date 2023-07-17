@@ -106,13 +106,6 @@ export default function Home() {
     setTicketsSold(ticketsSold.toNumber());
   };
 
-  const getDeadline = async () => {
-    if (!contractRaffle) return;
-    const deadline = await contractRaffle.deadline();
-    setEndTime(deadline.toNumber());
-    setEndTimeBool(true);
-  };
-
   const getTicketsBought = useCallback(async () => {
     if (!isConnected) return;
     try {
@@ -142,14 +135,14 @@ export default function Home() {
       }
     }
   }
-  
+
   async function whiteListMint() {
-    if(!isConnected) return // conditionner aussi a la phase guarranteed Mint
+    if (!isConnected) return // conditionner aussi a la phase guarranteed Mint
     try {
       let addressWl;
       let proofWl;
       const result = whitelist.map((data) => {
-        if (data.address === address){
+        if (data.address === address) {
           console.log("ouiiiiiiii");
           addressWl = data.address;
           proofWl = data.proof;
@@ -159,38 +152,57 @@ export default function Home() {
       await provider.waitForTransaction(tx.hash);
       toast.success("Success Mint !");
 
-    }catch (error) {
-      toast.error("Transaction error! But don't worry, even the best stumble sometimes!")
+    } catch (error) {
+      if (error.message.includes('execution reverted')) {
+        const errorMessage = error.reason.split(':')[1].trim();
+        toast.error(errorMessage)
+      }else(
+        toast.error("Transaction error! But don't worry, even the best stumble sometimes!")
+      )
     }
   }
 
   async function winnerRaffleMint() {
-    if(!isConnected && !isWinnerRaffle) return // conditionner aussi a la phase winner Mint
+    if (!isConnected && !isWinnerRaffle) return // conditionner aussi a la phase winner Mint
     try {
       const tx = await contractNft.winnerRaffleSaleMint();
       await provider.waitForTransaction(tx.hash);
       toast.success("Success Mint !");
 
-    }catch (error) {
+    } catch (error) {
       toast.error("Transaction error! But don't worry, even the best stumble sometimes!")
     }
   }
 
-  async function checkWinner () {
-    if(!isConnected) return // conditionner aussi a la phase winner Mint
-    try{
+  async function checkWinner() {
+    if (!isConnected) return // conditionner aussi a la phase winner Mint
+    try {
       const winnerData = await contractNft.winnerByAddress(address);
-      if (winnerData.addressWinner === address && winnerData.numberOfWin > 0){
+      if (winnerData.addressWinner === address && winnerData.numberOfWin > 0) {
         setIsWinnerRaffle(true);
         setWinnerNbMint(winnerData.numberOfWin.toNumber());
         toast.success("YOU ARE WINNER ! GO MINT");
       }
       toast.error("YOU ARE NOT WINNER... but dont worry ;) go to Magic Eden to explore collection !");
-    }catch(error){
+    } catch (error) {
       console.log(error);
     }
   }
 
+  async function buttonManager() {
+    if (!isConnected) return
+    try {
+      if (startGuaranteedTimeBool) {
+        await whiteListMint();
+      } else if (startTimeBool) {
+        await buyTickets();
+      } else if (endTimeBool) {
+        await winnerRaffleMint();
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
   // Guaranteed sale status
   const getGuaranteedSaleStatus = () => {
@@ -271,6 +283,14 @@ export default function Home() {
     (async function fetchProviderAndData() {
       await getAlchemyProviderAndData();
     })();
+  }, [address]);
+
+  useEffect(() => {
+    if (isConnected && endTimeBool) {
+      (async function fetchWinnerData() {
+        await checkWinner();
+      })();
+    }
   }, [address]);
 
   useEffect(() => {
@@ -472,7 +492,7 @@ export default function Home() {
                 </div>
                 <button
                   className="w-full lg:w-2/4 h-14 rounded-lg text-2xl bg-light font-bold text-black col-span-2"
-                  onClick={() => buyTickets()}
+                  onClick={() => buttonManager()}
                 >
                   {buttonText}
                 </button>
