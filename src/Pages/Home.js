@@ -44,6 +44,21 @@ export default function Home() {
   const [isWinnerRaffle, setIsWinnerRaffle] = useState(false);
   const [winnerNbMint, setWinnerNbMint] = useState(0);
 
+  // useEffect(() => {
+  //   window.ethereum.on('accountsChanged', function (accounts) {
+  //     if (accounts.length === 0) {
+  // L'utilisateur s'est déconnecté. Mettez à jour l'état en conséquence.
+  // Ici, vous pouvez réinitialiser l'état de votre application et afficher un message à l'utilisateur.
+  // } else {
+  // L'utilisateur a changé de compte. Mettez à jour l'état en conséquence.
+  // Par exemple, vous pouvez appeler à nouveau `useAccount` et `useBalance` pour obtenir le solde du nouveau compte.
+  //   }
+  // }); 
+  // Nettoyez l'écouteur d'événements lorsque le composant est démonté.
+  //   return () => window.ethereum.removeAllListeners();
+  // }, []);
+
+
   const settings = {
     apiKey: "4OV2g4TrNiCkA9wIc8OjGZzovYl_dx2r",
     network: Network.MATIC_MUMBAI,
@@ -89,7 +104,6 @@ export default function Home() {
     setShowTooltipPublic(false);
   };
 
-  // Countdown
   const handleIncrease = () => {
     setTicketCount(ticketCount + 1);
   };
@@ -114,24 +128,27 @@ export default function Home() {
       if (player.addressPlayer === address) {
         const ticketsBought = player.ticketsBought;
         setTicketsBought(ticketsBought.toNumber());
+      } else {
+        setTicketsBought(0);
       }
     } catch (error) {
       console.error("Error getting tickets bought:", error);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [address]);
 
   async function buyTickets() {
     if (isConnected) {
       try {
         setWaitingBuy(true);
-        const tx = await contractRaffle.buyTicket(ticketCount, { value: ethers.utils.parseEther((ticketCount * ticketPrice).toString()) });
+        const tx = await contractRaffle.buyTicket(ticketCount, { value: ethers.utils.parseEther((ticketCount * ticketPrice + ticketCount).toString()) });
         await provider.waitForTransaction(tx.hash);
         toast.success("You're in the game! Good luck with the draw!");
+        setWaitingBuy(false);
         getTicketsBought();
         getTicketsSold();
       } catch (error) {
         toast.error("Transaction error! But don't worry, even the best stumble sometimes!");
+        setWaitingBuy(false);
       }
     }
   }
@@ -156,7 +173,7 @@ export default function Home() {
       if (error.message.includes('execution reverted')) {
         const errorMessage = error.reason.split(':')[1].trim();
         toast.error(errorMessage)
-      }else(
+      } else (
         toast.error("Transaction error! But don't worry, even the best stumble sometimes!")
       )
     }
@@ -184,21 +201,6 @@ export default function Home() {
         toast.success("YOU ARE WINNER ! GO MINT");
       }
       toast.error("YOU ARE NOT WINNER... but dont worry ;) go to Magic Eden to explore collection !");
-    } catch (error) {
-      console.log(error);
-    }
-  }
-
-  async function buttonManager() {
-    if (!isConnected) return
-    try {
-      if (startGuaranteedTimeBool) {
-        await whiteListMint();
-      } else if (startTimeBool) {
-        await buyTickets();
-      } else if (endTimeBool) {
-        await winnerRaffleMint();
-      }
     } catch (error) {
       console.log(error);
     }
@@ -236,8 +238,9 @@ export default function Home() {
         const block = await maticProvider.getBlock();
         const contractRaffleBeforeConnection = new ethers.Contract(contractRaffleAddress, RaffleABI.abi, maticProvider);
         const dateStartNft = await contractNft.saleStartTime();
-        const dateEndtNftGuaranteed = await contractNft.endTimeGuarranted(); // to do: change endTimeGuarranted to endTimeGuaranteed
-        const startTime = 1689871513;
+        // const dateEndtNftGuaranteed = await contractNft.endTimeGuarranted(); // to do: change endTimeGuarranted to endTimeGuaranteed
+        const dateEndtNftGuaranteed = 1689703200; // to do: change endTimeGuarranted to endTimeGuaranteed
+        const startTime = 1689703800;
         const deadline = await contractRaffleBeforeConnection.deadline();
 
         if (block.timestamp < dateStartNft.toNumber()) {
@@ -245,12 +248,12 @@ export default function Home() {
           setGuaranteedStartTimeBool(false);
           setGuaranteedEndTimeBool(false);
           setDateStartGuaranteed(dateStartNft.toNumber());
-        } else if (block.timestamp >= dateStartNft.toNumber() && block.timestamp <= dateEndtNftGuaranteed.toNumber()) {
+        } else if (block.timestamp >= dateStartNft.toNumber() && block.timestamp <= dateEndtNftGuaranteed) {
           setGuaranteedNotStartedTimeBool(false);
           setGuaranteedStartTimeBool(true);
           setGuaranteedEndTimeBool(false);
-          setDateEndGuaranteed(dateEndtNftGuaranteed.toNumber());
-        } else if (block.timestamp > dateEndtNftGuaranteed.toNumber()) {
+          setDateEndGuaranteed(dateEndtNftGuaranteed);
+        } else if (block.timestamp > dateEndtNftGuaranteed) {
           setGuaranteedNotStartedTimeBool(false);
           setGuaranteedStartTimeBool(false);
           setGuaranteedEndTimeBool(true);
@@ -294,30 +297,81 @@ export default function Home() {
   }, [address]);
 
   useEffect(() => {
-    if (isConnected) {
-      getTicketsBought();
-    }
-  }, [isConnected, getTicketsBought, address]);
+    getTicketsBought();
+  }, [getTicketsBought, address]);
 
   useEffect(() => {
-    setHasBalance(prevHasBalance => {
-      if (balance && ticketCount > 0 && (balance.data?.value.toBigInt().toString() / 10 ** 18) >= ticketCount * ticketPrice) {
+    setHasBalance(() => {
+      if (balance && ticketCount > 0 && (balance.data?.value.toBigInt().toString() / 10 ** 18) >= (ticketCount * ticketPrice + ticketCount)) {
         return true;
       }
-      return prevHasBalance;
+      return false;
     });
   }, [balance, ticketCount]);
+
 
   let buttonText;
   if (waitingBuy) {
     buttonText = (
       <div className="flex justify-center items-center h-full">
-        <PuffLoader
-          color="#000" />
+        <PuffLoader color="#000" />
       </div>
     );
+  } else if (!isConnected) {
+    buttonText = (
+      <button
+        className="p- xl:p-0 w-full lg:w-2/4 h-14 rounded-lg text-xl xl:text-2xl bg-light opacity-50 font-bold text-black col-span-2"
+        disabled
+      // onClick={() => /* Function to connect wallet goes here */}
+      >
+        Connect your wallet
+      </button>
+    );
+  } else if (!hasBalance) {
+    buttonText = (
+      <button
+        className="p- xl:p-0 w-full lg:w-2/4 h-14 rounded-lg text-xl xl:text-2xl bg-light opacity-50 font-bold text-black col-span-2"
+        disabled
+      >
+        Insufficient Balance
+      </button>
+    );
+  } else if (isWhitelisted(address) && startGuaranteedTimeBool) {
+    buttonText = (
+      <button
+        className="w-full lg:w-2/4 h-14 rounded-lg text-2xl bg-light font-bold text-black col-span-2"
+        onClick={() => whiteListMint()}
+      >
+        Mint
+      </button>
+    );
+  } else if (startTimeBool) {
+    buttonText = (
+      <button
+        className="w-full lg:w-2/4 h-14 rounded-lg text-2xl bg-light font-bold text-black col-span-2"
+        onClick={() => buyTickets()}
+      >
+        Buy Tickets
+      </button>
+    );
+  } else if (isWinnerRaffle && endTimeBool) {
+    buttonText = (
+      <button
+        className="w-full lg:w-2/4 h-14 rounded-lg text-2xl bg-light font-bold text-black col-span-2"
+        onClick={() => winnerRaffleMint()}
+      >
+        Claim
+      </button>
+    );
   } else {
-    buttonText = isWhitelisted(address) ? 'Mint' : 'Buy Tickets';
+    buttonText = (
+      <button
+        className="p- xl:p-0 w-full lg:w-2/4 h-14 rounded-lg text-xl xl:text-2xl bg-light opacity-50 font-bold text-black col-span-2"
+        disabled
+      >
+        Waiting for next phase
+      </button>
+    );
   }
 
   return (
@@ -420,7 +474,7 @@ export default function Home() {
                       <>
                         Ends in
                         <span className="text-white pl-2 xl:text-xl">
-                          <CountdownComponent deadline={dateEndGuaranteed} />
+                          <CountdownComponent deadline={1689703200} />
                         </span>
                       </>
                     }
@@ -454,7 +508,7 @@ export default function Home() {
                       <>
                         Live in
                         <span className="text-white pl-2 xl:text-xl">
-                          <CountdownComponent deadline={1689871513} />
+                          <CountdownComponent deadline={1689703800} />
                         </span>
                       </>
                     }
@@ -484,20 +538,21 @@ export default function Home() {
                     className="w-4 md:w-6 lg:w-16 h-14 rounded-none bg-secondary text-white text-xl text-center"
                     min={1}
                     value={ticketCount}
-                    onChange={(e) => setTicketCount(parseInt(e.target.value))}
+                    onChange={(e) => {
+                      if (e.target.value === '') {
+                        setTicketCount(1);
+                      } else {
+                        setTicketCount(parseInt(e.target.value));
+                      }
+                    }}
                   />
                   <button className="w-10 h-14 rounded-r-lg text-white text-2xl" onClick={() => handleIncrease()}>
                     +
                   </button>
                 </div>
-                <button
-                  className="w-full lg:w-2/4 h-14 rounded-lg text-2xl bg-light font-bold text-black col-span-2"
-                  onClick={() => buttonManager()}
-                >
-                  {buttonText}
-                </button>
+                {buttonText}
                 <div className="mt-5 sm:mt-0">
-                  <p className="flex items-center text-xl text-white">Your tickets:<span className="ml-1 text-light pr-4">{ticketsBought}</span>
+                  <p className="flex items-center text-xl text-white">Your tickets:{isConnected && <span className="ml-1 text-light pr-4">{ticketsBought}</span>}
                   </p>
                 </div>
               </div>
