@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback } from "react";
+import { createPortal } from "react-dom";
 import { DynamicWidget } from "@dynamic-labs/sdk-react";
 import { useAccount, useBalance } from "wagmi";
 import { ethers } from "ethers";
@@ -10,6 +11,9 @@ import whitelist from '../Whitelist/whitelist.json';
 import { PuffLoader } from "react-spinners";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import ModalPending from "../Modals/ModalPending";
+import ModalWinner from "../Modals/ModalWinner";
+import ModalLooser from "../Modals/ModalLooser";
 
 const contractNftAddress = "0x70ee55cc52F32908461F2c4F70c6051274a4c2C5"
 const contractRaffleAddress = "0xBA73277276e86b325767A745617A601E05Ba4DD4";
@@ -20,6 +24,7 @@ export default function Home() {
   const balance = useBalance({ address: address });
 
   const [ticketCount, setTicketCount] = useState(1);
+  const [maxTicketsMint, setMaxTicketsMint] = useState(0);
   const [ticketsBought, setTicketsBought] = useState(0);
   const [ticketsSold, setTicketsSold] = useState(0);
   const [waitingBuy, setWaitingBuy] = useState(false);
@@ -39,9 +44,13 @@ export default function Home() {
   const [showTooltipOG, setShowTooltipOG] = useState(false);
   const [showTooltipPublic, setShowTooltipPublic] = useState(false);
   const [hasBalance, setHasBalance] = useState(false);
+  const [showModalWinner, setShowModalWinner] = useState(false);
+  const [showModalLooser, setShowModalLooser] = useState(false);
+  const [showModalPending, setShowModalPending] = useState(false);
 
   //winner state
   const [isWinnerRaffle, setIsWinnerRaffle] = useState(false);
+  const [hasCheckedWinner, setHasCheckedWinner] = useState(false);
   const [winnerNbMint, setWinnerNbMint] = useState(0);
 
   // useEffect(() => {
@@ -180,7 +189,7 @@ export default function Home() {
   }
 
   async function winnerRaffleMint() {
-    if (!isConnected && !isWinnerRaffle) return // conditionner aussi a la phase winner Mint
+    if (!isConnected && !isWinnerRaffle) return; // conditionner aussi a la phase winner Mint
     try {
       const tx = await contractNft.winnerRaffleSaleMint();
       await provider.waitForTransaction(tx.hash);
@@ -192,15 +201,19 @@ export default function Home() {
   }
 
   async function checkWinner() {
-    if (!isConnected) return // conditionner aussi a la phase winner Mint
+    if (!isConnected) return false; // conditionner aussi a la phase winner Mint
     try {
+      setHasCheckedWinner(true);
       const winnerData = await contractNft.winnerByAddress(address);
       if (winnerData.addressWinner === address && winnerData.numberOfWin > 0) {
         setIsWinnerRaffle(true);
         setWinnerNbMint(winnerData.numberOfWin.toNumber());
+        setMaxTicketsMint(winnerData.numberOfWin.toNumber());
         toast.success("YOU ARE WINNER ! GO MINT");
+        return true;
       }
       toast.error("YOU ARE NOT WINNER... but dont worry ;) go to Magic Eden to explore collection !");
+      return false;
     } catch (error) {
       console.log(error);
     }
@@ -239,9 +252,10 @@ export default function Home() {
         const contractRaffleBeforeConnection = new ethers.Contract(contractRaffleAddress, RaffleABI.abi, maticProvider);
         const dateStartNft = await contractNft.saleStartTime();
         // const dateEndtNftGuaranteed = await contractNft.endTimeGuarranted(); // to do: change endTimeGuarranted to endTimeGuaranteed
-        const dateEndtNftGuaranteed = 1689703200; // to do: change endTimeGuarranted to endTimeGuaranteed
+        const dateEndtNftGuaranteed = 1689703200;
         const startTime = 1689703800;
-        const deadline = await contractRaffleBeforeConnection.deadline();
+        // const deadline = await contractRaffleBeforeConnection.deadline();
+        const deadline = 1690308000;
 
         if (block.timestamp < dateStartNft.toNumber()) {
           setGuaranteedNotStartedTimeBool(true);
@@ -264,12 +278,12 @@ export default function Home() {
           setStartTimeBool(false);
           setEndTimeBool(false);
           setStartTime(startTime);
-        } else if (block.timestamp >= startTime && block.timestamp <= deadline.toNumber()) {
+        } else if (block.timestamp >= startTime && block.timestamp <= deadline) {
           setNotStartedTimeBool(false);
           setStartTimeBool(true);
           setEndTimeBool(false);
-          setEndTime(deadline.toNumber());
-        } else if (block.timestamp > deadline.toNumber()) {
+          setEndTime(deadline);
+        } else if (block.timestamp > deadline) {
           setNotStartedTimeBool(false);
           setStartTimeBool(false);
           setEndTimeBool(true);
@@ -313,24 +327,19 @@ export default function Home() {
   let buttonText;
   if (waitingBuy) {
     buttonText = (
-      <div className="flex justify-center items-center h-full">
-        <PuffLoader color="#000" />
-      </div>
-    );
-  } else if (!isConnected) {
-    buttonText = (
       <button
-        className="p- xl:p-0 w-full lg:w-2/4 h-14 rounded-lg text-xl xl:text-2xl bg-light opacity-50 font-bold text-black col-span-2"
+        className="xl:p-0 w-full lg:w-2/4 rounded-lg text-xl xl:text-2xl bg-light opacity-50 font-bold text-black col-span-2"
         disabled
-      // onClick={() => /* Function to connect wallet goes here */}
       >
-        Connect your wallet
+        <div className="flex justify-center items-center h-full">
+          <PuffLoader color="#000" />
+        </div>
       </button>
     );
-  } else if (!hasBalance) {
+  } else if (!hasBalance && !isWinnerRaffle) {
     buttonText = (
       <button
-        className="p- xl:p-0 w-full lg:w-2/4 h-14 rounded-lg text-xl xl:text-2xl bg-light opacity-50 font-bold text-black col-span-2"
+        className="xl:p-0 w-full lg:w-2/4 rounded-lg text-xl xl:text-2xl bg-light opacity-50 font-bold text-black col-span-2"
         disabled
       >
         Insufficient Balance
@@ -339,7 +348,7 @@ export default function Home() {
   } else if (isWhitelisted(address) && startGuaranteedTimeBool) {
     buttonText = (
       <button
-        className="w-full lg:w-2/4 h-14 rounded-lg text-2xl bg-light font-bold text-black col-span-2"
+        className="w-full lg:w-2/4 rounded-lg text-2xl bg-light font-bold text-black col-span-2"
         onClick={() => whiteListMint()}
       >
         Mint
@@ -348,30 +357,62 @@ export default function Home() {
   } else if (startTimeBool) {
     buttonText = (
       <button
-        className="w-full lg:w-2/4 h-14 rounded-lg text-2xl bg-light font-bold text-black col-span-2"
+        className="flex items-center justify-center w-full lg:w-2/4 rounded-lg text-2xl bg-light font-bold text-black col-span-2"
         onClick={() => buyTickets()}
       >
         Buy Tickets
       </button>
     );
-  } else if (isWinnerRaffle && endTimeBool) {
+  } else if (hasCheckedWinner && isWinnerRaffle) {
     buttonText = (
       <button
-        className="w-full lg:w-2/4 h-14 rounded-lg text-2xl bg-light font-bold text-black col-span-2"
+        className="w-full lg:w-2/4 rounded-lg text-2xl bg-light font-bold text-black col-span-2"
         onClick={() => winnerRaffleMint()}
       >
         Claim
       </button>
     );
+  } else if (endTimeBool) {
+    buttonText = (
+      <>
+        <button
+          className="w-full lg:w-2/4 rounded-lg text-2xl bg-light font-bold text-black col-span-2 "
+          onClick={async () => {
+            const hasChecked = await checkWinner();
+            if (!hasChecked) {
+              setShowModalPending(true);
+            } else if (isWinnerRaffle) {
+              setShowModalWinner(true);
+            } else {
+              setShowModalLooser(true);
+            }
+          }}
+        >
+          Verify
+        </button>
+        {showModalPending && createPortal(<ModalPending closeModal={() => setShowModalPending(false)} />, document.body)}
+        {showModalWinner && createPortal(<ModalWinner closeModal={() => setShowModalWinner(false)} winnerNbMint={winnerNbMint} />, document.body)}
+        {showModalLooser && createPortal(<ModalLooser closeModal={() => setShowModalLooser(false)} />, document.body)}
+      </>
+    );
   } else {
     buttonText = (
       <button
-        className="p- xl:p-0 w-full lg:w-2/4 h-14 rounded-lg text-xl xl:text-2xl bg-light opacity-50 font-bold text-black col-span-2"
+        className="p- xl:p-0 w-full lg:w-2/4 rounded-lg text-xl xl:text-2xl bg-light opacity-50 font-bold text-black col-span-2"
         disabled
       >
         Waiting for next phase
       </button>
     );
+  }
+
+  let maxTickets;
+  if (startGuaranteedTimeBool) {
+    maxTickets = 1;
+  } else if (endTimeBool) {
+    maxTickets = maxTicketsMint;
+  } else {
+    maxTickets = undefined;
   }
 
   return (
@@ -380,16 +421,16 @@ export default function Home() {
         position="bottom-center"
         theme="dark"
       />
-      <div className="homepage py-10 px-5 md:pr-20 lg:px-30 xl:px-20">
+      <div className="homepage py-10 px-5 lg:pr-20 lg:px-30 xl:px-20">
         <header className="navbar sm:px-10 md:px-0">
           <nav className="flex justify-center justify-between gap-8 md:gap-0">
-            <div className="">
+            <div className="d-none">
               <a href="./" className="">
                 <span className="sr-only">Ogronex</span>
                 <img
-                  className="h-14 w-auto"
+                  className="invisible sm:visible h-11 md:h-14 w-auto"
                   src="./Images/logo.png"
-                  alt=""
+                  alt="Ogronex logo"
                 />
               </a>
             </div>
@@ -403,7 +444,7 @@ export default function Home() {
         <main className="relative">
           <div className="flex flex-col-reverse md:flex-row justify-center">
             <div className="flex flex-col justify-center items-center w-full lg:w-2/4 h-auto">
-              <img className="w-full lg:max-w-[800px] xl:max-w-[650px]" src="./Images/prize-maschine.png" alt="" />
+              <img className="w-full md:mt-40 lg:mt-5 lg:max-w-[800px] xl:max-w-[650px]" src="./Images/prize-maschine.png" alt="" />
             </div>
             <div className="flex flex-col mt-10 w-full md:w-2/4 md:max-w-[700px] gap-6">
               <div className="flex flex-row p-4">
@@ -434,100 +475,104 @@ export default function Home() {
                   </div>
                 </div>
               </div>
-              <div className="flex flex-col md:flex-row items-center gap-4 md:gap-0 p-4 bg-four rounded-lg border border-gray-600 justify-between">
-                <div className="relative lg:text-lg xl:text-xl font-bold text-white">Guaranteed mint
-                  <span
-                    className="ml-3 text-light border border-light rounded-full px-2 text-sm"
-                    onMouseEnter={handleMouseEnter}
-                    onMouseLeave={handleMouseLeave}
-                  >
-                    i
-                  </span>
-                  {showTooltipOG &&
-                    <div className="tooltip absolute left-1/2 top-full -translate-x-1/2 transform whitespace-nowrap rounded bg-secondary bg-opacity-80 p-2 text-white">
-                      One mint per wallet
+              {!endTimeBool && (
+                <div className="flex flex-col gap-6">
+                  <div className="flex flex-col md:flex-row items-center gap-4 md:gap-0 p-4 bg-four rounded-lg border border-gray-600 justify-between">
+                    <div className="relative lg:text-lg xl:text-xl font-bold text-white">Guaranteed mint
+                      <span
+                        className="ml-3 text-light border border-light rounded-full px-2 text-sm"
+                        onMouseEnter={handleMouseEnter}
+                        onMouseLeave={handleMouseLeave}
+                      >
+                        i
+                      </span>
+                      {showTooltipOG &&
+                        <div className="tooltip absolute left-1/2 top-full -translate-x-1/2 transform whitespace-nowrap rounded bg-secondary bg-opacity-80 p-2 text-white">
+                          One mint per wallet
+                        </div>
+                      }
                     </div>
-                  }
-                </div>
-                <div className="flex px-3">
-                  <p className={"lg:text-lg xl:text-xl font-bold text-white bg-secondary py-2 px-6 lg:px-4 xl:px-6 rounded-lg border border-gray-600 bg-opacity-60 lg:min-w-[110px] xl:min-w-[130px]"}>
-                    <i className={`fas fa-circle pr-2 text-light text-sm animate-pulse ${saleGuaranteedStatus === 'Live' ? 'text-green-500' : 'text-red-500'}`}></i>
-                    {saleGuaranteedStatus}
-                  </p>
-                </div>
-                <div className="flex flex-col justify-end xl:ml-2 md:min-w-[110px] lg:min-w-[160px] xl:min-w-[233px]">
-                  <div className="flex flex-col text-center text-md text-gray-400 bg-secondary py-2 px-6 rounded-lg border border-gray-600 bg-opacity-60">
-                    {notStartedGuaranteedTimeBool &&
-                      <>
-                        Live in
-                        <span className="text-white pl-2 xl:text-xl">
-                          <CountdownComponent deadline={dateStartGuaranteed} />
-                        </span>
-                      </>
-                    }
-                    {endGuaranteedTimeBool &&
-                      <>
-                        Finished
-                      </>
-                    }
-                    {startGuaranteedTimeBool &&
-                      <>
-                        Ends in
-                        <span className="text-white pl-2 xl:text-xl">
-                          <CountdownComponent deadline={1689703200} />
-                        </span>
-                      </>
-                    }
-                  </div>
-                </div>
-              </div>
-              <div className="flex flex-col md:flex-row items-center p-4 bg-four rounded-lg border border-gray-600 gap-4 md:gap-0 justify-between">
-                <p className="relative lg:text-lg xl:text-xl font-bold text-white">Public
-                  <span
-                    className="ml-3 text-light border border-light rounded-full px-2 text-sm"
-                    onMouseEnter={handleMouseEnterPublic}
-                    onMouseLeave={handleMouseLeavePublic}
-                  >
-                    i
-                  </span>
-                  {showTooltipPublic && (
-                    <div className="tooltip absolute left-1/2 top-full -translate-x-1/2 transform whitespace-nowrap rounded bg-secondary bg-opacity-80 p-2 text-white">
-                      All winners will be drawn directly at the end of the sale.
+                    <div className="flex px-3">
+                      <p className={"lg:text-lg xl:text-xl font-bold text-white bg-secondary py-2 px-6 lg:px-4 xl:px-6 rounded-lg border border-gray-600 bg-opacity-60 lg:min-w-[110px] xl:min-w-[130px]"}>
+                        <i className={`fas fa-circle pr-2 text-light text-sm animate-pulse ${saleGuaranteedStatus === 'Live' ? 'text-green-500' : 'text-red-500'}`}></i>
+                        {saleGuaranteedStatus}
+                      </p>
                     </div>
-                  )}
-                </p>
-                <div className="flex ml-3 xs:ml-5 xl:ml-28">
-                  <div className={"lg:text-lg xl:text-xl font-bold text-white bg-secondary py-2 px-4 xl:px-6 rounded-lg border border-gray-600 bg-opacity-60 lg:min-w-[110px] xl:min-w-[130px]"}>
-                    <i className={`fas fa-circle pr-2 text-light text-sm animate-pulse ${salePublicStatus === 'Live' ? 'text-green-500' : 'text-red-500'}`}></i>
-                    {salePublicStatus}
+                    <div className="flex flex-col justify-end md:-ml-1.5 lg:ml-2 md:min-w-[110px] lg:min-w-[160px] xl:min-w-[233px]">
+                      <div className="flex flex-col text-center text-md text-gray-400 bg-secondary py-2 px-6 rounded-lg border border-gray-600 bg-opacity-60">
+                        {notStartedGuaranteedTimeBool &&
+                          <>
+                            Live in
+                            <span className="text-white pl-2 xl:text-xl">
+                              <CountdownComponent deadline={dateStartGuaranteed} />
+                            </span>
+                          </>
+                        }
+                        {endGuaranteedTimeBool &&
+                          <>
+                            Finished
+                          </>
+                        }
+                        {startGuaranteedTimeBool &&
+                          <>
+                            Ends in
+                            <span className="text-white pl-2 xl:text-xl">
+                              <CountdownComponent deadline={1689703200} />
+                            </span>
+                          </>
+                        }
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex flex-col md:flex-row items-center p-4 bg-four rounded-lg border border-gray-600 gap-4 md:gap-0 justify-between">
+                    <p className="relative lg:text-lg xl:text-xl font-bold text-white">Public
+                      <span
+                        className="ml-3 text-light border border-light rounded-full px-2 text-sm"
+                        onMouseEnter={handleMouseEnterPublic}
+                        onMouseLeave={handleMouseLeavePublic}
+                      >
+                        i
+                      </span>
+                      {showTooltipPublic && (
+                        <div className="tooltip absolute left-1/2 top-full -translate-x-1/2 transform whitespace-normal md:whitespace-nowrap rounded bg-secondary bg-opacity-80 p-2 text-white text-md min-w-[75vw] md:max-w-[95vw] overflow-hidden text-overflow-ellipsis">
+                          All winners will be drawn few minutes after the end.
+                        </div>
+                      )}
+                    </p>
+                    <div className="flex ml-3 xs:ml-5 xl:ml-28">
+                      <div className={"lg:text-lg xl:text-xl font-bold text-white bg-secondary py-2 px-4 xl:px-6 rounded-lg border border-gray-600 bg-opacity-60 lg:min-w-[110px] xl:min-w-[130px]"}>
+                        <i className={`fas fa-circle pr-2 text-light text-sm animate-pulse ${salePublicStatus === 'Live' ? 'text-green-500' : 'text-red-500'}`}></i>
+                        {salePublicStatus}
+                      </div>
+                    </div>
+                    <div className="flex flex-col justify-end ml-2 xs:ml-5 md:min-w-[110px] lg:min-w-[160px] xl:min-w-[233px]">
+                      <div className="flex flex-col text-center text-md text-gray-400 bg-secondary py-2 xl:py-2.5 px-6 rounded-lg border border-gray-600 bg-opacity-60">
+                        {notStartedTimeBool &&
+                          <>
+                            Live in
+                            <span className="text-white pl-2 xl:text-xl">
+                              <CountdownComponent deadline={1689703200} />
+                            </span>
+                          </>
+                        }
+                        {endTimeBool &&
+                          <>
+                            Finished
+                          </>
+                        }
+                        {startTimeBool &&
+                          <>
+                            Ends in
+                            <span className="text-white pl-2 xl:text-xl">
+                              <CountdownComponent deadline={endTime} />
+                            </span>
+                          </>
+                        }
+                      </div>
+                    </div>
                   </div>
                 </div>
-                <div className="flex flex-col justify-end ml-2 xs:ml-5 md:min-w-[110px] lg:min-w-[160px] xl:min-w-[233px]">
-                  <div className="flex flex-col text-center text-md text-gray-400 bg-secondary py-2 xl:py-2.5 px-6 rounded-lg border border-gray-600 bg-opacity-60">
-                    {notStartedTimeBool &&
-                      <>
-                        Live in
-                        <span className="text-white pl-2 xl:text-xl">
-                          <CountdownComponent deadline={1689703800} />
-                        </span>
-                      </>
-                    }
-                    {endTimeBool &&
-                      <>
-                        Finished
-                      </>
-                    }
-                    {startTimeBool &&
-                      <>
-                        Ends in
-                        <span className="text-white pl-2 xl:text-xl">
-                          <CountdownComponent deadline={endTime} />
-                        </span>
-                      </>
-                    }
-                  </div>
-                </div>
-              </div>
+              )}
               <div className="grid grid-cols-3 lg:flex flew-row gap-2 md:gap-4 lg:gap-8 xl:gap-11 w-full justify-between">
                 <div className="flex justify-around items-center rounded-lg border border-gray-600 bg-secondary">
                   <button className="w-10 h-14 rounded-l-lg text-white text-2xl" onClick={() => handleDecrease()}>
@@ -537,12 +582,13 @@ export default function Home() {
                     type="number"
                     className="w-4 md:w-6 lg:w-16 h-14 rounded-none bg-secondary text-white text-xl text-center"
                     min={1}
+                    max={maxTickets}
                     value={ticketCount}
                     onChange={(e) => {
                       if (e.target.value === '') {
                         setTicketCount(1);
                       } else {
-                        setTicketCount(parseInt(e.target.value));
+                        setTicketCount(Math.min(parseInt(e.target.value), maxTickets));
                       }
                     }}
                   />
@@ -554,6 +600,9 @@ export default function Home() {
                 <div className="mt-5 sm:mt-0">
                   <p className="flex items-center text-xl text-white">Your tickets:{isConnected && <span className="ml-1 text-light pr-4">{ticketsBought}</span>}
                   </p>
+                  {winnerNbMint && isConnected &&
+                    <p className="flex items-center text-xl text-white">Winning:<span className="ml-1 text-light pr-4">{winnerNbMint}</span></p>
+                  }
                 </div>
               </div>
             </div>
