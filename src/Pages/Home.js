@@ -15,8 +15,8 @@ import ModalPending from "../Modals/ModalPending";
 import ModalWinner from "../Modals/ModalWinner";
 import ModalLooser from "../Modals/ModalLooser";
 
-const contractNftAddress = "0x70ee55cc52F32908461F2c4F70c6051274a4c2C5"
-const contractRaffleAddress = "0xBA73277276e86b325767A745617A601E05Ba4DD4";
+const contractNftAddress = "0x367460AF11474809fa33A94C69b7815e68142830"
+const contractRaffleAddress = "0x0f6982a6469D3Eacec3B05ca0E663085CF0D8A0e";
 
 export default function Home() {
 
@@ -149,7 +149,7 @@ export default function Home() {
     if (isConnected) {
       try {
         setWaitingBuy(true);
-        const tx = await contractRaffle.buyTicket(ticketCount, { value: ethers.utils.parseEther((ticketCount * ticketPrice + ticketCount).toString()) });
+        const tx = await contractRaffle.buyTicket(ticketCount, { value: ethers.utils.parseEther((ticketCount * ticketPrice).toString()) });
         await provider.waitForTransaction(tx.hash);
         toast.success("You're in the game! Good luck with the draw!");
         setWaitingBuy(false);
@@ -251,11 +251,11 @@ export default function Home() {
         const block = await maticProvider.getBlock();
         const contractRaffleBeforeConnection = new ethers.Contract(contractRaffleAddress, RaffleABI.abi, maticProvider);
         const dateStartNft = await contractNft.saleStartTime();
-        // const dateEndtNftGuaranteed = await contractNft.endTimeGuarranted(); // to do: change endTimeGuarranted to endTimeGuaranteed
-        const dateEndtNftGuaranteed = 1689703200;
-        const startTime = 1689703800;
-        // const deadline = await contractRaffleBeforeConnection.deadline();
-        const deadline = 1690308000;
+        const dateEndtNftGuaranteed = await contractNft.endTimeGuarranted(); // to do: change endTimeGuarranted to endTimeGuaranteed
+        // const dateEndtNftGuaranteed = 1689703200;
+        const startTime = await contractRaffleBeforeConnection.startDate();
+        const deadline = await contractRaffleBeforeConnection.deadline();
+        // const deadline = 1690308000;
 
         if (block.timestamp < dateStartNft.toNumber()) {
           setGuaranteedNotStartedTimeBool(true);
@@ -273,17 +273,17 @@ export default function Home() {
           setGuaranteedEndTimeBool(true);
         }
 
-        if (block.timestamp < startTime) {
+        if (block.timestamp < startTime.toNumber()) {
           setNotStartedTimeBool(true);
           setStartTimeBool(false);
           setEndTimeBool(false);
-          setStartTime(startTime);
-        } else if (block.timestamp >= startTime && block.timestamp <= deadline) {
+          setStartTime(startTime.toNumber());
+        } else if (block.timestamp >= startTime.toNumber() && block.timestamp <= deadline.toNumber()) {
           setNotStartedTimeBool(false);
           setStartTimeBool(true);
           setEndTimeBool(false);
-          setEndTime(deadline);
-        } else if (block.timestamp > deadline) {
+          setEndTime(deadline.toNumber());
+        } else if (block.timestamp > deadline.toNumber()) {
           setNotStartedTimeBool(false);
           setStartTimeBool(false);
           setEndTimeBool(true);
@@ -316,7 +316,7 @@ export default function Home() {
 
   useEffect(() => {
     setHasBalance(() => {
-      if (balance && ticketCount > 0 && (balance.data?.value.toBigInt().toString() / 10 ** 18) >= (ticketCount * ticketPrice + ticketCount)) {
+      if (balance > 0 && ticketCount > 0 && (balance.data?.value.toBigInt().toString() / 10 ** 18) >= (ticketCount * ticketPrice)) {
         return true;
       }
       return false;
@@ -336,16 +336,27 @@ export default function Home() {
         </div>
       </button>
     );
-  } else if (!hasBalance && !isWinnerRaffle) {
+  } else if (!isConnected) {
     buttonText = (
       <button
         className="xl:p-0 w-full lg:w-2/4 rounded-lg text-xl xl:text-2xl bg-light opacity-50 font-bold text-black col-span-2"
         disabled
       >
-        Insufficient Balance
+        Connect your wallet
       </button>
     );
-  } else if (isWhitelisted(address) && startGuaranteedTimeBool) {
+   } 
+  // else if (!hasBalance) {
+  //   buttonText = (
+  //     <button
+  //       className="xl:p-0 w-full lg:w-2/4 rounded-lg text-xl xl:text-2xl bg-light opacity-50 font-bold text-black col-span-2"
+  //       disabled
+  //     >
+  //       Insufficient Balance
+  //     </button>
+  //   );
+  // }
+   else if (isWhitelisted(address) && startGuaranteedTimeBool) {
     buttonText = (
       <button
         className="w-full lg:w-2/4 rounded-lg text-2xl bg-light font-bold text-black col-span-2"
@@ -517,7 +528,7 @@ export default function Home() {
                           <>
                             Ends in
                             <span className="text-white pl-2 xl:text-xl">
-                              <CountdownComponent deadline={1689703200} />
+                              <CountdownComponent deadline={dateEndGuaranteed} />
                             </span>
                           </>
                         }
@@ -551,7 +562,7 @@ export default function Home() {
                           <>
                             Live in
                             <span className="text-white pl-2 xl:text-xl">
-                              <CountdownComponent deadline={1689703200} />
+                              <CountdownComponent deadline={startTime} />
                             </span>
                           </>
                         }
