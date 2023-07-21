@@ -24,7 +24,6 @@ export default function Home() {
   const balance = useBalance({ address: address });
 
   const [ticketCount, setTicketCount] = useState(1);
-  const [maxTicketsMint, setMaxTicketsMint] = useState(0);
   const [ticketsBought, setTicketsBought] = useState(0);
   const [ticketsSold, setTicketsSold] = useState(0);
   const [waitingBuy, setWaitingBuy] = useState(false);
@@ -165,6 +164,7 @@ export default function Home() {
   async function whiteListMint() {
     if (!isConnected) return // conditionner aussi a la phase guarranteed Mint
     try {
+      setWaitingBuy(true);
       let addressWl;
       let proofWl;
       const result = whitelist.map((data) => {
@@ -176,6 +176,7 @@ export default function Home() {
       });
       const tx = await contractNft.whitelistMint(proofWl);
       await provider.waitForTransaction(tx.hash);
+      setWaitingBuy(false);
       toast.success("Success Mint !");
 
     } catch (error) {
@@ -185,17 +186,20 @@ export default function Home() {
       } else (
         toast.error("Transaction error! But don't worry, even the best stumble sometimes!")
       )
+      setWaitingBuy(false);
     }
   }
 
   async function winnerRaffleMint() {
     if (!isConnected && !isWinnerRaffle) return; // conditionner aussi a la phase winner Mint
     try {
+      setWaitingBuy(true);
       const tx = await contractNft.winnerRaffleSaleMint();
       await provider.waitForTransaction(tx.hash);
       toast.success("Success Mint !");
 
     } catch (error) {
+      setWaitingBuy(false);
       toast.error("Transaction error! But don't worry, even the best stumble sometimes!")
     }
   }
@@ -203,19 +207,22 @@ export default function Home() {
   async function checkWinner() {
     if (!isConnected) return false; // conditionner aussi a la phase winner Mint
     try {
+      console.log("Checking winner...");
       setHasCheckedWinner(true);
       const winnerData = await contractNft.winnerByAddress(address);
+      console.log("Winner data:", winnerData);
       if (winnerData.addressWinner === address && winnerData.numberOfWin > 0) {
+        console.log("User is a winner");
         setIsWinnerRaffle(true);
         setWinnerNbMint(winnerData.numberOfWin.toNumber());
-        setMaxTicketsMint(winnerData.numberOfWin.toNumber());
         toast.success("YOU ARE WINNER ! GO MINT");
         return true;
       }
+      console.log("User is not a winner");
       toast.error("YOU ARE NOT WINNER... but dont worry ;) go to Magic Eden to explore collection !");
       return false;
     } catch (error) {
-      console.log(error);
+      console.log("Error checking winner:", error);
     }
   }
 
@@ -252,22 +259,20 @@ export default function Home() {
         const contractRaffleBeforeConnection = new ethers.Contract(contractRaffleAddress, RaffleABI.abi, maticProvider);
         const dateStartNft = await contractNft.saleStartTime();
         const dateEndtNftGuaranteed = await contractNft.endTimeGuarranted(); // to do: change endTimeGuarranted to endTimeGuaranteed
-        // const dateEndtNftGuaranteed = 1689703200;
         const startTime = await contractRaffleBeforeConnection.startDate();
         const deadline = await contractRaffleBeforeConnection.deadline();
-        // const deadline = 1690308000;
 
         if (block.timestamp < dateStartNft.toNumber()) {
           setGuaranteedNotStartedTimeBool(true);
           setGuaranteedStartTimeBool(false);
           setGuaranteedEndTimeBool(false);
           setDateStartGuaranteed(dateStartNft.toNumber());
-        } else if (block.timestamp >= dateStartNft.toNumber() && block.timestamp <= dateEndtNftGuaranteed) {
+        } else if (block.timestamp >= dateStartNft.toNumber() && block.timestamp <= dateEndtNftGuaranteed.toNumber()) {
           setGuaranteedNotStartedTimeBool(false);
           setGuaranteedStartTimeBool(true);
           setGuaranteedEndTimeBool(false);
-          setDateEndGuaranteed(dateEndtNftGuaranteed);
-        } else if (block.timestamp > dateEndtNftGuaranteed) {
+          setDateEndGuaranteed(dateEndtNftGuaranteed.toNumber());
+        } else if (block.timestamp > dateEndtNftGuaranteed.toNumber()) {
           setGuaranteedNotStartedTimeBool(false);
           setGuaranteedStartTimeBool(false);
           setGuaranteedEndTimeBool(true);
@@ -315,13 +320,17 @@ export default function Home() {
   }, [getTicketsBought, address]);
 
   useEffect(() => {
-    setHasBalance(() => {
-      if (balance > 0 && ticketCount > 0 && (balance.data?.value.toBigInt().toString() / 10 ** 18) >= (ticketCount * ticketPrice)) {
-        return true;
-      }
-      return false;
-    });
-  }, [balance, ticketCount]);
+    if (balance.data) {
+      const userBalanceInWei = balance.data.value;
+      const ticketCostInWei = ethers.utils.parseEther((ticketCount * ticketPrice).toString());
+      console.log("User balance:", userBalanceInWei.toString());
+      console.log("Ticket cost:", ticketCostInWei.toString());
+      setHasBalance(() => ticketCostInWei.lte(userBalanceInWei));
+    } else {
+      setHasBalance(false);
+    }
+  }, [balance, ticketCount, address]);
+
 
 
   let buttonText;
@@ -345,18 +354,18 @@ export default function Home() {
         Connect your wallet
       </button>
     );
-   } 
-  // else if (!hasBalance) {
-  //   buttonText = (
-  //     <button
-  //       className="xl:p-0 w-full lg:w-2/4 rounded-lg text-xl xl:text-2xl bg-light opacity-50 font-bold text-black col-span-2"
-  //       disabled
-  //     >
-  //       Insufficient Balance
-  //     </button>
-  //   );
-  // }
-   else if (isWhitelisted(address) && startGuaranteedTimeBool) {
+  }
+  else if (!hasBalance && startTimeBool) {
+    buttonText = (
+      <button
+        className="xl:p-0 w-full lg:w-2/4 rounded-lg text-xl xl:text-2xl bg-light opacity-50 font-bold text-black col-span-2"
+        disabled
+      >
+        Insufficient Balance
+      </button>
+    );
+  }
+  else if (isWhitelisted(address) && startGuaranteedTimeBool) {
     buttonText = (
       <button
         className="w-full lg:w-2/4 rounded-lg text-2xl bg-light font-bold text-black col-span-2"
@@ -387,15 +396,19 @@ export default function Home() {
     buttonText = (
       <>
         <button
-          className="w-full lg:w-2/4 rounded-lg text-2xl bg-light font-bold text-black col-span-2 "
+          className="w-full lg:w-2/4 rounded-lg text-2xl bg-light font-bold text-black col-span-2 max-h-[80px] md:max-h-auto "
           onClick={async () => {
-            const hasChecked = await checkWinner();
-            if (!hasChecked) {
-              setShowModalPending(true);
-            } else if (isWinnerRaffle) {
-              setShowModalWinner(true);
+            // const isRaffleOver = await contractNft.isRaffleOver();
+            const isRaffleOver = true;
+            if (isRaffleOver) {
+              const hasChecked = await checkWinner();
+              if (hasChecked && isWinnerRaffle) {
+                setShowModalWinner(true);
+              } else {
+                setShowModalLooser(true);
+              }
             } else {
-              setShowModalLooser(true);
+              setShowModalPending(true);
             }
           }}
         >
@@ -418,13 +431,18 @@ export default function Home() {
   }
 
   let maxTickets;
+  let showInput = true;
   if (startGuaranteedTimeBool) {
     maxTickets = 1;
+  } else if (startTimeBool) {
+    maxTickets = Infinity;
   } else if (endTimeBool) {
-    maxTickets = maxTicketsMint;
+    maxTickets = winnerNbMint;
+    showInput = false;
   } else {
     maxTickets = undefined;
   }
+
 
   return (
     <>
@@ -455,7 +473,8 @@ export default function Home() {
         <main className="relative">
           <div className="flex flex-col-reverse md:flex-row justify-center">
             <div className="flex flex-col justify-center items-center w-full lg:w-2/4 h-auto">
-              <img className="w-full md:mt-40 lg:mt-5 lg:max-w-[800px] xl:max-w-[650px]" src="./Images/prize-maschine.png" alt="" />
+              {/* <img className="w-full md:mt-40 lg:mt-5 lg:max-w-[800px] xl:max-w-[650px]" src="./Images/prize-maschine-test.png" alt="maschine with a hook to grab prize" /> */}
+              <img className="w-full md:mt-40 lg:mt-5" src="./Images/prize-maschine-test.png" alt="maschine with a hook to grab prize" />
             </div>
             <div className="flex flex-col mt-10 w-full md:w-2/4 md:max-w-[700px] gap-6">
               <div className="flex flex-row p-4">
@@ -584,35 +603,37 @@ export default function Home() {
                   </div>
                 </div>
               )}
-              <div className="grid grid-cols-3 lg:flex flew-row gap-2 md:gap-4 lg:gap-8 xl:gap-11 w-full justify-between">
-                <div className="flex justify-around items-center rounded-lg border border-gray-600 bg-secondary">
-                  <button className="w-10 h-14 rounded-l-lg text-white text-2xl" onClick={() => handleDecrease()}>
-                    -
-                  </button>
-                  <input
-                    type="number"
-                    className="w-4 md:w-6 lg:w-16 h-14 rounded-none bg-secondary text-white text-xl text-center"
-                    min={1}
-                    max={maxTickets}
-                    value={ticketCount}
-                    onChange={(e) => {
-                      if (e.target.value === '') {
-                        setTicketCount(1);
-                      } else {
-                        setTicketCount(Math.min(parseInt(e.target.value), maxTickets));
-                      }
-                    }}
-                  />
-                  <button className="w-10 h-14 rounded-r-lg text-white text-2xl" onClick={() => handleIncrease()}>
-                    +
-                  </button>
-                </div>
+              <div className="grid grid-cols-3 lg:flex flew-row gap-2 md:gap-4 lg:gap-8 xl:gap-11 w-full min-h-[50px] justify-between">
+                {showInput && (
+                  <div className="flex justify-around items-center rounded-lg border border-gray-600 bg-secondary">
+                    <button className="w-10 h-14 rounded-l-lg text-white text-2xl" onClick={handleDecrease}>
+                      -
+                    </button>
+                    <input
+                      type="number"
+                      className="w-4 md:w-6 lg:w-16 h-14 rounded-none bg-secondary text-white text-xl text-center"
+                      min={1}
+                      max={maxTickets}
+                      value={ticketCount}
+                      onChange={(e) => {
+                        if (e.target.value === '') {
+                          setTicketCount(1);
+                        } else {
+                          setTicketCount(Math.min(parseInt(e.target.value), maxTickets));
+                        }
+                      }}
+                    />
+                    <button className="w-10 h-14 rounded-r-lg text-white text-2xl" onClick={handleIncrease}>
+                      +
+                    </button>
+                  </div>
+                )}
                 {buttonText}
-                <div className="mt-5 sm:mt-0">
-                  <p className="flex items-center text-xl text-white">Your tickets:{isConnected && <span className="ml-1 text-light pr-4">{ticketsBought}</span>}
+                <div className="md:mt-5">
+                  <p className="flex justify-content items-center text-xl text-white">Your tickets:{isConnected && <span className="ml-1 text-light pr-4">{ticketsBought}</span>}
                   </p>
-                  {winnerNbMint && isConnected &&
-                    <p className="flex items-center text-xl text-white">Winning:<span className="ml-1 text-light pr-4">{winnerNbMint}</span></p>
+                  {isConnected && hasCheckedWinner &&
+                    <p className="flex justify-content items-center text-xl text-white sm:mt-3">Won:<span className="ml-5 sm:ml-12 md:ml-1 text-light pr-4">{winnerNbMint}</span></p>
                   }
                 </div>
               </div>
