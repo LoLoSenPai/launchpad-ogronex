@@ -152,8 +152,8 @@ export default function Home() {
         await provider.waitForTransaction(tx.hash);
         toast.success("You're in the game! Good luck with the draw!");
         setWaitingBuy(false);
-        getTicketsBought();
-        getTicketsSold();
+        await getTicketsBought();
+        await getTicketsSold();
       } catch (error) {
         toast.error("Transaction error! But don't worry, even the best stumble sometimes!");
         setWaitingBuy(false);
@@ -226,7 +226,7 @@ export default function Home() {
     }
   }
 
-  // Guaranteed sale status
+  // // Guaranteed sale status
   // const getGuaranteedSaleStatus = () => {
   //   if (notStartedGuaranteedTimeBool) {
   //     return "Not Started";
@@ -238,7 +238,7 @@ export default function Home() {
   // };
   // const saleGuaranteedStatus = getGuaranteedSaleStatus();
 
-  // // Public sale status
+  // // // Public sale status
   // const getPublicSaleStatus = () => {
   //   if (notStartedTimeBool) {
   //     return "Not Started";
@@ -299,7 +299,7 @@ useEffect(() => {
         const block = await maticProvider.getBlock();
         const contractRaffleBeforeConnection = new ethers.Contract(contractRaffleAddress, RaffleABI.abi, maticProvider);
         const dateStartNft = await contractNft.saleStartTime();
-        const dateEndtNftGuaranteed = await contractNft.endTimeGuarranted(); // to do: change endTimeGuarranted to endTimeGuaranteed
+        const dateEndtNftGuaranteed = await contractNft.endTimeGuaranteed();
         const startTime = await contractRaffleBeforeConnection.startDate();
         const deadline = await contractRaffleBeforeConnection.deadline();
 
@@ -439,8 +439,7 @@ useEffect(() => {
         <button
           className="lg:py-4 w-full lg:w-2/4 rounded-lg text-xl lg:text-2xl bg-light font-bold text-black col-span-2 max-h-[80px] md:max-h-auto "
           onClick={async () => {
-            // const isRaffleOver = await contractNft.isRaffleOver();
-            const isRaffleOver = true;
+            const isRaffleOver = await contractNft.isRaffleOver();
             if (isRaffleOver) {
               const hasChecked = await checkWinner();
               if (hasChecked && isWinnerRaffle) {
@@ -569,7 +568,7 @@ useEffect(() => {
                   </div>
                 </div>
               </div>
-              {endTimeBool && (
+        
                 <div className="flex flex-col gap-6">
                   <div className="flex flex-col md:flex-row items-center gap-4 p-4 bg-four rounded-lg border border-gray-600 justify-center md:justify-between">
                     <div className="relative lg:text-lg xl:text-xl font-bold text-white">Guaranteed mint
@@ -660,7 +659,7 @@ useEffect(() => {
                     )}
                   </div>
                 </div>
-              )}
+
               <div className="grid grid-cols-3 lg:flex flew-row gap-2 md:gap-4 lg:gap-8 xl:gap-11 w-full min-h-[50px] justify-between">
                 {showInput && (
                   <div className="flex justify-around items-center rounded-lg border border-gray-600 bg-secondary">
