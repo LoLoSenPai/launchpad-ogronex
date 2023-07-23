@@ -219,7 +219,7 @@ export default function Home() {
         return true;
       }
       console.log("User is not a winner");
-      toast.error("YOU ARE NOT WINNER... but dont worry ;) go to Magic Eden to explore collection !");
+      // toast.error("YOU ARE NOT WINNER... but dont worry ;) go to Magic Eden to explore collection !");
       return false;
     } catch (error) {
       console.log("Error checking winner:", error);
@@ -227,28 +227,69 @@ export default function Home() {
   }
 
   // Guaranteed sale status
-  const getGuaranteedSaleStatus = () => {
-    if (notStartedGuaranteedTimeBool) {
-      return "Not Started";
-    } else if (startGuaranteedTimeBool) {
-      return "Live";
-    } else if (endGuaranteedTimeBool) {
-      return "Ended";
-    }
-  };
-  const saleGuaranteedStatus = getGuaranteedSaleStatus();
+  // const getGuaranteedSaleStatus = () => {
+  //   if (notStartedGuaranteedTimeBool) {
+  //     return "Not Started";
+  //   } else if (startGuaranteedTimeBool) {
+  //     return "Live";
+  //   } else if (endGuaranteedTimeBool) {
+  //     return "Ended";
+  //   }
+  // };
+  // const saleGuaranteedStatus = getGuaranteedSaleStatus();
 
-  // Public sale status
-  const getPublicSaleStatus = () => {
-    if (notStartedTimeBool) {
-      return "Not Started";
-    } else if (startTimeBool) {
-      return "Live";
-    } else if (endTimeBool) {
-      return "Ended";
+  // // Public sale status
+  // const getPublicSaleStatus = () => {
+  //   if (notStartedTimeBool) {
+  //     return "Not Started";
+  //   } else if (startTimeBool) {
+  //     return "Live";
+  //   } else if (endTimeBool) {
+  //     return "Ended";
+  //   }
+  // };
+  // const salePublicStatus = getPublicSaleStatus();
+
+  // Liste des dépendances à surveiller
+const dependenciesGuaranteedSale = [notStartedGuaranteedTimeBool, startGuaranteedTimeBool, endGuaranteedTimeBool];
+const dependenciesPublicSale = [notStartedTimeBool, startTimeBool, endTimeBool];
+
+// État pour le statut de la vente garantie
+const [saleGuaranteedStatus, setSaleGuaranteedStatus] = useState("");
+
+// État pour le statut de la vente publique
+const [salePublicStatus, setSalePublicStatus] = useState("");
+
+useEffect(() => {
+  // Fonction pour vérifier le statut de la vente garantie
+  const checkGuaranteedSaleStatus = () => {
+    if (notStartedGuaranteedTimeBool) {
+      setSaleGuaranteedStatus("Not Started");
+    } else if (startGuaranteedTimeBool) {
+      setSaleGuaranteedStatus("Live");
+    } else if (endGuaranteedTimeBool) {
+      setSaleGuaranteedStatus("Ended");
     }
   };
-  const salePublicStatus = getPublicSaleStatus();
+
+  checkGuaranteedSaleStatus();
+}, [dependenciesGuaranteedSale]);
+
+useEffect(() => {
+  // Fonction pour vérifier le statut de la vente publique
+  const checkPublicSaleStatus = () => {
+    if (notStartedTimeBool) {
+      setSalePublicStatus("Not Started");
+    } else if (startTimeBool) {
+      setSalePublicStatus("Live");
+    } else if (endTimeBool) {
+      setSalePublicStatus("Ended");
+    }
+  };
+
+  checkPublicSaleStatus();
+}, [dependenciesPublicSale]);
+
 
 
   useEffect(() => {
@@ -337,7 +378,7 @@ export default function Home() {
   if (waitingBuy) {
     buttonText = (
       <button
-        className="xl:p-0 w-full lg:w-2/4 rounded-lg text-xl xl:text-2xl bg-light opacity-50 font-bold text-black col-span-2"
+        className="lg:py-4  w-full lg:w-2/4 rounded-lg text-xl lg:text-2xl bg-light opacity-50 font-bold text-black col-span-2"
         disabled
       >
         <div className="flex justify-center items-center h-full">
@@ -348,7 +389,7 @@ export default function Home() {
   } else if (!isConnected) {
     buttonText = (
       <button
-        className="xl:p-0 w-full lg:w-2/4 rounded-lg text-xl xl:text-2xl bg-light opacity-50 font-bold text-black col-span-2"
+        className="lg:py-4 w-full lg:w-2/4 rounded-lg text-xl lg:text-2xl bg-light opacity-50 font-bold text-black col-span-2"
         disabled
       >
         Connect your wallet
@@ -358,7 +399,7 @@ export default function Home() {
   else if (!hasBalance && startTimeBool) {
     buttonText = (
       <button
-        className="xl:p-0 w-full lg:w-2/4 rounded-lg text-xl xl:text-2xl bg-light opacity-50 font-bold text-black col-span-2"
+        className="lg:py-4  w-full lg:w-2/4 rounded-lg text-xl lg:text-2xl bg-light opacity-50 font-bold text-black col-span-2"
         disabled
       >
         Insufficient Balance
@@ -368,7 +409,7 @@ export default function Home() {
   else if (isWhitelisted(address) && startGuaranteedTimeBool) {
     buttonText = (
       <button
-        className="w-full lg:w-2/4 rounded-lg text-2xl bg-light font-bold text-black col-span-2"
+        className="lg:py-4 w-full lg:w-2/4 rounded-lg text-xl lg:text-2xl bg-light font-bold text-black col-span-2"
         onClick={() => whiteListMint()}
       >
         Mint
@@ -377,7 +418,7 @@ export default function Home() {
   } else if (startTimeBool) {
     buttonText = (
       <button
-        className="flex items-center justify-center w-full lg:w-2/4 rounded-lg text-2xl bg-light font-bold text-black col-span-2"
+        className="lg:py-4 flex items-center justify-center w-full lg:w-2/4 rounded-lg text-xl lg:text-2xl bg-light font-bold text-black col-span-2"
         onClick={() => buyTickets()}
       >
         Buy Tickets
@@ -386,7 +427,7 @@ export default function Home() {
   } else if (hasCheckedWinner && isWinnerRaffle) {
     buttonText = (
       <button
-        className="w-full lg:w-2/4 rounded-lg text-2xl bg-light font-bold text-black col-span-2"
+        className="lg:py-4 w-full lg:w-2/4 rounded-lg text-xl lg:text-2xl bg-light font-bold text-black col-span-2"
         onClick={() => winnerRaffleMint()}
       >
         Claim
@@ -396,7 +437,7 @@ export default function Home() {
     buttonText = (
       <>
         <button
-          className="w-full lg:w-2/4 rounded-lg text-2xl bg-light font-bold text-black col-span-2 max-h-[80px] md:max-h-auto "
+          className="lg:py-4 w-full lg:w-2/4 rounded-lg text-xl lg:text-2xl bg-light font-bold text-black col-span-2 max-h-[80px] md:max-h-auto "
           onClick={async () => {
             // const isRaffleOver = await contractNft.isRaffleOver();
             const isRaffleOver = true;
@@ -422,7 +463,7 @@ export default function Home() {
   } else {
     buttonText = (
       <button
-        className="p- xl:p-0 w-full lg:w-2/4 rounded-lg text-xl xl:text-2xl bg-light opacity-50 font-bold text-black col-span-2"
+        className="lg:py-4 w-full lg:w-2/4 rounded-lg text-xl xl:text-2xl bg-light opacity-50 font-bold text-black col-span-2"
         disabled
       >
         Waiting for next phase
@@ -450,9 +491,10 @@ export default function Home() {
         position="bottom-center"
         theme="dark"
       />
-      <div className="homepage py-10 px-5 lg:pr-20 lg:px-30 xl:px-20">
-        <header className="navbar sm:px-10 md:px-0">
-          <nav className="flex justify-center justify-between gap-8 md:gap-0">
+      <div className="homepage py-10 px-2 md:px-5 lg:px-20 lg:justify-center xl:max-w-[70vw] lg:mx-auto xl:px-0">
+
+        <header className="navbar px-0">
+          <nav className="flex justify-center md:justify-between gap-0">
             <div className="d-none">
               <a href="./" className="">
                 <span className="sr-only">Ogronex</span>
@@ -463,35 +505,57 @@ export default function Home() {
                 />
               </a>
             </div>
-            <div className="flex flex-row items-center md:gap-8 z-30">
+            <div className="flex flex-row items-center gap-4 md:gap-8 z-30">
               <a href="./" className="text-sm sm:text-xl font-bold text-gray-400">Terms and conditions</a>
-              <DynamicWidget variant='dropdown' />
+              <div className="">
+                <DynamicWidget variant='dropdown' />
+              </div>
             </div>
           </nav>
         </header>
 
-        <main className="relative">
-          <div className="flex flex-col-reverse md:flex-row justify-center">
-            <div className="flex flex-col justify-center items-center w-full lg:w-2/4 h-auto">
-              {/* <img className="w-full md:mt-40 lg:mt-5 lg:max-w-[800px] xl:max-w-[650px]" src="./Images/prize-maschine-test.png" alt="maschine with a hook to grab prize" /> */}
-              <img className="w-full md:mt-40 lg:mt-5" src="./Images/prize-maschine-test.png" alt="maschine with a hook to grab prize" />
-            </div>
-            <div className="flex flex-col mt-10 w-full md:w-2/4 md:max-w-[700px] gap-6">
-              <div className="flex flex-row p-4">
+        <main className="relative lg:justify-center">
+
+          <div className="flex flex-col-reverse md:flex-row justify-center w-full xl:pl-35">
+            <div className="flex flex-col mt-10 w-full gap-6 px-4">
+              <div className="flex flex-row p-0 md:p-3 md:pl-0">
                 <h1 className="text-6xl font-bold text-white">OG Teddies</h1>
-                <div className="md:flex items-center ml-5 mt-4 gap-3">
+                <div className="flex flex-col md:flex-row items-center ml-5 md:mt-4 gap-3">
+                  <a href="https://discord.gg/ogronexnft" target="_blank" rel="noreferrer"><i className="fab fa-discord text-lg text-gray-500"></i></a>
+                  <a href="https://twitter.com/Ogronex" target="_blank" rel="noreferrer"><i className="fab fa-twitter text-lg text-gray-500"></i></a>
+                  <a href="https://ogronex.com/" target="_blank" rel="noreferrer"><i className="fas fa-globe text-lg text-gray-500"></i></a>
+                </div>
+              </div>
+              <div className="flex flex-row xl:max-w-[70%] xl:px-4">
+                <p className="text-justify md:text-lg xl:text-xl font-bold text-gray-500">
+                  Introducing the "OG Teddies", a collection of 333 unique and
+                  lovable teddy bears. Own a digital representation of these adorable companions,
+                  unlock exclusive benefits, and immerse yourself in a vibrant community.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex flex-col md:flex-row justify-center md:mt-10 overflow-hidden lg:pb-10 xl:pb-12">
+            <div className="flex justify-center items-center w-full max-w-[400px] lg:min-w-[500px] xl:max-w-[650px] h-auto">
+              <img className="w-full scale-125" src="./Images/prize-maschine-test.png" alt="maschine with a hook to grab prize" />
+            </div>
+            <div className="flex flex-col mt-10 w-full md:max-w-[500px] gap-6">
+              {/* <img className="w-full md:mt-40 lg:mt-5 lg:max-w-[800px] xl:max-w-[650px]" src="./Images/prize-maschine-test.png" alt="maschine with a hook to grab prize" /> */}
+              {/* <div className="flex flex-row p-4 md:p-3 md:pl-0">
+                <h1 className="text-6xl font-bold text-white">OG Teddies</h1>
+                <div className="flex flex-col md:flex-row items-center ml-5 md:mt-4 gap-3">
                   <a href="https://discord.gg/ogronexnft" target="_blank" rel="noreferrer"><i className="fab fa-discord text-lg text-gray-500"></i></a>
                   <a href="https://twitter.com/Ogronex" target="_blank" rel="noreferrer"><i className="fab fa-twitter text-lg text-gray-500"></i></a>
                   <a href="https://ogronex.com/" target="_blank" rel="noreferrer"><i className="fas fa-globe text-lg text-gray-500"></i></a>
                 </div>
               </div>
               <div className="flex flex-row xl:px-4">
-                <p className="text-justify text-lg xl:text-xl font-bold text-gray-500">Introducing "Teddy Bear Treasures," an NFT project featuring 333 unique and
+                <p className="text-justify text-lg xl:text-xl font-bold text-gray-500">Introducing the "OG Teddies", a collection of 333 unique and
                   lovable teddy bears. Own a digital representation of these adorable companions,
-                  unlock exclusive benefits, and immerse yourself in a vibrant community of teddy
-                  bear enthusiasts.
+                  unlock exclusive benefits, and immerse yourself in a vibrant community.
                 </p>
-              </div>
+              </div> */}
               <div className="flex flex-row p-4 bg-secondary rounded-lg justify-around gap-3 sm:gap-7 border border-gray-600 bg-opacity-60">
                 <p className="flex flex-col xl:flex-row text-md lg:text-lg xl:text-xl font-bold text-white">Mint price:<span className="ml-1 text-sm md:text-md lg:text-lg xl:text-xl text-light">FREE</span><span className="ml-1 text-gray-400 text-xs lg:text-sm">+ 1 MATIC ticket fee</span>
                 </p>
@@ -505,9 +569,9 @@ export default function Home() {
                   </div>
                 </div>
               </div>
-              {!endTimeBool && (
+              {endTimeBool && (
                 <div className="flex flex-col gap-6">
-                  <div className="flex flex-col md:flex-row items-center gap-4 md:gap-0 p-4 bg-four rounded-lg border border-gray-600 justify-between">
+                  <div className="flex flex-col md:flex-row items-center gap-4 p-4 bg-four rounded-lg border border-gray-600 justify-center md:justify-between">
                     <div className="relative lg:text-lg xl:text-xl font-bold text-white">Guaranteed mint
                       <span
                         className="ml-3 text-light border border-light rounded-full px-2 text-sm"
@@ -522,37 +586,34 @@ export default function Home() {
                         </div>
                       }
                     </div>
-                    <div className="flex px-3">
+                    <div className="flex flew-row md:px-2">
                       <p className={"lg:text-lg xl:text-xl font-bold text-white bg-secondary py-2 px-6 lg:px-4 xl:px-6 rounded-lg border border-gray-600 bg-opacity-60 lg:min-w-[110px] xl:min-w-[130px]"}>
                         <i className={`fas fa-circle pr-2 text-light text-sm animate-pulse ${saleGuaranteedStatus === 'Live' ? 'text-green-500' : 'text-red-500'}`}></i>
                         {saleGuaranteedStatus}
                       </p>
                     </div>
-                    <div className="flex flex-col justify-end md:-ml-1.5 lg:ml-2 md:min-w-[110px] lg:min-w-[160px] xl:min-w-[233px]">
-                      <div className="flex flex-col text-center text-md text-gray-400 bg-secondary py-2 px-6 rounded-lg border border-gray-600 bg-opacity-60">
-                        {notStartedGuaranteedTimeBool &&
-                          <>
-                            Live in
-                            <span className="text-white pl-2 xl:text-xl">
-                              <CountdownComponent deadline={dateStartGuaranteed} />
-                            </span>
-                          </>
-                        }
-                        {endGuaranteedTimeBool &&
-                          <>
-                            Finished
-                          </>
-                        }
-                        {startGuaranteedTimeBool &&
-                          <>
-                            Ends in
-                            <span className="text-white pl-2 xl:text-xl">
-                              <CountdownComponent deadline={dateEndGuaranteed} />
-                            </span>
-                          </>
-                        }
+                    {!endGuaranteedTimeBool && (
+                      <div className="flex flex-col justify-end md:-ml-1.5 lg:ml-2 md:min-w-[110px] lg:min-w-[160px] xl:min-w-[233px]">
+                        <div className="flex flex-col text-center text-md text-gray-400 bg-secondary py-2 px-6 rounded-lg border border-gray-600 bg-opacity-60">
+                          {notStartedGuaranteedTimeBool &&
+                            <>
+                              Live in
+                              <span className="text-white pl-2 xl:text-xl">
+                                <CountdownComponent deadline={dateStartGuaranteed} />
+                              </span>
+                            </>
+                          }
+                          {startGuaranteedTimeBool &&
+                            <>
+                              Ends in
+                              <span className="text-white pl-2 xl:text-xl">
+                                <CountdownComponent deadline={dateEndGuaranteed} />
+                              </span>
+                            </>
+                          }
+                        </div>
                       </div>
-                    </div>
+                    )}
                   </div>
                   <div className="flex flex-col md:flex-row items-center p-4 bg-four rounded-lg border border-gray-600 gap-4 md:gap-0 justify-between">
                     <p className="relative lg:text-lg xl:text-xl font-bold text-white">Public
@@ -569,37 +630,34 @@ export default function Home() {
                         </div>
                       )}
                     </p>
-                    <div className="flex ml-3 xs:ml-5 xl:ml-28">
-                      <div className={"lg:text-lg xl:text-xl font-bold text-white bg-secondary py-2 px-4 xl:px-6 rounded-lg border border-gray-600 bg-opacity-60 lg:min-w-[110px] xl:min-w-[130px]"}>
+                    <div className="flex ml-3 xl:ml-28">
+                      <div className={"lg:text-lg xl:text-xl font-bold text-white bg-secondary py-2 px-6 xl:px-6 rounded-lg border border-gray-600 bg-opacity-60 lg:min-w-[110px] xl:min-w-[130px]"}>
                         <i className={`fas fa-circle pr-2 text-light text-sm animate-pulse ${salePublicStatus === 'Live' ? 'text-green-500' : 'text-red-500'}`}></i>
                         {salePublicStatus}
                       </div>
                     </div>
-                    <div className="flex flex-col justify-end ml-2 xs:ml-5 md:min-w-[110px] lg:min-w-[160px] xl:min-w-[233px]">
-                      <div className="flex flex-col text-center text-md text-gray-400 bg-secondary py-2 xl:py-2.5 px-6 rounded-lg border border-gray-600 bg-opacity-60">
-                        {notStartedTimeBool &&
-                          <>
-                            Live in
-                            <span className="text-white pl-2 xl:text-xl">
-                              <CountdownComponent deadline={startTime} />
-                            </span>
-                          </>
-                        }
-                        {endTimeBool &&
-                          <>
-                            Finished
-                          </>
-                        }
-                        {startTimeBool &&
-                          <>
-                            Ends in
-                            <span className="text-white pl-2 xl:text-xl">
-                              <CountdownComponent deadline={endTime} />
-                            </span>
-                          </>
-                        }
+                    {!endTimeBool && (
+                      <div className="flex flex-col justify-end ml-2 sm:ml-5 md:min-w-[110px] lg:min-w-[160px] xl:min-w-[233px]">
+                        <div className="flex flex-col text-center text-md text-gray-400 bg-secondary py-2 xl:py-2.5 px-6 rounded-lg border border-gray-600 bg-opacity-60">
+                          {notStartedTimeBool &&
+                            <>
+                              Live in
+                              <span className="text-white pl-2 xl:text-xl">
+                                <CountdownComponent deadline={startTime} />
+                              </span>
+                            </>
+                          }
+                          {startTimeBool &&
+                            <>
+                              Ends in
+                              <span className="text-white pl-2 xl:text-xl">
+                                <CountdownComponent deadline={endTime} />
+                              </span>
+                            </>
+                          }
+                        </div>
                       </div>
-                    </div>
+                    )}
                   </div>
                 </div>
               )}
@@ -629,11 +687,11 @@ export default function Home() {
                   </div>
                 )}
                 {buttonText}
-                <div className="md:mt-5">
-                  <p className="flex justify-content items-center text-xl text-white">Your tickets:{isConnected && <span className="ml-1 text-light pr-4">{ticketsBought}</span>}
+                <div className="flex flex-col justify-center">
+                  <p className="flex justify-content items-center lg:text-xl text-white leading-tight">Your tickets:{isConnected && <span className="ml-1 text-light pr-4">{ticketsBought}</span>}
                   </p>
                   {isConnected && hasCheckedWinner &&
-                    <p className="flex justify-content items-center text-xl text-white sm:mt-3">Won:<span className="ml-5 sm:ml-12 md:ml-1 text-light pr-4">{winnerNbMint}</span></p>
+                    <p className="flex justify-content items-center lg:text-xl text-white sm:mt-3 md:mt-1">Won:<span className="ml-8 md:ml-12 lg:ml-16 text-light ">{winnerNbMint}</span></p>
                   }
                 </div>
               </div>

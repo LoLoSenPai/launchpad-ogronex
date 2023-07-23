@@ -335,12 +335,14 @@ input[type="number"]::-webkit-outer-spin-button {
 .dynamic-shadow-dom {
   --dynamic-connect-button-background: none;
   --dynamic-connect-button-border: 2px solid #02ffa7;
+  --dynamic-connect-button-border-hover: 2px solid #02ffa7;
   --dynamic-footer-text-color: #000;
   --dynamic-footer-icon-color: #000;
   --dynamic-footer-arrow-color: #000;
   --dynamic-text-primary: #02ffa7;
   --dynamic-text-secondary: #fff;
   --dynamic-wallet-list-tile-background: #10282d;
+  --dynamic-hover-background: #02ffa7;
 }
 
 .svg-container:hover + .tooltip {

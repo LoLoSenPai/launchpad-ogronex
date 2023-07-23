@@ -30,7 +30,7 @@ module.exports = {
       animation: {
         'background-shine': 'background-shine 4s linear infinite',
         'pulse': 'pulse 2s linear infinite',
-        wave: 'wave 1.5s linear infinite',
+        'wave': 'wave 1.5s linear infinite',
       },
       keyframes: {
         'background-shine': {
@@ -41,7 +41,7 @@ module.exports = {
           '0%, 100%': { transform: 'scale(1)' },
           '50%': { transform: 'scale(1.2)' },
         },
-        wave: {
+        'wave': {
           '0%': { transform: 'scale(0.5)', opacity: 0 },
           '50%': { transform: 'scale(1)', opacity: 1 },
           '100%': { transform: 'scale(0.5)', opacity: 0 },
