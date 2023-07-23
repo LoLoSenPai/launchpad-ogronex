@@ -15,8 +15,8 @@ import ModalPending from "../Modals/ModalPending";
 import ModalWinner from "../Modals/ModalWinner";
 import ModalLooser from "../Modals/ModalLooser";
 
-const contractNftAddress = "0x367460AF11474809fa33A94C69b7815e68142830"
-const contractRaffleAddress = "0x0f6982a6469D3Eacec3B05ca0E663085CF0D8A0e";
+const contractNftAddress = "0x31ECCdf7289C3504d8299BFf675D4478EC83E92F"
+const contractRaffleAddress = "0x7554D07eE505b15d68B1Ce351bD5E9f174e014C2";
 
 export default function Home() {
 
@@ -68,8 +68,8 @@ export default function Home() {
 
 
   const settings = {
-    apiKey: "4OV2g4TrNiCkA9wIc8OjGZzovYl_dx2r",
-    network: Network.MATIC_MUMBAI,
+    apiKey: "ZQYOoMuEPgZwfP0yxEz1NzGyn2y2qCTW",
+    network: Network.MATIC_MAINNET,
   };
 
   const alchemy = new Alchemy(settings);
