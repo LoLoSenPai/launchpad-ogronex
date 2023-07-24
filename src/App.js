@@ -1,9 +1,12 @@
 import Home from './Pages/Home';
+import { SaleStatusProvider } from './Context/SaleStatusContext';
 
 function App() {
   return (
     <>
-      <Home />
+      <SaleStatusProvider>
+        <Home />
+      </SaleStatusProvider>
     </>
   );
 }

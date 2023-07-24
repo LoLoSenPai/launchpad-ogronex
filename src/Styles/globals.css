@@ -362,3 +362,10 @@ input[type="number"]::-webkit-outer-spin-button {
   opacity: 0;
   animation: wave 1.5s linear infinite;
 }
+
+.btn-shadow {
+  transition: box-shadow 0.2s ease-in-out;
+}
+.btn-shadow:hover {
+  box-shadow: 0 0 20px rgba(2, 255, 167, 0.25);
+}
