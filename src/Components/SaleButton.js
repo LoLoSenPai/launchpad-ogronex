@@ -91,7 +91,7 @@ export default function SaleButton(props) {
     return (
         <>
             <button
-                className="lg:py-2 w-full rounded-lg text-xl xl:text-2xl bg-light font-bold text-black col-span-2 min-h-[60px] max-h-[80px] md:max-h-auto btn-shadow"
+                className={`lg:py-2 w-full rounded-lg text-xl xl:text-2xl bg-light font-bold text-black col-span-2 min-h-[60px] max-h-[80px] md:max-h-auto btn-shadow ${buttonDisabled ? 'opacity-50' : ''} flex justify-center items-center`}
                 onClick={buttonOnClick}
                 disabled={buttonDisabled}
             >
