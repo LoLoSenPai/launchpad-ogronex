@@ -38,29 +38,39 @@ export const SaleStatusProvider = ({ children }) => {
             // const deadline = await contractRaffleBeforeConnection.deadline();
 
             const dateStartNft = 1690230600;
-            const dateEndtNftGuaranteed = 1690230605;
-            const startTime = 1690230610;
-            const deadline = 1690230615;
+            const dateEndtNftGuaranteed = 1690290000;
+            const startTime = 1690293600;
+            const deadline = 1690295400;
+
+            let guaranteedStatus = '';
+            if (block.timestamp < dateStartNft) {
+                guaranteedStatus = "Not Started";
+            } else if (block.timestamp >= dateStartNft && block.timestamp <= dateEndtNftGuaranteed) {
+                guaranteedStatus = "Live";
+            } else {
+                guaranteedStatus = "Ended";
+            }
+
+            let publicSaleStatus = '';
+            if (block.timestamp < startTime) {
+                publicSaleStatus = "Not Started";
+            } else if (block.timestamp >= startTime && block.timestamp <= deadline) {
+                publicSaleStatus = "Live";
+            } else {
+                publicSaleStatus = "Ended";
+            }
 
             setSaleStatus((prevStatus) => ({
                 ...prevStatus,
                 guaranteed: {
                     ...prevStatus.guaranteed,
-                    status: block.timestamp < dateStartNft
-                        ? "Not Started"
-                        : block.timestamp >= dateStartNft && block.timestamp <= dateEndtNftGuaranteed
-                            ? "Live"
-                            : "Ended",
+                    status: guaranteedStatus,
                     start: dateStartNft,
                     end: dateEndtNftGuaranteed,
                 },
                 publicSale: {
                     ...prevStatus.publicSale,
-                    status: block.timestamp < startTime
-                        ? "Not Started"
-                        : block.timestamp >= startTime && block.timestamp <= deadline
-                            ? "Live"
-                            : "Ended",
+                    status: publicSaleStatus,
                     start: startTime,
                     end: deadline,
                 },
@@ -68,7 +78,7 @@ export const SaleStatusProvider = ({ children }) => {
         }, 1000);
 
         return () => clearInterval(interval);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     return (
