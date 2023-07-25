@@ -49,7 +49,7 @@ export default function SaleButton(props) {
         } else if (isWhitelisted(address) && guaranteed.status === 'Live') {
             newTextButton = "Mint";
             newButtonOnClick = () => whiteListMint();
-        } else if (!hasBalance) {
+        } else if (!hasBalance && publicSale.status === 'Live') {
             newButtonDisabled = true;
             newTextButton = "Insufficient Balance";
         } else if (publicSale.status === 'Live') {

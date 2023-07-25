@@ -37,6 +37,7 @@ export default function Home() {
   const [isWinnerRaffle, setIsWinnerRaffle] = useState(false);
   const [hasCheckedWinner, setHasCheckedWinner] = useState(false);
   const [winnerNbMint, setWinnerNbMint] = useState(0);
+  const [hasNotMinted, setHasNotMinted] = useState(false);
 
   const { guaranteed, publicSale } = useContext(SaleStatusContext);
   // Use `guaranteed.status`, `guaranteed.start`, `guaranteed.end`, `public.status`, `public.start`, `public.end`
@@ -185,15 +186,20 @@ export default function Home() {
   async function winnerRaffleMint() {
     if (!isConnected && !isWinnerRaffle) return; // conditionner aussi a la phase winner Mint
     try {
+      if (!hasNotMinted) {
+        toast.error("You have already minted your winning ticket!");
+        return;
+      }
       setWaitingBuy(true);
       const tx = await contractNft.winnerRaffleSaleMint();
       await provider.waitForTransaction(tx.hash);
       toast.success("Success Mint !");
-
+      await checkWinner(); 
     } catch (error) {
       toast.error("Transaction error! But don't worry, even the best stumble sometimes!")
+    } finally {
+      setWaitingBuy(false);
     }
-    setWaitingBuy(false);
   }
 
   async function checkWinner() {
@@ -316,7 +322,7 @@ export default function Home() {
 
           <div className="flex flex-col md:flex-row justify-center md:mt-10 sm:max-md:overflow-hidden lg:pb-10 xl:pb-12">
             <div className="flex justify-center items-center w-full max-w-[400px] lg:min-w-[500px] xl:max-w-[600px] h-auto overflow-hidden xl:overflow-visible pb-7 lg:pb-8">
-              <img className="w-full scale-125" src="./Images/prize-maschine-test.png" alt="maschine with a hook to grab prize" />
+              <img className="w-full scale-125" src="./Images/prize-maschine.png" alt="maschine with a hook to grab prize" />
             </div>
             <div className="flex flex-col mt-10 w-full md:max-w-[420px] lg:max-w-[510px] xl:max-w-[650px] gap-6">
 
