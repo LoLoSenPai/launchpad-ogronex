@@ -12,6 +12,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { SaleStatusContext } from "../Context/SaleStatusContext";
 import SaleButton from "../Components/SaleButton";
 import TermsAndConditions from "./TermsAndConditions";
+import { ClaimCountdown } from "../Components/ClaimCountdown";
 
 const contractNftAddress = "0x5C4F40C2a4719C2E08CDA077dCAbB0F4B3Ef737d"
 const contractRaffleAddress = "0x7DB03BA949b8CBfC1208247f8050cC977dc13f03";
@@ -194,7 +195,7 @@ export default function Home() {
       const tx = await contractNft.winnerRaffleSaleMint();
       await provider.waitForTransaction(tx.hash);
       toast.success("Success Mint !");
-      await checkWinner(); 
+      await checkWinner();
     } catch (error) {
       toast.error("Transaction error! But don't worry, even the best stumble sometimes!")
     } finally {
@@ -209,6 +210,9 @@ export default function Home() {
       const winnerData = await contractNft.winnerByAddress(address);
       console.log("Winner data:", winnerData);
       const isWinner = winnerData.addressWinner === address && winnerData.numberOfWin > 0;
+      const notMinted = winnerData.notMinted;
+
+      setHasNotMinted(notMinted);
 
       if (isWinner) {
         setIsWinnerRaffle(true);
@@ -495,6 +499,11 @@ export default function Home() {
                     </p>
                   )}
                 </div>
+              </div>
+              <div className="flex flex-col justify-center items-center mt-4">
+                <p className="text-center text-white text-md md:text-lg lg:text-xl font-bold">
+                  <ClaimCountdown deadline={publicSale.end} />
+                </p>
               </div>
             </div>
           </div>
