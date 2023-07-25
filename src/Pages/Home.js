@@ -191,9 +191,9 @@ export default function Home() {
       toast.success("Success Mint !");
 
     } catch (error) {
-      setWaitingBuy(false);
       toast.error("Transaction error! But don't worry, even the best stumble sometimes!")
     }
+    setWaitingBuy(false);
   }
 
   async function checkWinner() {
