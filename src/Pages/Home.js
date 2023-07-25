@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useMemo, useCallback, useContext } from "react";
-// import { createPortal } from "react-dom";
 import { DynamicWidget } from "@dynamic-labs/sdk-react";
 import { useAccount, useBalance } from "wagmi";
 import { ethers } from "ethers";
@@ -8,14 +7,11 @@ import CountdownComponent from "../Components/Countdown";
 import RaffleABI from "../ABI/RaffleG_0.json";
 import NftABI from "../ABI/TBT_NFT.json";
 import whitelist from '../Whitelist/whitelist.json';
-// import { PuffLoader } from "react-spinners";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-// import ModalPending from "../Modals/ModalPending";
-// import ModalWinner from "../Modals/ModalWinner";
-// import ModalLooser from "../Modals/ModalLooser";
 import { SaleStatusContext } from "../Context/SaleStatusContext";
 import SaleButton from "../Components/SaleButton";
+import TermsAndConditions from "./TermsAndConditions";
 
 const contractNftAddress = "0x31ECCdf7289C3504d8299BFf675D4478EC83E92F"
 const contractRaffleAddress = "0x7554D07eE505b15d68B1Ce351bD5E9f174e014C2";
@@ -107,7 +103,9 @@ export default function Home() {
   };
 
   const handleIncrease = () => {
-    setTicketCount(ticketCount + 1);
+    if ((guaranteed.status === 'Live' && ticketCount < 1) || publicSale.status === 'Live') {
+      setTicketCount(ticketCount + 1);
+    }
   };
 
   const handleDecrease = () => {
@@ -213,7 +211,7 @@ export default function Home() {
         toast.success("LUCKY ! GO MINT 🎫");
       } else {
         setIsWinnerRaffle(false);
-      console.log("User is not a winner");
+        console.log("User is not a winner");
       }
       return isWinner;
     } catch (error) {
@@ -256,12 +254,12 @@ export default function Home() {
   if (guaranteed.status === 'Live') {
     maxTickets = 1;
   } else if (publicSale.status === 'Live') {
-    maxTickets = Infinity;
+    maxTickets = 10000;
   } else if (publicSale.status === 'Ended') {
     maxTickets = winnerNbMint;
     showInput = false;
   } else {
-    maxTickets = undefined;
+    maxTickets = 1;
   }
 
 
@@ -276,7 +274,7 @@ export default function Home() {
         <header className="navbar px-0 -ml-6 md:-ml-0 md:px-2">
           <nav className="flex justify-center md:justify-between gap-0">
             <div className="invisible md:visible ">
-              <a href="./" className="">
+              <a href="/" className="">
                 <span className="sr-only">Ogronex</span>
                 <img
                   className="h-11 md:h-14 w-auto"
@@ -286,7 +284,7 @@ export default function Home() {
               </a>
             </div>
             <div className="flex flex-row items-center gap-4 md:gap-8 z-30">
-              <a href="./" className="text-sm sm:text-xl font-bold text-gray-400">Terms and conditions</a>
+              <TermsAndConditions />
               <div className="z-30">
                 <DynamicWidget variant='dropdown' />
               </div>
@@ -431,8 +429,8 @@ export default function Home() {
 
               <div className="grid grid-cols-3 lg:flex flew-row gap-2 md:gap-4 lg:gap-6 xl:gap-11 w-full max-h-[70px] justify-between">
                 {showInput && (
-                  <div className="flex justify-around items-center rounded-lg border border-gray-600 bg-secondary">
-                    <button className="w-10 h-14 rounded-l-lg text-white text-2xl z-10" onClick={handleDecrease}>
+                  <div className="flex justify-around items-center rounded-lg border border-gray-600 bg-secondary z-10">
+                    <button className="w-10 h-14 rounded-l-lg text-white text-2xl" onClick={handleDecrease}>
                       -
                     </button>
                     <input

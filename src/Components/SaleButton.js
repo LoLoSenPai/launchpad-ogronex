@@ -38,7 +38,7 @@ export default function SaleButton(props) {
     useEffect(() => {
         let newTextButton = "Waiting for next phase";
         let newButtonOnClick = () => {};
-        let newButtonDisabled = false;
+        let newButtonDisabled = true;
 
         if (waitingBuy) {
             newButtonDisabled = true;
