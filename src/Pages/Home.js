@@ -13,8 +13,8 @@ import { SaleStatusContext } from "../Context/SaleStatusContext";
 import SaleButton from "../Components/SaleButton";
 import TermsAndConditions from "./TermsAndConditions";
 
-const contractNftAddress = "0x31ECCdf7289C3504d8299BFf675D4478EC83E92F"
-const contractRaffleAddress = "0x7554D07eE505b15d68B1Ce351bD5E9f174e014C2";
+const contractNftAddress = "0x9656E2C59D5D34479fecb112b122DB976C1FcF57"
+const contractRaffleAddress = "0x71343cC324C9c688723c70e0d1FC328dba6E4D86";
 
 export default function Home() {
 

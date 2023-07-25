@@ -4,22 +4,22 @@
         "proof": [
             "0x2675965d3b8fade2f742e5cefdf6a4fd14b395fdc5bde1a67246bf522f7c5959",
             "0x76eaa7d3e39e90c2820de7c09f0bcb6c981c43a7b390b1c6f72bd2ed81519806",
-            "0x20fd8844991e43c67b022fefedaafc2fe253c7ec13f2c10e9ff3685530072675"
+            "0x54669086e1a3bbae7fc4c10c0295ad4a63b6ca3986c79ef0352a6536ac21fde3"
         ]
     },
     {
         "address": "0xBBb6a61E719B9C99005f7b628f969168B0d92e83",
         "proof": [
-            "0xc3957ef252d97369528b331577f1178580770140636047b15025754d85603d55",
-            "0xc5f5ddd5aa3c39cf12f32dd5db1896a231781f993a5017f382ed750de4fff66e",
+            "0x8f0d0f294ea90b6cb1a86947fcd8f429d6790f3bd3be3fe91349f8a678f876e7",
+            "0xcc64fe0033e75cdce84f2be2741b3ef2fe348eac1f24e053b10e457237166602",
             "0x0bc3e0b29b1e09fd56bdde0f1eb65a012e99496efbd54c22c6e306929846f429"
         ]
     },
     {
         "address": "0x5fFc198dAab1f1DBaD63f5eb090B42Eb13E1028e",
         "proof": [
-            "0x901915842a69a0edd604c443d92e66cc0028bd10cf0b44ea69790e24260ce05e",
             "0xc5f5ddd5aa3c39cf12f32dd5db1896a231781f993a5017f382ed750de4fff66e",
+            "0x12a337f0df6d8b8f078ccf8638a18672647f82f9d284499e3fa0c85c37f0346f",
             "0x0bc3e0b29b1e09fd56bdde0f1eb65a012e99496efbd54c22c6e306929846f429"
         ]
     },
@@ -28,7 +28,7 @@
         "proof": [
             "0x5931b4ed56ace4c46b68524cb5bcbf4195f1bbaacbe5228fbd090546c88dd229",
             "0x1a08d3a5ab0ca9a4412f9e037c08c777ed8701bb85ef4fe1fd8fca0e8329c998",
-            "0x20fd8844991e43c67b022fefedaafc2fe253c7ec13f2c10e9ff3685530072675"
+            "0x54669086e1a3bbae7fc4c10c0295ad4a63b6ca3986c79ef0352a6536ac21fde3"
         ]
     },
     {
@@ -36,13 +36,14 @@
         "proof": [
             "0x70e0b1b09cb291e3e7ec42a0a74b48a7c823f36806644a4fb4d68a9f1220e1e8",
             "0x1a08d3a5ab0ca9a4412f9e037c08c777ed8701bb85ef4fe1fd8fca0e8329c998",
-            "0x20fd8844991e43c67b022fefedaafc2fe253c7ec13f2c10e9ff3685530072675"
+            "0x54669086e1a3bbae7fc4c10c0295ad4a63b6ca3986c79ef0352a6536ac21fde3"
         ]
     },
     {
         "address": "0x2b956d5bEf8c5A87a3D3aBcE1Be497245F473C06",
         "proof": [
-            "0x72aba5d82422dba258377e45bf3b874683419ff18772435016db21569d534a26",
+            "0xc3957ef252d97369528b331577f1178580770140636047b15025754d85603d55",
+            "0x12a337f0df6d8b8f078ccf8638a18672647f82f9d284499e3fa0c85c37f0346f",
             "0x0bc3e0b29b1e09fd56bdde0f1eb65a012e99496efbd54c22c6e306929846f429"
         ]
     },
@@ -51,7 +52,15 @@
         "proof": [
             "0x1266ebb0c5b10ca1cb4ecabf373c63e1d7f58ef1595835cb7fb7b6ccb00bb832",
             "0x76eaa7d3e39e90c2820de7c09f0bcb6c981c43a7b390b1c6f72bd2ed81519806",
-            "0x20fd8844991e43c67b022fefedaafc2fe253c7ec13f2c10e9ff3685530072675"
+            "0x54669086e1a3bbae7fc4c10c0295ad4a63b6ca3986c79ef0352a6536ac21fde3"
+        ]
+    },
+    {
+        "address": "0x5b9017407FDbbdE5E2b47C25A622aEcC700d8bC4",
+        "proof": [
+            "0x901915842a69a0edd604c443d92e66cc0028bd10cf0b44ea69790e24260ce05e",
+            "0xcc64fe0033e75cdce84f2be2741b3ef2fe348eac1f24e053b10e457237166602",
+            "0x0bc3e0b29b1e09fd56bdde0f1eb65a012e99496efbd54c22c6e306929846f429"
         ]
     }
 ]
