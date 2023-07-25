@@ -1,5 +1,7 @@
 import React, { createContext, useState, useEffect } from 'react';
 import { Network, Alchemy } from 'alchemy-sdk';
+import RaffleABI from '../contracts/Raffle.json';
+import { ethers } from "ethers";
 
 export const SaleStatusContext = createContext();
 
@@ -24,6 +26,11 @@ export const SaleStatusProvider = ({ children }) => {
     };
 
     const alchemy = new Alchemy(settings);
+
+    const contractNftAddress = "0x9656E2C59D5D34479fecb112b122DB976C1FcF57"
+    const contractRaffleAddress = "0x71343cC324C9c688723c70e0d1FC328dba6E4D86";
+
+    const contractNft = new ethers.Contract(contractNftAddress, RaffleABI.abi, alchemy.config.getProvider());
 
 
     useEffect(() => {
