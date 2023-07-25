@@ -500,11 +500,13 @@ export default function Home() {
                   )}
                 </div>
               </div>
-              <div className="flex flex-col justify-center items-center mt-4">
-                <p className="text-center text-white text-md md:text-lg lg:text-xl font-bold">
-                  <ClaimCountdown deadline={publicSale.end} />
-                </p>
-              </div>
+              {publicSale.status === "Ended" &&
+                <div className="flex flex-col justify-center items-center mt-4">
+                  <p className="text-center text-white text-md md:text-lg lg:text-xl font-bold">
+                    <ClaimCountdown deadline={publicSale.end} />
+                  </p>
+                </div>
+              }
             </div>
           </div>
           <div className="flex flex-row justify-end mt-10 lg:mt-0 mr-2 md:mr-5">
