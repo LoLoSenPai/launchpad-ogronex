@@ -37,8 +37,8 @@ export default function SaleButton(props) {
 
     useEffect(() => {
         let newTextButton = "Waiting for next phase";
-        let newButtonOnClick = () => {};
-        let newButtonDisabled = true;
+        let newButtonOnClick = () => { };
+        let newButtonDisabled = false;
 
         if (waitingBuy) {
             newButtonDisabled = true;
@@ -81,6 +81,10 @@ export default function SaleButton(props) {
         } else if (publicSale.status === 'Ended' && hasCheckedWinner && !isWinnerRaffle) {
             newButtonDisabled = true;
             newTextButton = "You didn't win...";
+        }
+
+        if (newTextButton === "Waiting for next phase") {
+            newButtonDisabled = true;
         }
 
         setTextButton(newTextButton);
