@@ -502,9 +502,9 @@ export default function Home() {
               </div>
               {publicSale.status === "Ended" &&
                 <div className="flex flex-col justify-center items-center mt-4">
-                  <p className="text-center text-white text-md md:text-lg lg:text-xl font-bold">
+                  <div className="text-center text-white text-md md:text-lg lg:text-xl font-bold">
                     <ClaimCountdown deadline={publicSale.end} />
-                  </p>
+                  </div>
                 </div>
               }
             </div>
