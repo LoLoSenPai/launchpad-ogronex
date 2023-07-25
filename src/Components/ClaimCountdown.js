@@ -6,9 +6,9 @@ export function ClaimCountdown({ deadline }) {
     }
     const deadlineInSeconds = parseInt(deadline.toString()) + 24*60*60; // convert deadline to seconds and add 24 hours
     const deadlineInMilliseconds = deadlineInSeconds * 1000; // convert deadline to milliseconds
-    const renderer = ({ days, hours, minutes, seconds, completed }) => {
+    const renderer = ({ hours, minutes, seconds, completed }) => {
         if (completed) {
-            return <div>Ended</div>;
+            return <div>Claim closed</div>;
         } else {
             return (
                 <div>
