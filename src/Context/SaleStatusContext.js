@@ -31,30 +31,30 @@ export const SaleStatusProvider = ({ children }) => {
 
             const maticProvider = await alchemy.config.getProvider();
             const block = await maticProvider.getBlock();
-            // const contractRaffleBeforeConnection = new ethers.Contract(contractRaffleAddress, RaffleABI.abi, maticProvider);
-            // const dateStartNft = await contractNft.saleStartTime();
-            // const dateEndtNftGuaranteed = await contractNft.endTimeGuaranteed();
-            // const startTime = await contractRaffleBeforeConnection.startDate();
-            // const deadline = await contractRaffleBeforeConnection.deadline();
+            const contractRaffleBeforeConnection = new ethers.Contract(contractRaffleAddress, RaffleABI.abi, maticProvider);
+            const dateStartNft = await contractNft.saleStartTime();
+            const dateEndtNftGuaranteed = await contractNft.endTimeGuaranteed();
+            const startTime = await contractRaffleBeforeConnection.startDate();
+            const deadline = await contractRaffleBeforeConnection.deadline();
 
-            const dateStartNft = 1690230600;
-            const dateEndtNftGuaranteed = 1690290000;
-            const startTime = 1690293600;
-            const deadline = 1690295400;
+            // const dateStartNft = 1690230600;
+            // const dateEndtNftGuaranteed = 1690290000;
+            // const startTime = 1690293600;
+            // const deadline = 1690295400;
 
             let guaranteedStatus = '';
-            if (block.timestamp < dateStartNft) {
+            if (block.timestamp < dateStartNft.toNumber()) {
                 guaranteedStatus = "Not Started";
-            } else if (block.timestamp >= dateStartNft && block.timestamp <= dateEndtNftGuaranteed) {
+            } else if (block.timestamp >= dateStartNft.toNumber() && block.timestamp <= dateEndtNftGuaranteed.toNumber()) {
                 guaranteedStatus = "Live";
             } else {
                 guaranteedStatus = "Ended";
             }
 
             let publicSaleStatus = '';
-            if (block.timestamp < startTime) {
+            if (block.timestamp < startTime.toNumber()) {
                 publicSaleStatus = "Not Started";
-            } else if (block.timestamp >= startTime && block.timestamp <= deadline) {
+            } else if (block.timestamp >= startTime.toNumber() && block.timestamp <= deadline.toNumber()) {
                 publicSaleStatus = "Live";
             } else {
                 publicSaleStatus = "Ended";
