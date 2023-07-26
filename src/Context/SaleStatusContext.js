@@ -4,8 +4,8 @@ import { ethers } from 'ethers';
 import NftABI from '../ABI/TBT_NFT.json';
 import RaffleABI from '../ABI/RaffleG_0.json';
 
-const contractNftAddress = "0x5C4F40C2a4719C2E08CDA077dCAbB0F4B3Ef737d"
-const contractRaffleAddress = "0x7DB03BA949b8CBfC1208247f8050cC977dc13f03";
+const contractNftAddress = "0x5E82c890a9531784F5c2730C16c76361670D0429";
+const contractRaffleAddress = "0x84D78f7826e4d614B294DD1A65aeAb3e08CbC738";
 
 export const SaleStatusContext = createContext();
 

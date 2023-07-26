@@ -14,8 +14,8 @@ import SaleButton from "../Components/SaleButton";
 import TermsAndConditions from "./TermsAndConditions";
 import { ClaimCountdown } from "../Components/ClaimCountdown";
 
-const contractNftAddress = "0x5C4F40C2a4719C2E08CDA077dCAbB0F4B3Ef737d"
-const contractRaffleAddress = "0x7DB03BA949b8CBfC1208247f8050cC977dc13f03";
+const contractNftAddress = "0x5E82c890a9531784F5c2730C16c76361670D0429";
+const contractRaffleAddress = "0x84D78f7826e4d614B294DD1A65aeAb3e08CbC738";
 
 export default function Home() {
 
@@ -74,7 +74,7 @@ export default function Home() {
     setTicketsSold(ticketsSold.toNumber());
   };
 
-  const ticketPrice = 0.01
+  const ticketPrice = 1;
   const provider = new ethers.providers.Web3Provider(window.ethereum);
   const signer = provider.getSigner();
   const contractRaffle = useMemo(() => {
