@@ -330,12 +330,12 @@ export default function Home() {
             </div>
             <div className="flex flex-col mt-10 w-full md:max-w-[420px] lg:max-w-[510px] xl:max-w-[650px] gap-6">
 
-              <div className="flex flex-row py-4 px-2 md:p-4 xl:px-0 bg-secondary rounded-lg justify-around gap-3 md:gap-7 border border-gray-600 bg-opacity-60">
-                <p className="flex flex-col text-md lg:text-lg xl:text-xl font-bold text-white">Mint price:<span className=" text-sm md:text-md lg:text-lg xl:text-xl text-light">FREE</span><span className=" text-gray-400 text-xs lg:text-sm">+ 1 MATIC ticket fee</span>
+              <div className="flex flex-row py-4 px-2 md:p-4 xl:px-0 bg-secondary rounded-lg justify-around gap-3 md:gap-7 lg:gap-0 border border-gray-600 bg-opacity-60">
+                <p className="flex flex-col lg:flex-row text-md lg:text-lg xl:text-xl font-bold text-white">Mint price:<span className=" text-sm md:text-md lg:text-lg xl:text-xl text-light">FREE</span><span className=" text-gray-400 text-xs lg:text-sm">+ 1 MATIC ticket fee</span>
                 </p>
-                <p className="flex flex-col text-md lg:text-lg xl:text-xl font-bold text-white">Supply:<span className="text-center text-light">333</span>
+                <p className="flex flex-col lg:flex-row text-md lg:text-lg xl:text-xl font-bold text-white">Supply:<span className="text-center text-light">333</span>
                 </p>
-                <div className="flex flex-col text-md lg:text-lg xl:text-xl font-bold text-white">
+                <div className="flex flex-col lg:flex-row text-md lg:text-lg xl:text-xl font-bold text-white">
                   Tickets sold:
                   <div className="flex justify-end">
                     <span className="ml-1 text-light">{ticketsSold}</span>
