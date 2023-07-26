@@ -60,7 +60,7 @@ export default function Home() {
 
 
   const settings = {
-    apiKey: "ZQYOoMuEPgZwfP0yxEz1NzGyn2y2qCTW",
+    apiKey: "kKaUsI3UwlljF-I3np_9fWNG--9i9RlF",
     network: Network.MATIC_MAINNET,
   };
 
