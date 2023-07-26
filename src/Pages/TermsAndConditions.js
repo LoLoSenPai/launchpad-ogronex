@@ -27,7 +27,7 @@ function TermsAndConditions() {
                             <h2 className="md:text-xl font-bold text-gray-300 mt-4">Claiming of NFTs</h2>
                             <p>Winners have 24 hours to claim their NFTs after the public raffle phase. Please note that all won NFTs will be claimed at once to save on transaction fees. After the 24-hour window, unclaimed NFTs will no longer be available for claiming. We are not responsible for any unclaimed NFTs.</p>
                             <h2 className="md:text-xl font-bold text-gray-300 mt-4">Acceptance of Risk</h2>
-                            <p>By participating in the minting process, you acknowledge that you are aware of the inherent risks associated with blockchain and NFT transactions, including but not limited to fluctuations in the value of Ethereum and NFTs, and technological difficulties that could prevent the minting process.</p>
+                            <p>By participating in the minting process, you acknowledge that you are aware of the inherent risks associated with blockchain and NFT transactions, including but not limited to fluctuations in the value of Matic and NFTs, and technological difficulties that could prevent the minting process.</p>
                         </div>
                         <button
                             onClick={() => setModalVisible(false)}
