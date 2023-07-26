@@ -1,10 +1,4 @@
-import React, { useEffect } from 'react';
-
-export default function ModalWinner({ closeModal, winnerNbMint }) {
-
-    useEffect(() => {
-        console.log('ModalWinner rendered with winnerNbMint:', winnerNbMint);
-    }, [winnerNbMint]);
+export default function ModalWinner({ closeModal }) {
 
     return (
         <div
