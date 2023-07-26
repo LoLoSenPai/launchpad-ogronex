@@ -264,7 +264,7 @@ export default function Home() {
   if (guaranteed.status === 'Live') {
     maxTickets = 1;
   } else if (publicSale.status === 'Live') {
-    maxTickets = 10000;
+    maxTickets = 100000;
   } else if (publicSale.status === 'Ended') {
     maxTickets = winnerNbMint;
     showInput = false;
