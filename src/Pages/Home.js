@@ -28,6 +28,7 @@ export default function Home() {
   const [waitingBuy, setWaitingBuy] = useState(false);
 
   const [showTooltipOG, setShowTooltipOG] = useState(false);
+  const [showTooltipWL, setShowTooltipWL] = useState(false);
   const [showTooltipPublic, setShowTooltipPublic] = useState(false);
   const [hasBalance, setHasBalance] = useState(false);
   const [showModalWinner, setShowModalWinner] = useState(false);
@@ -40,23 +41,8 @@ export default function Home() {
   const [winnerNbMint, setWinnerNbMint] = useState(0);
   const [hasNotMinted, setHasNotMinted] = useState(false);
 
-  const { guaranteed, publicSale } = useContext(SaleStatusContext);
-  // Use `guaranteed.status`, `guaranteed.start`, `guaranteed.end`, `public.status`, `public.start`, `public.end`
-
-
-  // useEffect(() => {
-  //   window.ethereum.on('accountsChanged', function (accounts) {
-  //     if (accounts.length === 0) {
-  // L'utilisateur s'est déconnecté. Mettez à jour l'état en conséquence.
-  // Ici, vous pouvez réinitialiser l'état de votre application et afficher un message à l'utilisateur.
-  // } else {
-  // L'utilisateur a changé de compte. Mettez à jour l'état en conséquence.
-  // Par exemple, vous pouvez appeler à nouveau `useAccount` et `useBalance` pour obtenir le solde du nouveau compte.
-  //   }
-  // }); 
-  // Nettoyez l'écouteur d'événements lorsque le composant est démonté.
-  //   return () => window.ethereum.removeAllListeners();
-  // }, []);
+  const { guaranteed, whitelistFCFS, publicSale } = useContext(SaleStatusContext);
+  // Use `guaranteed.status`, `guaranteed.start`, `guaranteed.end`, `public.status`, `public.start`, `public.end`, `whitelistFCFS.status`, `whitelistFCFS.start`, `whitelistFCFS.end` to get the status of each sale
 
 
   const settings = {
@@ -92,14 +78,20 @@ export default function Home() {
   const handleMouseEnter = () => {
     setShowTooltipOG(true);
   };
-
   const handleMouseLeave = () => {
     setShowTooltipOG(false);
   };
+
+  const handleMouseEnterWL = () => {
+    setShowTooltipWL(true);
+  };
+  const handleMouseLeaveWL = () => {
+    setShowTooltipWL(false);
+  };
+
   const handleMouseEnterPublic = () => {
     setShowTooltipPublic(true);
   };
-
   const handleMouseLeavePublic = () => {
     setShowTooltipPublic(false);
   };
@@ -331,9 +323,9 @@ export default function Home() {
             <div className="flex flex-col mt-10 w-full md:max-w-[420px] lg:max-w-[510px] xl:max-w-[650px] gap-6">
 
               <div className="flex flex-row py-4 px-2 md:p-4 xl:px-0 bg-secondary rounded-lg justify-around gap-3 md:gap-7 lg:gap-0 border border-gray-600 bg-opacity-60">
-                <p className="flex flex-col lg:flex-row text-md lg:text-lg xl:text-xl font-bold text-white">Mint price:<span className=" text-sm md:text-md lg:text-lg xl:text-xl text-light">FREE</span><span className=" text-gray-400 text-xs lg:text-sm">+ 1 MATIC ticket fee</span>
+                <p className="flex flex-col lg:flex-row text-md lg:text-lg xl:text-xl font-bold text-white">Mint price:<span className=" text-sm md:text-md lg:text-lg xl:text-xl text-light">FREE</span><span className=" text-gray-400 text-xs lg:text-sm">+ 0.5 MATIC ticket fee</span>
                 </p>
-                <p className="flex flex-col lg:flex-row text-md lg:text-lg xl:text-xl font-bold text-white">Supply:<span className="text-center text-light">333</span>
+                <p className="flex flex-col lg:flex-row text-md lg:text-lg xl:text-xl font-bold text-white">Supply:<span className="text-center text-light">5000</span>
                 </p>
                 <div className="flex flex-col lg:flex-row text-md lg:text-lg xl:text-xl font-bold text-white">
                   Tickets sold:
@@ -357,7 +349,7 @@ export default function Home() {
                     </span>
                     {showTooltipOG &&
                       <div className="text-center tooltip absolute left-1/2 top-full -translate-x-1/2 transform whitespace-nowrap rounded bg-secondary bg-opacity-80 p-2 text-white z-10">
-                        One mint per wallet
+                        Boxbies and Dalmatians Holders
                       </div>
                     }
                   </div>
@@ -383,6 +375,52 @@ export default function Home() {
                             Ends in
                             <span className="text-white pl-2 xl:text-xl">
                               <CountdownComponent deadline={guaranteed.end} />
+                            </span>
+                          </>
+                        }
+                      </div>
+                    </div>
+                  )}
+                </div>
+                
+                <div className="flex flex-col md:flex-row items-center gap-4 lg:gap-2 xl:gap-10 p-4 bg-four rounded-lg border border-gray-600 justify-center md:justify-between">
+                  <div className="relative lg:text-lg xl:text-xl font-bold text-white">
+                    Whitelist FCFS
+                    <span
+                      className="ml-3 text-light border border-light rounded-full px-2 text-sm"
+                      onMouseEnter={handleMouseEnterWL}
+                      onMouseLeave={handleMouseLeaveWL}
+                    >
+                      i
+                    </span>
+                    {showTooltipWL &&
+                      <div className="text-center tooltip absolute left-1/2 top-full -translate-x-1/2 transform whitespace-nowrap rounded bg-secondary bg-opacity-80 p-2 text-white z-10">
+                        One mint per wallet
+                      </div>
+                    }
+                  </div>
+                  <div className="flex flew-row justify-center lg:px-2">
+                    <p className={"flex items-center xl:text-xl font-bold text-white bg-secondary py-2 px-6 md:px-2 lg:px-6 rounded-lg border border-gray-600 bg-opacity-60 md:h-[66px] xl:h-[74px] min-w-[160px] md:min-w-[80px] md:max-w-[90px] lg:min-w-[160px] xl:min-w-[180px]"}>
+                      <i className={`fas fa-circle pr-2 text-light text-sm animate-pulse ${whitelistFCFS.status === 'Live' ? 'text-green-500' : 'text-red-500'}`}></i>
+                      {whitelistFCFS.status}
+                    </p>
+                  </div>
+                  {whitelistFCFS.status !== 'Ended' && (
+                    <div className="flex flex-col justify-end md:-ml-1.5 lg:ml-2 xl:ml-0 min-w-[170px] xl:min-w-[233px]">
+                      <div className="flex flex-col text-center text-md text-gray-400 bg-secondary py-2 px-6 rounded-lg border border-gray-600 bg-opacity-60">
+                        {whitelistFCFS.status === 'Not Started' &&
+                          <>
+                            Live in
+                            <span className="text-white pl-2 xl:text-xl">
+                              <CountdownComponent deadline={whitelistFCFS.start} />
+                            </span>
+                          </>
+                        }
+                        {whitelistFCFS.status === 'Live' &&
+                          <>
+                            Ends in
+                            <span className="text-white pl-2 xl:text-xl">
+                              <CountdownComponent deadline={whitelistFCFS.end} />
                             </span>
                           </>
                         }

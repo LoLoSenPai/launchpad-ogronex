@@ -27,6 +27,7 @@ export default function SaleButton(props) {
         setShowModalLooser,
         contractNft,
         guaranteed,
+        whitelistFCFS,
         publicSale,
         winnerNbMint,
     } = props;
@@ -48,6 +49,9 @@ export default function SaleButton(props) {
             newTextButton = "Connect your wallet";
         } else if (isWhitelisted(address) && guaranteed.status === 'Live') {
             newTextButton = "Mint";
+            newButtonOnClick = () => whiteListMint();
+        } else if (isWhitelisted(address) && whitelistFCFS.status === 'Live') {
+            newTextButton = "Hurry up! Mint now";
             newButtonOnClick = () => whiteListMint();
         } else if (!hasBalance && publicSale.status === 'Live') {
             newButtonDisabled = true;

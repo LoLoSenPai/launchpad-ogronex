@@ -16,6 +16,11 @@ export const SaleStatusProvider = ({ children }) => {
             start: null,
             end: null,
         },
+        whitelistFCFS: {
+            status: '',
+            start: null,
+            end: null,
+        },
         publicSale: {
             status: '',
             start: null,
@@ -41,24 +46,41 @@ export const SaleStatusProvider = ({ children }) => {
                 const contractNft = new ethers.Contract(contractNftAddress, NftABI.abi, maticProvider);
                 const contractRaffleBeforeConnection = new ethers.Contract(contractRaffleAddress, RaffleABI.abi, maticProvider)
     
-                const dateStartNft = await contractNft.saleStartTime();
-                const dateEndtNftGuaranteed = await contractNft.endTimeGuaranteed();
-                const startTime = await contractRaffleBeforeConnection.startDate();
-                const deadline = await contractRaffleBeforeConnection.deadline();
+                const dateStartNft = 1690729200;
+                const dateEndtNftGuaranteed = 1690815600;
+                const whitelistFcfsStart = 1690815610;
+                const whitelistFcfsEnd = 1690819200;
+                const startTime = 1690819210;
+                const deadline = 1690830000;
+                // const dateStartNft = await contractNft.saleStartTime();
+                // const dateEndtNftGuaranteed = await contractNft.endTimeGuaranteed();
+                // const whitelistFcfsStart = await contractNft.saleStartTime();
+                // const whitelistFcfsEnd = await contractNft.endTimeGuaranteed();
+                // const startTime = await contractRaffleBeforeConnection.startDate();
+                // const deadline = await contractRaffleBeforeConnection.deadline();
     
                 let guaranteedStatus = '';
-                if (block.timestamp < dateStartNft.toNumber()) {
+                if (block.timestamp < dateStartNft) {
                     guaranteedStatus = "Not Started";
-                } else if (block.timestamp >= dateStartNft.toNumber() && block.timestamp <= dateEndtNftGuaranteed.toNumber()) {
+                } else if (block.timestamp >= dateStartNft && block.timestamp <= dateEndtNftGuaranteed) {
                     guaranteedStatus = "Live";
                 } else {
                     guaranteedStatus = "Ended";
                 }
+               
+                let whitelistStatus = '';
+                if (block.timestamp < whitelistFcfsStart) {
+                    whitelistStatus = "Not Started";
+                } else if (block.timestamp >= whitelistFcfsStart && block.timestamp <= whitelistFcfsEnd) {
+                    whitelistStatus = "Live";
+                } else {
+                    whitelistStatus = "Ended";
+                }
     
                 let publicSaleStatus = '';
-                if (block.timestamp < startTime.toNumber()) {
+                if (block.timestamp < startTime) {
                     publicSaleStatus = "Not Started";
-                } else if (block.timestamp >= startTime.toNumber() && block.timestamp <= deadline.toNumber()) {
+                } else if (block.timestamp >= startTime && block.timestamp <= deadline) {
                     publicSaleStatus = "Live";
                 } else {
                     publicSaleStatus = "Ended";
@@ -71,6 +93,12 @@ export const SaleStatusProvider = ({ children }) => {
                         status: guaranteedStatus,
                         start: dateStartNft,
                         end: dateEndtNftGuaranteed,
+                    },
+                    whitelistFCFS: {
+                        ...prevStatus.whitelistFCFS,
+                        status: whitelistStatus,
+                        start: whitelistFcfsStart,
+                        end: whitelistFcfsEnd,
                     },
                     publicSale: {
                         ...prevStatus.publicSale,
