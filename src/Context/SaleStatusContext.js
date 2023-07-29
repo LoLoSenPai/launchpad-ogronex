@@ -1,17 +1,22 @@
-import React, { createContext, useState, useEffect } from 'react';
-import { Network, Alchemy } from 'alchemy-sdk';
-import { ethers } from 'ethers';
-import NftABI from '../ABI/TBT_NFT.json';
-import RaffleABI from '../ABI/RaffleG_0.json';
-
-const contractNftAddress = "0x5E82c890a9531784F5c2730C16c76361670D0429";
-const contractRaffleAddress = "0x84D78f7826e4d614B294DD1A65aeAb3e08CbC738";
+import React, { createContext, useState, useEffect, useMemo } from 'react';
+import { useEthereumProvider } from '../Hooks/EthereumProvider';
+import { useContracts } from '../Hooks/Contracts';
+import useAlchemy from '../Hooks/AlchemyProvider';
 
 export const SaleStatusContext = createContext();
 
 export const SaleStatusProvider = ({ children }) => {
+    const maticProvider = useAlchemy();
+    const provider = useEthereumProvider();
+    const { contractNft, contractRaffle } = useContracts(provider);
+    const [error, setError] = useState(null);
     const [saleStatus, setSaleStatus] = useState({
         guaranteed: {
+            status: '',
+            start: null,
+            end: null,
+        },
+        whitelistSale: {
             status: '',
             start: null,
             end: null,
@@ -23,47 +28,57 @@ export const SaleStatusProvider = ({ children }) => {
         },
     });
 
-
-    const settings = {
-        apiKey: "ZQYOoMuEPgZwfP0yxEz1NzGyn2y2qCTW",
-        network: Network.MATIC_MAINNET,
-    };
-
-    const alchemy = new Alchemy(settings);
-
+    const contextValue = useMemo(() => ({ saleStatus, error }), [saleStatus, error]);
 
     useEffect(() => {
         const interval = setInterval(async () => {
             try {
-                const maticProvider = await alchemy.config.getProvider();
                 const block = await maticProvider.getBlock();
-    
-                const contractNft = new ethers.Contract(contractNftAddress, NftABI.abi, maticProvider);
-                const contractRaffleBeforeConnection = new ethers.Contract(contractRaffleAddress, RaffleABI.abi, maticProvider)
-    
-                const dateStartNft = await contractNft.saleStartTime();
-                const dateEndtNftGuaranteed = await contractNft.endTimeGuaranteed();
-                const startTime = await contractRaffleBeforeConnection.startDate();
-                const deadline = await contractRaffleBeforeConnection.deadline();
-    
+
+                const dateStartNft = 1690658413;
+                const dateEndtNftGuaranteed = 1690834813;
+
+                const whitelistStartTime = 1690838413;
+                const whitelistEndTime = 1690842013;
+
+                const startTime = 1690845613;
+                const deadline = 1690847953;
+                // const dateStartNft = await contractNft.saleStartTime();
+                // const dateEndtNftGuaranteed = await contractNft.endTimeGuaranteed();
+
+                // const whitelistStartTime = await contractRaffle.saleStartTime();
+                // const whitelistEndTime = await contractRaffle.endTimeGuaranteed();
+
+                // const startTime = await contractRaffle.startDate();
+                // const deadline = await contractRaffle.deadline();
+
                 let guaranteedStatus = '';
-                if (block.timestamp < dateStartNft.toNumber()) {
+                if (block.timestamp < dateStartNft) {
                     guaranteedStatus = "Not Started";
-                } else if (block.timestamp >= dateStartNft.toNumber() && block.timestamp <= dateEndtNftGuaranteed.toNumber()) {
+                } else if (block.timestamp >= dateStartNft && block.timestamp <= dateEndtNftGuaranteed) {
                     guaranteedStatus = "Live";
                 } else {
                     guaranteedStatus = "Ended";
                 }
-    
+
+                let whitelistStatus = '';
+                if (block.timestamp < dateStartNft) {
+                    whitelistStatus = "Not Started";
+                } else if (block.timestamp >= dateStartNft && block.timestamp <= dateEndtNftGuaranteed) {
+                    whitelistStatus = "Live";
+                } else {
+                    whitelistStatus = "Ended";
+                }
+
                 let publicSaleStatus = '';
-                if (block.timestamp < startTime.toNumber()) {
+                if (block.timestamp < startTime) {
                     publicSaleStatus = "Not Started";
-                } else if (block.timestamp >= startTime.toNumber() && block.timestamp <= deadline.toNumber()) {
+                } else if (block.timestamp >= startTime && block.timestamp <= deadline) {
                     publicSaleStatus = "Live";
                 } else {
                     publicSaleStatus = "Ended";
                 }
-    
+
                 setSaleStatus((prevStatus) => ({
                     ...prevStatus,
                     guaranteed: {
@@ -71,6 +86,12 @@ export const SaleStatusProvider = ({ children }) => {
                         status: guaranteedStatus,
                         start: dateStartNft,
                         end: dateEndtNftGuaranteed,
+                    },
+                    whitelistSale: {
+                        ...prevStatus.whitelist,
+                        status: whitelistStatus,
+                        start: whitelistStartTime,
+                        end: whitelistEndTime,
                     },
                     publicSale: {
                         ...prevStatus.publicSale,
@@ -81,16 +102,15 @@ export const SaleStatusProvider = ({ children }) => {
                 }));
             } catch (error) {
                 console.error("An error occurred while checking the time:", error);
+                setError(error);
             }
         }, 1000);
-    
+
         return () => clearInterval(interval);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
-    
+    }, [setSaleStatus, contractNft, contractRaffle, maticProvider]);
 
     return (
-        <SaleStatusContext.Provider value={saleStatus}>
+        <SaleStatusContext.Provider value={contextValue}>
             {children}
         </SaleStatusContext.Provider>
     );

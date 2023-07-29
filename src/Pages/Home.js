@@ -1,21 +1,19 @@
-import React, { useState, useEffect, useMemo, useCallback, useContext } from "react";
+import React, { useState, useEffect, useCallback, useContext } from "react";
 import { DynamicWidget } from "@dynamic-labs/sdk-react";
 import { useAccount, useBalance } from "wagmi";
 import { ethers } from "ethers";
-import { Network, Alchemy } from 'alchemy-sdk';
 import CountdownComponent from "../Components/Countdown";
-import RaffleABI from "../ABI/RaffleG_0.json";
-import NftABI from "../ABI/TBT_NFT.json";
-import whitelist from '../Whitelist/whitelist.json';
+
+import Whitelist from "../Lib/whitelist";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { SaleStatusContext } from "../Context/SaleStatusContext";
 import SaleButton from "../Components/SaleButton";
 import TermsAndConditions from "./TermsAndConditions";
 import { ClaimCountdown } from "../Components/ClaimCountdown";
-
-const contractNftAddress = "0x5E82c890a9531784F5c2730C16c76361670D0429";
-const contractRaffleAddress = "0x84D78f7826e4d614B294DD1A65aeAb3e08CbC738";
+import { useEthereumProvider } from "../Hooks/EthereumProvider";
+import { useContracts } from "../Hooks/Contracts";
+import useAlchemy from "../Hooks/AlchemyProvider";
 
 export default function Home() {
 
@@ -34,58 +32,26 @@ export default function Home() {
   const [showModalLooser, setShowModalLooser] = useState(false);
   const [showModalPending, setShowModalPending] = useState(false);
 
-  //winner state
   const [isWinnerRaffle, setIsWinnerRaffle] = useState(false);
   const [hasCheckedWinner, setHasCheckedWinner] = useState(false);
   const [winnerNbMint, setWinnerNbMint] = useState(0);
   const [hasNotMinted, setHasNotMinted] = useState(false);
 
-  const { guaranteed, publicSale } = useContext(SaleStatusContext);
+  const { guaranteed, whitelist, publicSale } = useContext(SaleStatusContext);
   // Use `guaranteed.status`, `guaranteed.start`, `guaranteed.end`, `public.status`, `public.start`, `public.end`
 
 
-  // useEffect(() => {
-  //   window.ethereum.on('accountsChanged', function (accounts) {
-  //     if (accounts.length === 0) {
-  // L'utilisateur s'est déconnecté. Mettez à jour l'état en conséquence.
-  // Ici, vous pouvez réinitialiser l'état de votre application et afficher un message à l'utilisateur.
-  // } else {
-  // L'utilisateur a changé de compte. Mettez à jour l'état en conséquence.
-  // Par exemple, vous pouvez appeler à nouveau `useAccount` et `useBalance` pour obtenir le solde du nouveau compte.
-  //   }
-  // }); 
-  // Nettoyez l'écouteur d'événements lorsque le composant est démonté.
-  //   return () => window.ethereum.removeAllListeners();
-  // }, []);
 
-
-  const settings = {
-    apiKey: "ZQYOoMuEPgZwfP0yxEz1NzGyn2y2qCTW",
-    network: Network.MATIC_MAINNET,
-  };
-
-  const alchemy = new Alchemy(settings);
-
-  const getAlchemyProviderAndData = async () => {
-    const maticProvider = await alchemy.config.getProvider();
-    // const block = await maticProvider.getBlock();
-    const contractRaffleBeforeConnection = new ethers.Contract(contractRaffleAddress, RaffleABI.abi, maticProvider);
-    const ticketsSold = await contractRaffleBeforeConnection.nbTicketSell();
-    setTicketsSold(ticketsSold.toNumber());
-  };
 
   const ticketPrice = 1;
-  const provider = new ethers.providers.Web3Provider(window.ethereum);
-  const signer = provider.getSigner();
-  const contractRaffle = useMemo(() => {
-    return new ethers.Contract(contractRaffleAddress, RaffleABI.abi, signer);
-  }, [signer]);
-  const contractNft = useMemo(() => {
-    return new ethers.Contract(contractNftAddress, NftABI.abi, signer);
-  }, [signer]);
+
+  const alchemy = useAlchemy();
+
+  const provider = useEthereumProvider();
+  const { contractNft, contractRaffle } = useContracts(provider);
 
   const isWhitelisted = (address) => {
-    return whitelist.some(item => item.address === address);
+    return Whitelist.some(item => item.address === address);
   }
 
   // Tooltip for i icon
@@ -104,8 +70,9 @@ export default function Home() {
     setShowTooltipPublic(false);
   };
 
+  // Input number of tickets
   const handleIncrease = () => {
-    if ((guaranteed.status === 'Live' && ticketCount < 1) || publicSale.status === 'Live') {
+    if ((guaranteed.status === 'Live' && ticketCount < 1) || whitelist.status || publicSale.status === 'Live') {
       setTicketCount(ticketCount + 1);
     }
   };
@@ -229,19 +196,6 @@ export default function Home() {
     }
   }
 
-  useEffect(() => {
-    (async function fetchProviderAndData() {
-      await getAlchemyProviderAndData();
-    })();
-  }, [address]);
-
-  // useEffect(() => {
-  //   if (isConnected && endTimeBool) {
-  //     (async function fetchWinnerData() {
-  //       await checkWinner();
-  //     })();
-  //   }
-  // }, [endTimeBool, isConnected, address]);
 
   useEffect(() => {
     getTicketsBought();
@@ -261,7 +215,7 @@ export default function Home() {
 
   let maxTickets;
   let showInput = true;
-  if (guaranteed.status === 'Live') {
+  if (guaranteed.status || whitelist.status === 'Live') {
     maxTickets = 1;
   } else if (publicSale.status === 'Live') {
     maxTickets = 100000;
@@ -383,6 +337,51 @@ export default function Home() {
                             Ends in
                             <span className="text-white pl-2 xl:text-xl">
                               <CountdownComponent deadline={guaranteed.end} />
+                            </span>
+                          </>
+                        }
+                      </div>
+                    </div>
+                  )}
+                </div>
+                <div className="flex flex-col md:flex-row items-center gap-4 lg:gap-2 xl:gap-10 p-4 bg-four rounded-lg border border-gray-600 justify-center md:justify-between">
+                  <div className="relative lg:text-lg xl:text-xl font-bold text-white">
+                    Whitelist FCFS
+                    <span
+                      className="ml-3 text-light border border-light rounded-full px-2 text-sm"
+                      onMouseEnter={handleMouseEnter}
+                      onMouseLeave={handleMouseLeave}
+                    >
+                      i
+                    </span>
+                    {showTooltipOG &&
+                      <div className="text-center tooltip absolute left-1/2 top-full -translate-x-1/2 transform whitespace-nowrap rounded bg-secondary bg-opacity-80 p-2 text-white z-10">
+                        One mint per wallet (FCFS)
+                      </div>
+                    }
+                  </div>
+                  <div className="flex flew-row justify-center lg:px-2">
+                    <p className={"flex items-center xl:text-xl font-bold text-white bg-secondary py-2 px-6 md:px-2 lg:px-6 rounded-lg border border-gray-600 bg-opacity-60 md:h-[66px] xl:h-[74px] min-w-[160px] md:min-w-[80px] md:max-w-[90px] lg:min-w-[160px] xl:min-w-[180px]"}>
+                      <i className={`fas fa-circle pr-2 text-light text-sm animate-pulse ${whitelist.status === 'Live' ? 'text-green-500' : 'text-red-500'}`}></i>
+                      {whitelist.status}
+                    </p>
+                  </div>
+                  {whitelist.status !== 'Ended' && (
+                    <div className="flex flex-col justify-end md:-ml-1.5 lg:ml-2 xl:ml-0 min-w-[170px] xl:min-w-[233px]">
+                      <div className="flex flex-col text-center text-md text-gray-400 bg-secondary py-2 px-6 rounded-lg border border-gray-600 bg-opacity-60">
+                        {whitelist.status === 'Not Started' &&
+                          <>
+                            Live in
+                            <span className="text-white pl-2 xl:text-xl">
+                              <CountdownComponent deadline={whitelist.start} />
+                            </span>
+                          </>
+                        }
+                        {whitelist.status === 'Live' &&
+                          <>
+                            Ends in
+                            <span className="text-white pl-2 xl:text-xl">
+                              <CountdownComponent deadline={whitelist.end} />
                             </span>
                           </>
                         }
