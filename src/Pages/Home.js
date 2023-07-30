@@ -13,6 +13,7 @@ import { SaleStatusContext } from "../Context/SaleStatusContext";
 import SaleButton from "../Components/SaleButton";
 import TermsAndConditions from "./TermsAndConditions";
 import { ClaimCountdown } from "../Components/ClaimCountdown";
+import ShareButton from "../Components/ShareButton";
 
 const contractNftAddress = "0x5E82c890a9531784F5c2730C16c76361670D0429";
 const contractRaffleAddress = "0x84D78f7826e4d614B294DD1A65aeAb3e08CbC738";
@@ -136,6 +137,11 @@ export default function Home() {
         setWaitingBuy(true);
         const tx = await contractRaffle.buyTicket(ticketCount, { value: ethers.utils.parseEther((ticketCount * ticketPrice).toString()) });
         await provider.waitForTransaction(tx.hash);
+        if (tx.status === 0) {
+          toast.error("Transaction error! But don't worry, even the best stumble sometimes!");
+          setWaitingBuy(false);
+          return;
+        }
         toast.success("You're in the game! Good luck for the draw!");
         setWaitingBuy(false);
         await getTicketsBought();
@@ -299,7 +305,7 @@ export default function Home() {
           <div className="flex flex-col-reverse md:flex-row justify-center w-full xl:pl-35">
             <div className="flex flex-col mt-10 w-full gap-6 px-4">
               <div className="flex flex-row p-0 md:p-3 md:pl-0">
-                <h1 className="text-6xl font-bold text-white">OG Teddies</h1>
+                <h1 className="text-6xl font-bold text-white">Boxbies</h1>
                 <div className="flex flex-col md:flex-row items-center ml-5 md:mt-4 gap-3">
                   <a href="https://discord.gg/ogronexnft" target="_blank" rel="noreferrer"><i className="fab fa-discord text-lg text-gray-500"></i></a>
                   <a href="https://twitter.com/Ogronex" target="_blank" rel="noreferrer"><i className="fab fa-twitter text-lg text-gray-500"></i></a>
@@ -323,7 +329,7 @@ export default function Home() {
             <div className="flex flex-col mt-10 w-full md:max-w-[420px] lg:max-w-[510px] xl:max-w-[650px] gap-6">
 
               <div className="flex flex-row py-4 px-2 md:p-4 xl:px-0 bg-secondary rounded-lg justify-around gap-3 md:gap-7 lg:gap-0 border border-gray-600 bg-opacity-60">
-                <p className="flex flex-col lg:flex-row text-md lg:text-lg xl:text-xl font-bold text-white">Mint price:<span className=" text-sm md:text-md lg:text-lg xl:text-xl text-light">FREE</span><span className=" text-gray-400 text-xs lg:text-sm">+ 0.5 MATIC ticket fee</span>
+                <p className="flex flex-col lg:flex-row text-md lg:text-lg xl:text-xl font-bold text-white">Mint price:<span className=" text-sm md:text-md lg:text-lg xl:text-xl text-light">FREE</span><span className=" text-gray-400 text-xs lg:text-sm">+ 1 MATIC ticket fee</span>
                 </p>
                 <p className="flex flex-col lg:flex-row text-md lg:text-lg xl:text-xl font-bold text-white">Supply:<span className="text-center text-light">5000</span>
                 </p>
@@ -538,6 +544,7 @@ export default function Home() {
                   )}
                 </div>
               </div>
+              <ShareButton />
               {publicSale.status === "Ended" &&
                 <div className="flex flex-col justify-center items-center mt-4">
                   <div className="text-center text-white text-md md:text-lg lg:text-xl font-bold">

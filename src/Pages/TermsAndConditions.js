@@ -22,7 +22,9 @@ function TermsAndConditions() {
                             <p>Welcome to our NFT collection minting website. Before you proceed, please read the following terms and conditions:</p>
                             <h2 className="md:text-xl font-bold text-gray-300 mt-4">Phase 1: Guaranteed Mint</h2>
                             <p>All whitelisted individuals who have provided their wallet addresses have the opportunity to mint 1 NFT. This phase ends with the commencement of the public raffle. Note that whitelisted individuals who have not minted their NFT by the end of this phase will no longer have the opportunity to do so. All sales during this phase are final and non-refundable.</p>
-                            <h2 className="md:text-xl font-bold text-gray-300 mt-4">Phase 2: Public Raffle</h2>
+                            <h2 className="md:text-xl font-bold text-gray-300 mt-4">Phase 2: Whitelist Mint FCFS</h2>
+                            <p>FCFS means First Come First Serve. So the first 2700 successful transactions will be allowed</p>
+                            <h2 className="md:text-xl font-bold text-gray-300 mt-4">Phase 3: Public Raffle</h2>
                             <p>During this phase, everyone is allowed to purchase as many tickets as they wish. Winners will be selected through our smart contract, which ensures fair randomization using Chainlink VRF. This phase ends with the announcement of winners. All ticket purchases are final and non-refundable.</p>
                             <h2 className="md:text-xl font-bold text-gray-300 mt-4">Claiming of NFTs</h2>
                             <p>Winners have 24 hours to claim their NFTs after the public raffle phase. Please note that all won NFTs will be claimed at once to save on transaction fees. After the 24-hour window, unclaimed NFTs will no longer be available for claiming. We are not responsible for any unclaimed NFTs.</p>
