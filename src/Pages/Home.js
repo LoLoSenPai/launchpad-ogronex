@@ -25,6 +25,7 @@ export default function Home() {
 
   const [ticketCount, setTicketCount] = useState(1);
   const [ticketsBought, setTicketsBought] = useState(0);
+  const [nftSupply, setNftSupply] = useState(0);
   const [ticketsSold, setTicketsSold] = useState(0);
   const [waitingBuy, setWaitingBuy] = useState(false);
 
@@ -61,8 +62,10 @@ export default function Home() {
     const contractNftBeforeConnection = new ethers.Contract(contractNftAddress, NftABI.abi, maticProvider);
     const ticketsSold = await contractRaffleBeforeConnection.nbTicketSell();
     const isOver = await contractNftBeforeConnection.isRaffleOver();
+    const nftsupply = await contractNftBeforeConnection.totalSupply();
     setTicketsSold(ticketsSold.toNumber());
     setIsRaffleOver(isOver);
+    setNftSupply(nftsupply.toNumber());
   };
 
   const ticketPrice = 1;
@@ -123,6 +126,15 @@ export default function Home() {
     setIsRaffleOver(isOver);
   };
 
+  const getTotalSupply = async () => {
+    if (!isConnected) return;
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    const signer = provider.getSigner();
+    const contractNft = new ethers.Contract(contractNftAddress, NftABI.abi, signer);
+    const nftsupply = await contractNft.totalSupply();
+    setNftSupply(nftsupply.toNumber());
+  };
+
   const getTicketsBought = useCallback(async () => {
     if (!isConnected) return;
     try {
@@ -165,20 +177,22 @@ export default function Home() {
   async function whiteListMint() {
     if (!isConnected) return // conditionner aussi a la phase guarranteed Mint
     try {
+      // conditionner la WL en function de la phase (holder, og and wl)!
       setWaitingBuy(true);
       let addressWl;
       let proofWl;
+      let availableToMint;
       const result = whitelist.map((data) => {
         if (data.address === address) {
-          console.log("ouiiiiiiii");
           addressWl = data.address;
           proofWl = data.proof;
+          availableToMint = data.availableToMint;
         }
       });
       const provider = new ethers.providers.Web3Provider(window.ethereum);
       const signer = provider.getSigner();
       const contractNft = new ethers.Contract(contractNftAddress, NftABI.abi, signer);
-      const tx = await contractNft.whitelistMint(proofWl);
+      const tx = await contractNft.whitelistMint(availableToMint, proofWl, ticketCount);
       await provider.waitForTransaction(tx.hash);
       setWaitingBuy(false);
       toast.success("Success Mint !");
@@ -248,24 +262,13 @@ export default function Home() {
       getTicketsBought();
       getTicketsSold();
       getRaffleOver();
+      getTotalSupply()
     }else{
       (async function fetchProviderAndData() {
         await getAlchemyProviderAndData();
       })();
     }
   }, [address]);
-
-  // useEffect(() => {
-  //   if (isConnected && endTimeBool) {
-  //     (async function fetchWinnerData() {
-  //       await checkWinner();
-  //     })();
-  //   }
-  // }, [endTimeBool, isConnected, address]);
-
-  // useEffect(() => {
-  //   getTicketsBought();
-  // }, [getTicketsBought, address]);
 
   useEffect(() => {
     if(!isConnected) return;
@@ -292,7 +295,6 @@ export default function Home() {
   } else {
     maxTickets = 1;
   }
-
 
   return (
     <>
@@ -354,7 +356,7 @@ export default function Home() {
               <div className="flex flex-row py-4 px-2 md:p-4 xl:px-0 bg-secondary rounded-lg justify-around gap-3 md:gap-7 lg:gap-0 border border-gray-600 bg-opacity-60">
                 <p className="flex flex-col lg:flex-row text-md lg:text-lg xl:text-xl font-bold text-white">Mint price:<span className=" text-sm md:text-md lg:text-lg xl:text-xl text-light">FREE</span><span className=" text-gray-400 text-xs lg:text-sm">+ 1 MATIC ticket fee</span>
                 </p>
-                <p className="flex flex-col lg:flex-row text-md lg:text-lg xl:text-xl font-bold text-white">Supply:<span className="text-center text-light">5000</span>
+                <p className="flex flex-col lg:flex-row text-md lg:text-lg xl:text-xl font-bold text-white">Supply:<span className="text-center text-light"> {nftSupply} / 5000</span>
                 </p>
                 <div className="flex flex-col lg:flex-row text-md lg:text-lg xl:text-xl font-bold text-white">
                   Tickets sold:
