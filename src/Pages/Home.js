@@ -41,35 +41,31 @@ export default function Home() {
   const [hasCheckedWinner, setHasCheckedWinner] = useState(false);
   const [winnerNbMint, setWinnerNbMint] = useState(0);
   const [hasNotMinted, setHasNotMinted] = useState(false);
+  const [isRaffleOver, setIsRaffleOver] = useState(false);
+  
 
   const { guaranteed, whitelistFCFS, publicSale } = useContext(SaleStatusContext);
   // Use `guaranteed.status`, `guaranteed.start`, `guaranteed.end`, `public.status`, `public.start`, `public.end`, `whitelistFCFS.status`, `whitelistFCFS.start`, `whitelistFCFS.end` to get the status of each sale
 
 
-  const settings = {
-    apiKey: "ZQYOoMuEPgZwfP0yxEz1NzGyn2y2qCTW",
-    network: Network.MATIC_MAINNET,
-  };
-
-  const alchemy = new Alchemy(settings);
+  
 
   const getAlchemyProviderAndData = async () => {
+    const settings = {
+      apiKey: "kKaUsI3UwlljF-I3np_9fWNG--9i9RlF",
+      network: Network.MATIC_MAINNET,
+    };  
+    const alchemy = new Alchemy(settings);
     const maticProvider = await alchemy.config.getProvider();
-    // const block = await maticProvider.getBlock();
     const contractRaffleBeforeConnection = new ethers.Contract(contractRaffleAddress, RaffleABI.abi, maticProvider);
+    const contractNftBeforeConnection = new ethers.Contract(contractNftAddress, NftABI.abi, maticProvider);
     const ticketsSold = await contractRaffleBeforeConnection.nbTicketSell();
+    const isOver = await contractNftBeforeConnection.isRaffleOver();
     setTicketsSold(ticketsSold.toNumber());
+    setIsRaffleOver(isOver);
   };
 
   const ticketPrice = 1;
-  const provider = new ethers.providers.Web3Provider(window.ethereum);
-  const signer = provider.getSigner();
-  const contractRaffle = useMemo(() => {
-    return new ethers.Contract(contractRaffleAddress, RaffleABI.abi, signer);
-  }, [signer]);
-  const contractNft = useMemo(() => {
-    return new ethers.Contract(contractNftAddress, NftABI.abi, signer);
-  }, [signer]);
 
   const isWhitelisted = (address) => {
     return whitelist.some(item => item.address === address);
@@ -110,14 +106,29 @@ export default function Home() {
   };
 
   const getTicketsSold = async () => {
-    if (!contractRaffle) return;
+    if (!isConnected) return;
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    const signer = provider.getSigner();
+    const contractRaffle = new ethers.Contract(contractRaffleAddress, RaffleABI.abi, signer);
     const ticketsSold = await contractRaffle.nbTicketSell();
     setTicketsSold(ticketsSold.toNumber());
+  };
+
+  const getRaffleOver = async () => {
+    if (!isConnected) return;
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    const signer = provider.getSigner();
+    const contractNft = new ethers.Contract(contractNftAddress, NftABI.abi, signer);
+    const isOver = await contractNft.isRaffleOver();
+    setIsRaffleOver(isOver);
   };
 
   const getTicketsBought = useCallback(async () => {
     if (!isConnected) return;
     try {
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const signer = provider.getSigner();
+      const contractRaffle = new ethers.Contract(contractRaffleAddress, RaffleABI.abi, signer);
       const idPlayer = await contractRaffle.idByAddress(address);
       const player = await contractRaffle.playersList(idPlayer);
       if (player.addressPlayer === address) {
@@ -135,13 +146,11 @@ export default function Home() {
     if (isConnected) {
       try {
         setWaitingBuy(true);
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+        const signer = provider.getSigner();
+        const contractRaffle = new ethers.Contract(contractRaffleAddress, RaffleABI.abi, signer);
         const tx = await contractRaffle.buyTicket(ticketCount, { value: ethers.utils.parseEther((ticketCount * ticketPrice).toString()) });
         await provider.waitForTransaction(tx.hash);
-        if (tx.status === 0) {
-          toast.error("Transaction error! But don't worry, even the best stumble sometimes!");
-          setWaitingBuy(false);
-          return;
-        }
         toast.success("You're in the game! Good luck for the draw!");
         setWaitingBuy(false);
         await getTicketsBought();
@@ -166,6 +175,9 @@ export default function Home() {
           proofWl = data.proof;
         }
       });
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const signer = provider.getSigner();
+      const contractNft = new ethers.Contract(contractNftAddress, NftABI.abi, signer);
       const tx = await contractNft.whitelistMint(proofWl);
       await provider.waitForTransaction(tx.hash);
       setWaitingBuy(false);
@@ -190,6 +202,9 @@ export default function Home() {
         return;
       }
       setWaitingBuy(true);
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const signer = provider.getSigner();
+      const contractNft = new ethers.Contract(contractNftAddress, NftABI.abi, signer);
       const tx = await contractNft.winnerRaffleSaleMint();
       await provider.waitForTransaction(tx.hash);
       toast.success("Success Mint !");
@@ -202,16 +217,17 @@ export default function Home() {
   }
 
   async function checkWinner() {
-    if (!isConnected) return false; // conditionner aussi a la phase winner Mint
+    if (!isConnected && !isRaffleOver) return false; // nned to be connected and raffleOver
     try {
       console.log("Checking winner...");
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const signer = provider.getSigner();
+      const contractNft = new ethers.Contract(contractNftAddress, NftABI.abi, signer);
       const winnerData = await contractNft.winnerByAddress(address);
       console.log("Winner data:", winnerData);
       const isWinner = winnerData.addressWinner === address && winnerData.numberOfWin > 0;
       const notMinted = winnerData.notMinted;
-
       setHasNotMinted(notMinted);
-
       if (isWinner) {
         setIsWinnerRaffle(true);
         setWinnerNbMint(winnerData.numberOfWin.toNumber());
@@ -228,9 +244,15 @@ export default function Home() {
   }
 
   useEffect(() => {
-    (async function fetchProviderAndData() {
-      await getAlchemyProviderAndData();
-    })();
+    if(isConnected){
+      getTicketsBought();
+      getTicketsSold();
+      getRaffleOver();
+    }else{
+      (async function fetchProviderAndData() {
+        await getAlchemyProviderAndData();
+      })();
+    }
   }, [address]);
 
   // useEffect(() => {
@@ -241,11 +263,12 @@ export default function Home() {
   //   }
   // }, [endTimeBool, isConnected, address]);
 
-  useEffect(() => {
-    getTicketsBought();
-  }, [getTicketsBought, address]);
+  // useEffect(() => {
+  //   getTicketsBought();
+  // }, [getTicketsBought, address]);
 
   useEffect(() => {
+    if(!isConnected) return;
     if (balance.data) {
       const userBalanceInWei = balance.data.value;
       const ticketCostInWei = ethers.utils.parseEther((ticketCount * ticketPrice).toString());
@@ -517,7 +540,7 @@ export default function Home() {
                   buyTickets={buyTickets}
                   checkWinner={checkWinner}
                   winnerRaffleMint={winnerRaffleMint}
-                  contractNft={contractNft}
+                  isRaffleOver={isRaffleOver}
                   setShowModalWinner={setShowModalWinner}
                   showModalWinner={showModalWinner}
                   setShowModalLooser={setShowModalLooser}

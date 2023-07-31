@@ -1,11 +1,5 @@
 import React, { createContext, useState, useEffect } from 'react';
 import { Network, Alchemy } from 'alchemy-sdk';
-import { ethers } from 'ethers';
-import NftABI from '../ABI/TBT_NFT.json';
-import RaffleABI from '../ABI/RaffleG_0.json';
-
-const contractNftAddress = "0x5E82c890a9531784F5c2730C16c76361670D0429";
-const contractRaffleAddress = "0x84D78f7826e4d614B294DD1A65aeAb3e08CbC738";
 
 export const SaleStatusContext = createContext();
 
@@ -28,23 +22,19 @@ export const SaleStatusProvider = ({ children }) => {
         },
     });
 
-
-    const settings = {
-        apiKey: "ZQYOoMuEPgZwfP0yxEz1NzGyn2y2qCTW",
-        network: Network.MATIC_MAINNET,
-    };
-
-    const alchemy = new Alchemy(settings);
-
-
     useEffect(() => {
         const interval = setInterval(async () => {
             try {
+                //only fetch block.timestamp no mor data when user not connected
+                const settings = {
+                    apiKey: "kKaUsI3UwlljF-I3np_9fWNG--9i9RlF",
+                    network: Network.MATIC_MAINNET,
+                };
+            
+                const alchemy = new Alchemy(settings);
                 const maticProvider = await alchemy.config.getProvider();
                 const block = await maticProvider.getBlock();
     
-                const contractNft = new ethers.Contract(contractNftAddress, NftABI.abi, maticProvider);
-                const contractRaffleBeforeConnection = new ethers.Contract(contractRaffleAddress, RaffleABI.abi, maticProvider)
     
                 const dateStartNft = 1690729200;
                 const dateEndtNftGuaranteed = 1690815600;

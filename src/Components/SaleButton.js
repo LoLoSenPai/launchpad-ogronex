@@ -25,7 +25,7 @@ export default function SaleButton(props) {
         setShowModalPending,
         showModalLooser,
         setShowModalLooser,
-        contractNft,
+        isRaffleOver,
         guaranteed,
         whitelistFCFS,
         publicSale,
@@ -62,8 +62,7 @@ export default function SaleButton(props) {
         } else if (publicSale.status === 'Ended' && !hasCheckedWinner && isConnected) {
             newTextButton = "Verify";
             newButtonOnClick = async () => {
-                const isRaffleOver = await contractNft.isRaffleOver();
-                if (isRaffleOver) {
+                if (isRaffleOver.status) {
                     const isWinner = await checkWinner();
                     setHasCheckedWinner(true);
                     console.log("hasCheckedWinner from button", hasCheckedWinner);
