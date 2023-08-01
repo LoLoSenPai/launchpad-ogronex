@@ -5,6 +5,11 @@ export const SaleStatusContext = createContext();
 
 export const SaleStatusProvider = ({ children }) => {
     const [saleStatus, setSaleStatus] = useState({
+        holder: {
+            status: '',
+            start: null,
+            end: null,
+        },
         guaranteed: {
             status: '',
             start: null,
@@ -35,19 +40,23 @@ export const SaleStatusProvider = ({ children }) => {
                 const maticProvider = await alchemy.config.getProvider();
                 const block = await maticProvider.getBlock();
     
-                const START_TIMESTAMP = 1690984800; //Wed Aug 02 2023 14:00:00 GMT+0
-                const OG_START_TIMESTAMP = 1691071200; //Thu Aug 03 2023 14:00:00 GMT+0
-                const WL_START_TIMESTAMP = 1691074800; //Thu Aug 03 2023 15:00:00 GMT+0
-                const WL_END_TIMESTAMP = 1691078400; //Thu Aug 03 2023 16:00:00 GMT+0
-                const START_RAFFLE_TIMESTAMP = 1691078400;//Thu Aug 03 2023 16:00:00 GMT+0
-                const END_RAFFLE_TIMESTAMP = 1691089200;//Thu Aug 03 2023 19:00:00 GMT+0
+                // const START_TIMESTAMP = 1690984800; //Wed Aug 02 2023 14:00:00 GMT+0
+                // const OG_START_TIMESTAMP = 1691071200; //Thu Aug 03 2023 14:00:00 GMT+0
+                // const WL_START_TIMESTAMP = 1691074800; //Thu Aug 03 2023 15:00:00 GMT+0
+                // const WL_END_TIMESTAMP = 1691078400; //Thu Aug 03 2023 16:00:00 GMT+0
+                // const START_RAFFLE_TIMESTAMP = 1691078400;//Thu Aug 03 2023 16:00:00 GMT+0
+                // const END_RAFFLE_TIMESTAMP = 1691089200;//Thu Aug 03 2023 19:00:00 GMT+0
 
-                const dateStartNft = 1690984800;
-                const dateEndtNftGuaranteed = 1691071200;
-                const whitelistOGStart = 1691071200; //need to add the OG phase 
-                const whitelistOGEnd = 1691074800; //need to add the OG phase 
+                // holder sale
+                const dateStartNftHolder = 1690984800;
+                const dateEndtNftHolder = 1691071200;
+                // OG fcfs
+                const dateStartNft = 1691071200;
+                const dateEndtNftGuaranteed = 1691074800;
+                // whitelist fcfs
                 const whitelistFcfsStart = 1691074800;
                 const whitelistFcfsEnd = 1691078400;
+                // public sale
                 const startTime = 1691078400;
                 const deadline = 1691089200;
                 // const dateStartNft = await contractNft.saleStartTime();
@@ -57,6 +66,15 @@ export const SaleStatusProvider = ({ children }) => {
                 // const startTime = await contractRaffleBeforeConnection.startDate();
                 // const deadline = await contractRaffleBeforeConnection.deadline();
     
+                let holderStatus = '';
+                if (block.timestamp < dateStartNftHolder) {
+                    holderStatus = "Not Started";
+                } else if (block.timestamp >= dateStartNftHolder && block.timestamp <= dateEndtNftHolder) {
+                    holderStatus = "Live";
+                } else {
+                    holderStatus = "Ended";
+                }
+
                 let guaranteedStatus = '';
                 if (block.timestamp < dateStartNft) {
                     guaranteedStatus = "Not Started";
@@ -86,6 +104,12 @@ export const SaleStatusProvider = ({ children }) => {
     
                 setSaleStatus((prevStatus) => ({
                     ...prevStatus,
+                    holder: {
+                        ...prevStatus.holder,
+                        status: holderStatus,
+                        start: dateStartNftHolder,
+                        end: dateEndtNftHolder,
+                    },
                     guaranteed: {
                         ...prevStatus.guaranteed,
                         status: guaranteedStatus,

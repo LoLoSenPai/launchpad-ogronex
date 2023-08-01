@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useCallback, useContext } from "react";
+import React, { useState, useEffect, useCallback, useContext } from "react";
 import { DynamicWidget } from "@dynamic-labs/sdk-react";
 import { useAccount, useBalance } from "wagmi";
 import { ethers } from "ethers";
@@ -31,6 +31,7 @@ export default function Home() {
   const [ticketsSold, setTicketsSold] = useState(0);
   const [waitingBuy, setWaitingBuy] = useState(false);
 
+  const [showTooltipHolder, setShowTooltipHolder] = useState(false);
   const [showTooltipOG, setShowTooltipOG] = useState(false);
   const [showTooltipWL, setShowTooltipWL] = useState(false);
   const [showTooltipPublic, setShowTooltipPublic] = useState(false);
@@ -47,7 +48,7 @@ export default function Home() {
   const [isRaffleOver, setIsRaffleOver] = useState(false);
 
 
-  const { guaranteed, whitelistFCFS, publicSale } = useContext(SaleStatusContext);
+  const { holder, guaranteed, whitelistFCFS, publicSale } = useContext(SaleStatusContext);
   // Use `guaranteed.status`, `guaranteed.start`, `guaranteed.end`, `public.status`, `public.start`, `public.end`, `whitelistFCFS.status`, `whitelistFCFS.start`, `whitelistFCFS.end` to get the status of each sale
 
 
@@ -90,6 +91,13 @@ export default function Home() {
 
 
   // Tooltip for i icon
+  const handleMouseEnterHolder = () => {
+    setShowTooltipHolder(true);
+  };
+  const handleMouseLeaveHolder = () => {
+    setShowTooltipHolder(false);
+  };
+
   const handleMouseEnter = () => {
     setShowTooltipOG(true);
   };
@@ -198,7 +206,7 @@ export default function Home() {
       let addressWl;
       let proofWl;
       let availableToMint;
-      if(now > START_TIMESTAMP && now <= OG_START_TIMESTAMP){
+      if (now > START_TIMESTAMP && now <= OG_START_TIMESTAMP) {
         const result = whitelistGuaranteed.map((data) => {
           if (data.address === address) {
             addressWl = data.address;
@@ -206,7 +214,7 @@ export default function Home() {
             availableToMint = data.availableToMint;
           }
         });
-      }else if(now > OG_START_TIMESTAMP && now <= WL_START_TIMESTAMP){
+      } else if (now > OG_START_TIMESTAMP && now <= WL_START_TIMESTAMP) {
         const result = whitelistOG.map((data) => {
           if (data.address === address) {
             addressWl = data.address;
@@ -214,7 +222,7 @@ export default function Home() {
             availableToMint = data.availableToMint;
           }
         });
-      }else{
+      } else {
         const result = whitelistWL.map((data) => {
           if (data.address === address) {
             addressWl = data.address;
@@ -402,9 +410,56 @@ export default function Home() {
               </div>
 
               <div className="flex flex-col gap-6">
+
                 <div className="flex flex-col md:flex-row items-center gap-4 lg:gap-2 xl:gap-10 p-4 bg-four rounded-lg border border-gray-600 justify-center md:justify-between">
                   <div className="relative lg:text-lg xl:text-xl font-bold text-white">
-                    Guaranteed mint
+                    Holders
+                    <span
+                      className="ml-3 text-light border border-light rounded-full px-2 text-sm"
+                      onMouseEnter={handleMouseEnterHolder}
+                      onMouseLeave={handleMouseLeaveHolder}
+                    >
+                      i
+                    </span>
+                    {showTooltipHolder &&
+                      <div className="text-center tooltip absolute left-1/2 top-full -translate-x-1/2 transform whitespace-nowrap rounded bg-secondary bg-opacity-80 p-2 text-white z-10">
+                        Boxbies and Dalmatians Holders
+                      </div>
+                    }
+                  </div>
+                  <div className="flex flew-row justify-center lg:px-2">
+                    <p className={"flex items-center xl:text-xl font-bold text-white bg-secondary py-2 px-6 md:px-2 lg:px-6 rounded-lg border border-gray-600 bg-opacity-60 md:h-[66px] xl:h-[74px] min-w-[160px] md:min-w-[80px] md:max-w-[90px] lg:min-w-[160px] xl:min-w-[180px]"}>
+                      <i className={`fas fa-circle pr-2 text-light text-sm animate-pulse ${holder.status === 'Live' ? 'text-green-500' : 'text-red-500'}`}></i>
+                      {holder.status}
+                    </p>
+                  </div>
+                  {holder.status !== 'Ended' && (
+                    <div className="flex flex-col justify-end md:-ml-1.5 lg:ml-2 xl:ml-0 min-w-[170px] xl:min-w-[233px]">
+                      <div className="flex flex-col text-center text-md text-gray-400 bg-secondary py-2 px-6 rounded-lg border border-gray-600 bg-opacity-60">
+                        {holder.status === 'Not Started' &&
+                          <>
+                            Live in
+                            <span className="text-white pl-2 xl:text-xl">
+                              <CountdownComponent deadline={holder.start} />
+                            </span>
+                          </>
+                        }
+                        {holder.status === 'Live' &&
+                          <>
+                            Ends in
+                            <span className="text-white pl-2 xl:text-xl">
+                              <CountdownComponent deadline={holder.end} />
+                            </span>
+                          </>
+                        }
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                <div className="flex flex-col md:flex-row items-center gap-4 lg:gap-2 xl:gap-10 p-4 bg-four rounded-lg border border-gray-600 justify-center md:justify-between">
+                  <div className="relative lg:text-lg xl:text-xl font-bold text-white">
+                    OG FCFS
                     <span
                       className="ml-3 text-light border border-light rounded-full px-2 text-sm"
                       onMouseEnter={handleMouseEnter}
@@ -414,7 +469,7 @@ export default function Home() {
                     </span>
                     {showTooltipOG &&
                       <div className="text-center tooltip absolute left-1/2 top-full -translate-x-1/2 transform whitespace-nowrap rounded bg-secondary bg-opacity-80 p-2 text-white z-10">
-                        Boxbies and Dalmatians Holders
+                        1 mint per wallet
                       </div>
                     }
                   </div>
@@ -465,10 +520,10 @@ export default function Home() {
                     }
                   </div>
                   <div className="flex flew-row justify-center lg:px-2">
-                    <p className={"flex items-center xl:text-xl font-bold text-white bg-secondary py-2 px-6 md:px-2 lg:px-6 rounded-lg border border-gray-600 bg-opacity-60 md:h-[66px] xl:h-[74px] min-w-[160px] md:min-w-[80px] md:max-w-[90px] lg:min-w-[160px] xl:min-w-[180px]"}>
+                    <div className={"flex items-center xl:text-xl font-bold text-white bg-secondary py-2 px-6 md:px-2 lg:px-6 rounded-lg border border-gray-600 bg-opacity-60 md:h-[66px] xl:h-[74px] min-w-[160px] md:min-w-[80px] md:max-w-[90px] lg:min-w-[160px] xl:min-w-[180px]"}>
                       <i className={`fas fa-circle pr-2 text-light text-sm animate-pulse ${whitelistFCFS.status === 'Live' ? 'text-green-500' : 'text-red-500'}`}></i>
                       {whitelistFCFS.status}
-                    </p>
+                    </div>
                   </div>
                   {whitelistFCFS.status !== 'Ended' && (
                     <div className="flex flex-col justify-end md:-ml-1.5 lg:ml-2 xl:ml-0 min-w-[170px] xl:min-w-[233px]">
