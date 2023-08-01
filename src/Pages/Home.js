@@ -39,7 +39,7 @@ export default function Home() {
   const [ticketsSold, setTicketsSold] = useState(0);
   const [waitingBuy, setWaitingBuy] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [availableToMint, setAvailableToMint] = useState(undefined);
+  const [availableToMint, setAvailableToMint] = useState(0);
 
   const [showTooltipHolder, setShowTooltipHolder] = useState(false);
   const [showTooltipOG, setShowTooltipOG] = useState(false);
