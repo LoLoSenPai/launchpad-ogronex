@@ -431,7 +431,7 @@ export default function Home() {
           <div className="flex flex-col-reverse md:flex-row justify-center w-full xl:pl-35">
             <div className="flex flex-col mt-10 w-full gap-6 px-4">
               <div className="flex justify-between xl:justify-normal items-center p-0 md:p-3 md:pl-0 xl:ml-5">
-                <h1 className="text-6xl font-bold text-white">Boxbies</h1>
+                <h1 className="text-xl md:text-6xl font-bold text-white">Infected Dalmatians</h1>
                 <div className="flex flex-col md:flex-row items-center gap-3 xl:ml-10">
                   <a href="https://discord.gg/boxbies" target="_blank" rel="noreferrer"><i className="fab fa-discord text-lg text-gray-500"></i></a>
                   <a href="https://twitter.com/dalmatiansnft" target="_blank" rel="noreferrer"><i className="fab fa-twitter text-lg text-gray-500"></i></a>
