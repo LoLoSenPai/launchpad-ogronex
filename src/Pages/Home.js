@@ -313,7 +313,7 @@ export default function Home() {
         await getAlchemyProviderAndData();
       })();
     }
-  }, [address, isConnected, getTicketsBought, getTicketsSold]);
+  }, [address]);
 
   useEffect(() => {
     const whitelistObject = isWhitelisted(address);
@@ -322,7 +322,7 @@ export default function Home() {
 
   useEffect(() => {
     if (!isConnected) return;
-    if (balance.data) {
+    if (balance.data && typeof ticketCount === 'number' && typeof ticketPrice === 'number') {
       const userBalanceInWei = balance.data.value;
       const ticketCostInWei = ethers.utils.parseEther((ticketCount * ticketPrice).toString());
       console.log("User balance:", userBalanceInWei.toString());
@@ -330,7 +330,7 @@ export default function Home() {
     } else {
       setHasBalance(false);
     }
-  }, [address, balance, ticketCount, ticketPrice, isConnected]);
+  }, [address, balance, ticketCount, ticketPrice, isConnected]);  
 
 
   let maxTickets;
