@@ -214,21 +214,27 @@ export default function Home() {
       await provider.waitForTransaction(tx.hash);
       setWaitingBuy(false);
       toast.success("Success Mint !");
+      let alreadyMintGuaranted = 0;
+      let alreadyMintOG = 0;
+      let alreadyMintWL = 0;
       if (holder.status === "Live") {
-        const alreadyMintGuaranted = await contractNft.alreadyMintedHolders(address)
+        alreadyMintGuaranted = await contractNft.alreadyMintedHolders(address)
         setRemainingTickets(availableToMint - alreadyMintGuaranted);
         toast.success(`You have already mint ${alreadyMintGuaranted} NFT`)
       }
       if (guaranteed.status === "Live") {
-        const alreadyMintOG = await contractNft.alreadyMintedOG(address)
+        alreadyMintOG = await contractNft.alreadyMintedOG(address)
         setRemainingTickets(availableToMint - alreadyMintOG);
         toast.success(`You have already mint ${alreadyMintOG} NFT`)
       }
       if (whitelistFCFS.status === "Live") {
-        const alreadyMintWL = await contractNft.alreadyMintedWhitelist(address)
+        alreadyMintWL = await contractNft.alreadyMintedWhitelist(address)
         setRemainingTickets(availableToMint - alreadyMintWL);
         toast.success(`You have already mint ${alreadyMintWL} NFT`)
       }
+      const newRemainingTickets = availableToMint - alreadyMintGuaranted - alreadyMintOG - alreadyMintWL;
+      setRemainingTickets(newRemainingTickets);
+      localStorage.setItem('remainingTickets', newRemainingTickets.toString());
       await getTotalSupply();
     } catch (error) {
       if (error.message.includes('execution reverted')) {
@@ -291,7 +297,12 @@ export default function Home() {
   }
 
   useEffect(() => {
-    setRemainingTickets(availableToMint);
+    const remainingTicketsFromLocalStorage = localStorage.getItem('remainingTickets');
+    if (remainingTicketsFromLocalStorage) {
+      setRemainingTickets(Number(remainingTicketsFromLocalStorage));
+    } else {
+      setRemainingTickets(availableToMint);
+    }
   }, [availableToMint]);
 
   useEffect(() => {
@@ -300,7 +311,7 @@ export default function Home() {
     } else {
       setTicketCount(1);
     }
-  }, [holder.status, publicSale.status, remainingTickets]);  
+  }, [holder.status, publicSale.status, remainingTickets]);
 
   useEffect(() => {
     if (isConnected) {
@@ -328,7 +339,7 @@ export default function Home() {
     // Save the value in localStorage
     localStorage.setItem('availableToMint', newAvailableToMint);
   }, [address, isWhitelisted]);
-  
+
   // useEffect(() => {
   //   const whitelistObject = isWhitelisted(address);
   //   setAvailableToMint(whitelistObject ? whitelistObject.availableToMint : undefined);
@@ -344,7 +355,7 @@ export default function Home() {
     } else {
       setHasBalance(false);
     }
-  }, [address, ticketCount]);  
+  }, [address, ticketCount]);
 
 
   let maxTickets;
