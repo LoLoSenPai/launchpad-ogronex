@@ -6,7 +6,9 @@ import { Network, Alchemy } from 'alchemy-sdk';
 import CountdownComponent from "../Components/Countdown";
 import RaffleABI from "../ABI/RaffleG_0.json";
 import NftABI from "../ABI/TBT_NFT.json";
-import whitelist from '../Whitelist/whitelist.json';
+import whitelistGuaranteed from '../Whitelist/whitelistGuaranteed.json';
+import whitelistOG from '../Whitelist/whitelistOG.json';
+import whitelistWL from '../Whitelist/whitelistWL.json';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { SaleStatusContext } from "../Context/SaleStatusContext";
@@ -43,19 +45,24 @@ export default function Home() {
   const [winnerNbMint, setWinnerNbMint] = useState(0);
   const [hasNotMinted, setHasNotMinted] = useState(false);
   const [isRaffleOver, setIsRaffleOver] = useState(false);
-  
+
 
   const { guaranteed, whitelistFCFS, publicSale } = useContext(SaleStatusContext);
   // Use `guaranteed.status`, `guaranteed.start`, `guaranteed.end`, `public.status`, `public.start`, `public.end`, `whitelistFCFS.status`, `whitelistFCFS.start`, `whitelistFCFS.end` to get the status of each sale
 
 
-  
+  const START_TIMESTAMP = 1690984800; //Wed Aug 02 2023 14:00:00 GMT+0
+  const OG_START_TIMESTAMP = 1691071200; //Thu Aug 03 2023 14:00:00 GMT+0
+  const WL_START_TIMESTAMP = 1691074800; //Thu Aug 03 2023 15:00:00 GMT+0
+  const WL_END_TIMESTAMP = 1691078400; //Thu Aug 03 2023 16:00:00 GMT+0
+  const START_RAFFLE_TIMESTAMP = 1691078400;//Thu Aug 03 2023 16:00:00 GMT+0
+  const END_RAFFLE_TIMESTAMP = 1691089200;//Thu Aug 03 2023 19:00:00 GMT+0
 
   const getAlchemyProviderAndData = async () => {
     const settings = {
       apiKey: "kKaUsI3UwlljF-I3np_9fWNG--9i9RlF",
       network: Network.MATIC_MAINNET,
-    };  
+    };
     const alchemy = new Alchemy(settings);
     const maticProvider = await alchemy.config.getProvider();
     const contractRaffleBeforeConnection = new ethers.Contract(contractRaffleAddress, RaffleABI.abi, maticProvider);
@@ -71,8 +78,16 @@ export default function Home() {
   const ticketPrice = 1;
 
   const isWhitelisted = (address) => {
-    return whitelist.some(item => item.address === address);
+    const now = Date.now();
+    if (now < OG_START_TIMESTAMP) { //Thu Aug 03 2023 14:00:00 GMT+0 (OG_START_TIMESTAMP)
+      return whitelistGuaranteed.some(item => item.address === address);
+    } else if (now < WL_START_TIMESTAMP) { //Thu Aug 03 2023 15:00:00 GMT+0 (WL_START_TIMESTAMP)
+      return whitelistOG.some(item => item.address === address);
+    } else {
+      return whitelistWL.some(item => item.address === address);
+    }
   }
+
 
   // Tooltip for i icon
   const handleMouseEnter = () => {
@@ -178,17 +193,36 @@ export default function Home() {
     if (!isConnected) return // conditionner aussi a la phase guarranteed Mint
     try {
       // conditionner la WL en function de la phase (holder, og and wl)!
+      const now = Date.now();
       setWaitingBuy(true);
       let addressWl;
       let proofWl;
       let availableToMint;
-      const result = whitelist.map((data) => {
-        if (data.address === address) {
-          addressWl = data.address;
-          proofWl = data.proof;
-          availableToMint = data.availableToMint;
-        }
-      });
+      if(now > START_TIMESTAMP && now <= OG_START_TIMESTAMP){
+        const result = whitelistGuaranteed.map((data) => {
+          if (data.address === address) {
+            addressWl = data.address;
+            proofWl = data.proof;
+            availableToMint = data.availableToMint;
+          }
+        });
+      }else if(now > OG_START_TIMESTAMP && now <= WL_START_TIMESTAMP){
+        const result = whitelistOG.map((data) => {
+          if (data.address === address) {
+            addressWl = data.address;
+            proofWl = data.proof;
+            availableToMint = data.availableToMint;
+          }
+        });
+      }else{
+        const result = whitelistWL.map((data) => {
+          if (data.address === address) {
+            addressWl = data.address;
+            proofWl = data.proof;
+            availableToMint = data.availableToMint;
+          }
+        });
+      }
       const provider = new ethers.providers.Web3Provider(window.ethereum);
       const signer = provider.getSigner();
       const contractNft = new ethers.Contract(contractNftAddress, NftABI.abi, signer);
@@ -231,7 +265,7 @@ export default function Home() {
   }
 
   async function checkWinner() {
-    if (!isConnected && !isRaffleOver) return false; // nned to be connected and raffleOver
+    if (!isConnected && !isRaffleOver) return false; // need to be connected and raffleOver
     try {
       console.log("Checking winner...");
       const provider = new ethers.providers.Web3Provider(window.ethereum);
@@ -258,12 +292,12 @@ export default function Home() {
   }
 
   useEffect(() => {
-    if(isConnected){
+    if (isConnected) {
       getTicketsBought();
       getTicketsSold();
       getRaffleOver();
       getTotalSupply()
-    }else{
+    } else {
       (async function fetchProviderAndData() {
         await getAlchemyProviderAndData();
       })();
@@ -271,7 +305,7 @@ export default function Home() {
   }, [address]);
 
   useEffect(() => {
-    if(!isConnected) return;
+    if (!isConnected) return;
     if (balance.data) {
       const userBalanceInWei = balance.data.value;
       const ticketCostInWei = ethers.utils.parseEther((ticketCount * ticketPrice).toString());
@@ -413,7 +447,7 @@ export default function Home() {
                     </div>
                   )}
                 </div>
-                
+
                 <div className="flex flex-col md:flex-row items-center gap-4 lg:gap-2 xl:gap-10 p-4 bg-four rounded-lg border border-gray-600 justify-center md:justify-between">
                   <div className="relative lg:text-lg xl:text-xl font-bold text-white">
                     Whitelist FCFS
