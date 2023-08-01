@@ -339,7 +339,7 @@ export default function Home() {
       setLoading(false);
     }
     fetchData();
-  }, [address, isConnected]);
+  }, [address]);
   
 
   useEffect(() => {
