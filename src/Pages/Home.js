@@ -330,7 +330,7 @@ export default function Home() {
     } else {
       setHasBalance(false);
     }
-  }, [address, balance, ticketCount, ticketPrice, isConnected]);  
+  }, [address, ticketCount]);  
 
 
   let maxTickets;
