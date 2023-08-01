@@ -261,7 +261,6 @@ export default function Home() {
       const tx = await contractNft.winnerRaffleSaleMint();
       await provider.waitForTransaction(tx.hash);
       toast.success("Success Mint !");
-      await checkWinner();
     } catch (error) {
       toast.error("Transaction error! But don't worry, even the best stumble sometimes!")
     } finally {
@@ -691,7 +690,7 @@ export default function Home() {
                   buyTickets={buyTickets}
                   checkWinner={checkWinner}
                   winnerRaffleMint={winnerRaffleMint}
-                  isRaffleOver={appIsRaffleOver}
+                  appIsRaffleOver={appIsRaffleOver}
                   setShowModalWinner={setShowModalWinner}
                   showModalWinner={showModalWinner}
                   setShowModalLooser={setShowModalLooser}

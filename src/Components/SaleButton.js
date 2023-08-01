@@ -70,6 +70,7 @@ export default function SaleButton(props) {
         } else if (publicSale && publicSale.status === 'Ended' && !hasCheckedWinner && isConnected) {
             newTextButton = "Verify";
             newButtonOnClick = async () => {
+                console.log(appIsRaffleOver);
                 if (appIsRaffleOver) {
                     console.log("ICI");
                     const isWinner = await checkWinner();
