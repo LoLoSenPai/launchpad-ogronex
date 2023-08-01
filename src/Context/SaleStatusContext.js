@@ -51,7 +51,7 @@ export const SaleStatusProvider = ({ children }) => {
                 const whitelistFcfsEnd = 1690920900;
                 // public sale
                 const startTime = 1690923600;
-                const deadline = 1690934400;
+                const deadline = 1690928580;
                 // const dateStartNft = await contractNft.saleStartTime();
                 // const dateEndtNftGuaranteed = await contractNft.endTimeGuaranteed();
                 // const whitelistFcfsStart = await contractNft.saleStartTime();
