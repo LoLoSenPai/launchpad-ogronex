@@ -317,8 +317,22 @@ export default function Home() {
 
   useEffect(() => {
     const whitelistObject = isWhitelisted(address);
-    setAvailableToMint(whitelistObject ? whitelistObject.availableToMint : undefined);
+    let newAvailableToMint = whitelistObject ? whitelistObject.availableToMint : undefined;
+    // Check if a value is saved in localStorage
+    const availableToMintFromStorage = localStorage.getItem('availableToMint');
+    if (availableToMintFromStorage) {
+      // Use the value from localStorage if it exists
+      newAvailableToMint = availableToMintFromStorage;
+    }
+    setAvailableToMint(newAvailableToMint);
+    // Save the value in localStorage
+    localStorage.setItem('availableToMint', newAvailableToMint);
   }, [address, isWhitelisted]);
+  
+  // useEffect(() => {
+  //   const whitelistObject = isWhitelisted(address);
+  //   setAvailableToMint(whitelistObject ? whitelistObject.availableToMint : undefined);
+  // }, [address, isWhitelisted]);
 
   useEffect(() => {
     if (!isConnected) return;
@@ -409,7 +423,7 @@ export default function Home() {
 
           <div className="flex flex-col md:flex-row justify-center md:mt-10 sm:max-md:overflow-hidden lg:pb-10 xl:pb-12">
             <div className="flex justify-center items-center w-full max-w-[400px] lg:min-w-[500px] xl:max-w-[600px] h-auto overflow-hidden xl:overflow-visible pb-7 lg:pb-8">
-              <img className="w-full scale-125" src="./Images/prize-maschine.png" alt="maschine with a hook to grab prize" />
+              <img className="w-full scale-125" src="./Images/prize-maschine-test.png" alt="maschine with a hook to grab prize" />
             </div>
             <div className="flex flex-col mt-10 w-full md:max-w-[420px] lg:max-w-[510px] xl:max-w-[650px] gap-6">
 
@@ -660,6 +674,7 @@ export default function Home() {
                   hasCheckedWinner={hasCheckedWinner}
                   holder={holder}
                   guaranteed={guaranteed}
+                  whitelistFCFS={whitelistFCFS}
                   publicSale={publicSale}
                   setIsWinnerRaffle={setIsWinnerRaffle}
                   remainingTickets={remainingTickets}
