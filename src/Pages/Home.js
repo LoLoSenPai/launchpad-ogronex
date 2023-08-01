@@ -82,8 +82,8 @@ export default function Home() {
     };
     const alchemy = new Alchemy(settings);
     const maticProvider = await alchemy.config.getProvider();
-    const contractRaffleBeforeConnection = new ethers.Contract(contractRaffleAddress, RaffleABI.abi, maticProvider);
-    const contractNftBeforeConnection = new ethers.Contract(contractNftAddress, NftABI.abi, maticProvider);
+    const contractRaffleBeforeConnection = new ethers.Contract(contractRaffleAddress, RaffleABI, maticProvider);
+    const contractNftBeforeConnection = new ethers.Contract(contractNftAddress, NftABI, maticProvider);
     const ticketsSold = await contractRaffleBeforeConnection.nbTicketSell();
     const isOver = await contractNftBeforeConnection.isRaffleOver();
     const nftsupply = await contractNftBeforeConnection.totalSupply();
@@ -166,7 +166,7 @@ export default function Home() {
     if (!isConnected) return;
     const provider = new ethers.providers.Web3Provider(window.ethereum);
     const signer = provider.getSigner();
-    const contractRaffle = new ethers.Contract(contractRaffleAddress, RaffleABI.abi, signer);
+    const contractRaffle = new ethers.Contract(contractRaffleAddress, RaffleABI, signer);
     const ticketsSold = await contractRaffle.nbTicketSell();
     setTicketsSold(ticketsSold.toNumber());
   };
@@ -175,17 +175,28 @@ export default function Home() {
     if (!isConnected) return;
     const provider = new ethers.providers.Web3Provider(window.ethereum);
     const signer = provider.getSigner();
-    const contractNft = new ethers.Contract(contractNftAddress, NftABI.abi, signer);
+    const contractNft = new ethers.Contract(contractNftAddress, NftABI, signer);
     const isOver = await contractNft.isRaffleOver();
     setIsRaffleOver(isOver);
   };
 
   const getTotalSupply = async () => {
     if (!isConnected) return;
+    const now = Date.now();
     const provider = new ethers.providers.Web3Provider(window.ethereum);
     const signer = provider.getSigner();
-    const contractNft = new ethers.Contract(contractNftAddress, NftABI.abi, signer);
+    const contractNft = new ethers.Contract(contractNftAddress, NftABI, signer);
     const nftsupply = await contractNft.totalSupply();
+    if (now > START_TIMESTAMP && now <= OG_START_TIMESTAMP) {
+      const alreadyMintGuaranted = await contractNft.alreadyMintedHolders(address)
+      toast.success(`you have alredy mint ${alreadyMintGuaranted} NFT`)
+    } else if (now > OG_START_TIMESTAMP && now <= WL_START_TIMESTAMP) {
+      const alreadyMintOG= await contractNft.alreadyMintedOG(address)
+      toast.success(`you have alredy mint ${alreadyMintOG} NFT`)
+    } else {
+      const alreadyMintWhitelist = await contractNft.alreadyMintedWhitelist(address)
+      toast.success(`you have alredy mint ${alreadyMintWhitelist} NFT`)
+    }
     setNftSupply(nftsupply.toNumber());
   };
 
@@ -194,7 +205,7 @@ export default function Home() {
     try {
       const provider = new ethers.providers.Web3Provider(window.ethereum);
       const signer = provider.getSigner();
-      const contractRaffle = new ethers.Contract(contractRaffleAddress, RaffleABI.abi, signer);
+      const contractRaffle = new ethers.Contract(contractRaffleAddress, RaffleABI, signer);
       const idPlayer = await contractRaffle.idByAddress(address);
       const player = await contractRaffle.playersList(idPlayer);
       if (player.addressPlayer === address) {
@@ -214,7 +225,7 @@ export default function Home() {
         setWaitingBuy(true);
         const provider = new ethers.providers.Web3Provider(window.ethereum);
         const signer = provider.getSigner();
-        const contractRaffle = new ethers.Contract(contractRaffleAddress, RaffleABI.abi, signer);
+        const contractRaffle = new ethers.Contract(contractRaffleAddress, RaffleABI, signer);
         const tx = await contractRaffle.buyTicket(ticketCount, { value: ethers.utils.parseEther((ticketCount * ticketPrice).toString()) });
         await provider.waitForTransaction(tx.hash);
         toast.success("You're in the game! Good luck for the draw!");
@@ -289,12 +300,12 @@ export default function Home() {
       // }
       const provider = new ethers.providers.Web3Provider(window.ethereum);
       const signer = provider.getSigner();
-      const contractNft = new ethers.Contract(contractNftAddress, NftABI.abi, signer);
+      const contractNft = new ethers.Contract(contractNftAddress, NftABI, signer);
       const tx = await contractNft.whitelistMint(availableToMint, proofWl, ticketCount);
       await provider.waitForTransaction(tx.hash);
       setWaitingBuy(false);
       toast.success("Success Mint !");
-
+      await getTotalSupply();
     } catch (error) {
       if (error.message.includes('execution reverted')) {
         const errorMessage = error.reason.split(':')[1].trim();
@@ -316,7 +327,7 @@ export default function Home() {
       setWaitingBuy(true);
       const provider = new ethers.providers.Web3Provider(window.ethereum);
       const signer = provider.getSigner();
-      const contractNft = new ethers.Contract(contractNftAddress, NftABI.abi, signer);
+      const contractNft = new ethers.Contract(contractNftAddress, NftABI, signer);
       const tx = await contractNft.winnerRaffleSaleMint();
       await provider.waitForTransaction(tx.hash);
       toast.success("Success Mint !");
@@ -334,7 +345,7 @@ export default function Home() {
       console.log("Checking winner...");
       const provider = new ethers.providers.Web3Provider(window.ethereum);
       const signer = provider.getSigner();
-      const contractNft = new ethers.Contract(contractNftAddress, NftABI.abi, signer);
+      const contractNft = new ethers.Contract(contractNftAddress, NftABI, signer);
       const winnerData = await contractNft.winnerByAddress(address);
       console.log("Winner data:", winnerData);
       const isWinner = winnerData.addressWinner === address && winnerData.numberOfWin > 0;
