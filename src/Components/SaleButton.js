@@ -25,7 +25,7 @@ export default function SaleButton(props) {
         setShowModalPending,
         showModalLooser,
         setShowModalLooser,
-        isRaffleOver,
+        appIsRaffleOver,
         holder,
         guaranteed,
         whitelistFCFS,
@@ -70,7 +70,8 @@ export default function SaleButton(props) {
         } else if (publicSale && publicSale.status === 'Ended' && !hasCheckedWinner && isConnected) {
             newTextButton = "Verify";
             newButtonOnClick = async () => {
-                if (isRaffleOver.status) {
+                if (appIsRaffleOver) {
+                    console.log("ICI");
                     const isWinner = await checkWinner();
                     setHasCheckedWinner(true);
                     console.log("hasCheckedWinner from button", hasCheckedWinner);
@@ -101,7 +102,7 @@ export default function SaleButton(props) {
         setTextButton(newTextButton);
         setButtonOnClick(() => newButtonOnClick);
         setButtonDisabled(newButtonDisabled);
-    }, [isConnected, waitingBuy, hasBalance, address, isWhitelisted, isWinnerRaffle, hasCheckedWinner,holder, guaranteed, whitelistFCFS, publicSale, isRaffleOver, remainingTickets, availableToMint]);
+    }, [isConnected, waitingBuy, hasBalance, address, isWhitelisted, isWinnerRaffle, hasCheckedWinner,holder, guaranteed, whitelistFCFS, publicSale, appIsRaffleOver, remainingTickets, availableToMint]);
 
     return (
         <>
