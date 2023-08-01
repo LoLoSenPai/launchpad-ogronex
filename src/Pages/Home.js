@@ -182,21 +182,10 @@ export default function Home() {
 
   const getTotalSupply = async () => {
     if (!isConnected) return;
-    const now = Date.now();
     const provider = new ethers.providers.Web3Provider(window.ethereum);
     const signer = provider.getSigner();
     const contractNft = new ethers.Contract(contractNftAddress, NftABI, signer);
     const nftsupply = await contractNft.totalSupply();
-    if (now > START_TIMESTAMP && now <= OG_START_TIMESTAMP) {
-      const alreadyMintGuaranted = await contractNft.alreadyMintedHolders(address)
-      toast.success(`you have alredy mint ${alreadyMintGuaranted} NFT`)
-    } else if (now > OG_START_TIMESTAMP && now <= WL_START_TIMESTAMP) {
-      const alreadyMintOG= await contractNft.alreadyMintedOG(address)
-      toast.success(`you have alredy mint ${alreadyMintOG} NFT`)
-    } else {
-      const alreadyMintWhitelist = await contractNft.alreadyMintedWhitelist(address)
-      toast.success(`you have alredy mint ${alreadyMintWhitelist} NFT`)
-    }
     setNftSupply(nftsupply.toNumber());
   };
 
@@ -245,37 +234,39 @@ export default function Home() {
       // conditionner la WL en function de la phase (holder, og and wl)!
       const now = Date.now();
       setWaitingBuy(true);
-      let addressWl;
-      let proofWl;
-      let availableToMint;
-      if (now > START_TIMESTAMP && now <= OG_START_TIMESTAMP) {
-        const result = dataWhiteListGuaranteed.map((data) => {
-          if (data.address === address) {
-            addressWl = data.address;
-            proofWl = data.proof;
-            availableToMint = data.availableToMint;
-          }
-        });
-      } else if (now > OG_START_TIMESTAMP && now <= WL_START_TIMESTAMP) {
-        const result = dataWhiteListOG.map((data) => {
-          if (data.address === address) {
-            addressWl = data.address;
-            proofWl = data.proof;
-            availableToMint = data.availableToMint;
-          }
-        });
-      } else {
-        const result = dataWhiteListWL.map((data) => {
-          if (data.address === address) {
-            addressWl = data.address;
-            proofWl = data.proof;
-            availableToMint = data.availableToMint;
-          }
-        });
-      }
+      // let addressWl;
+      // let proofWl
+      // let availableToMint;
       // if (now > START_TIMESTAMP && now <= OG_START_TIMESTAMP) {
-      //   const result = whitelistGuaranteed.map((data) => {
+      //   const result = dataWhiteListGuaranteed.map((data) => {
       //     if (data.address === address) {
+      //       addressWl = data.address;
+      //       proofWl = data.proof;
+      //       availableToMint = data.availableToMint;
+      //       console.log(proofWl);
+      //     }
+      //   });
+      //   console.log("test");
+      // } else if (now > OG_START_TIMESTAMP && now <= WL_START_TIMESTAMP) {
+      //   const result = dataWhiteListOG.map((data) => {
+      //     if (data.address === address) {
+      //       addressWl = data.address;
+      //       proofWl = data.proof;
+      //       availableToMint = data.availableToMint;
+      //     }
+      //   });
+      // } else {
+      //   const result = dataWhiteListWL.map((data) => {
+      //     if (data.address === address) {
+      //       addressWl = data.address;
+      //       proofWl = data.proof;
+      //       availableToMint = data.availableToMint;
+      //     }
+      //   });
+      // }
+      // if (now > START_TIMESTAMP && now <= OG_START_TIMESTAMP) {
+        //   const result = whitelistGuaranteed.map((data) => {
+          //     if (data.address === address) {
       //       addressWl = data.address;
       //       proofWl = data.proof;
       //       availableToMint = data.availableToMint;
@@ -298,13 +289,26 @@ export default function Home() {
       //     }
       //   });
       // }
+      const whitelistObject = isWhitelisted(address);
       const provider = new ethers.providers.Web3Provider(window.ethereum);
       const signer = provider.getSigner();
       const contractNft = new ethers.Contract(contractNftAddress, NftABI, signer);
-      const tx = await contractNft.whitelistMint(availableToMint, proofWl, ticketCount);
+      const tx = await contractNft.whitelistMint(availableToMint, whitelistObject.proof, ticketCount, { value: ethers.utils.parseEther((ticketCount * 1).toString()) });
       await provider.waitForTransaction(tx.hash);
       setWaitingBuy(false);
       toast.success("Success Mint !");
+      if (now > START_TIMESTAMP && now <= OG_START_TIMESTAMP) {
+        const alreadyMintGuaranted = await contractNft.alreadyMintedHolders(address)
+        toast.success(`You have already mint ${alreadyMintGuaranted} NFT`)
+      }
+      if (now > OG_START_TIMESTAMP && now <= WL_START_TIMESTAMP) {
+        const alreadyMintOG = await contractNft.alreadyMintedOG(address)
+        toast.success(`You have already mint ${alreadyMintOG} NFT`)
+      }
+      if (now > WL_START_TIMESTAMP && now <= WL_END_TIMESTAMP) {
+        const alreadyMintWL = await contractNft.alreadyMintedWhitelist(address)
+        toast.success(`You have already mint ${alreadyMintWL} NFT`)
+      }
       await getTotalSupply();
     } catch (error) {
       if (error.message.includes('execution reverted')) {
@@ -384,7 +388,7 @@ export default function Home() {
     setAvailableToMint(whitelistObject ? whitelistObject.availableToMint : undefined);
   }, [address, isWhitelisted]);
 
-  useEffect(() => {
+  useEffect (() => {
     if (!isConnected) return;
     if (balance.data) {
       const userBalanceInWei = balance.data.value;
@@ -394,7 +398,7 @@ export default function Home() {
     } else {
       setHasBalance(false);
     }
-  }, [ticketCount, address, isConnected, balance.data]);
+  }, [address]);
 
 
   let maxTickets;
@@ -404,12 +408,18 @@ export default function Home() {
   }
   else if (guaranteed.status === 'Live') {
     maxTickets = 1;
-  } else if (publicSale.status === 'Live') {
+  }
+  else if (whitelistFCFS.status === 'Live') {
+    maxTickets = 1;
+  }
+  else if (publicSale.status === 'Live') {
     maxTickets = 100000;
-  } else if (publicSale.status === 'Ended') {
+  }
+  else if (publicSale.status === 'Ended') {
     maxTickets = winnerNbMint;
     // showInput = false;
-  } else {
+  }
+  else {
     maxTickets = 1;
   }
 
