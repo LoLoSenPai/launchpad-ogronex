@@ -38,7 +38,7 @@ export default function Home() {
   const [nftSupply, setNftSupply] = useState(0);
   const [ticketsSold, setTicketsSold] = useState(0);
   const [waitingBuy, setWaitingBuy] = useState(false);
-
+  const [loading, setLoading] = useState(false);
   const [availableToMint, setAvailableToMint] = useState(undefined);
 
   const [showTooltipHolder, setShowTooltipHolder] = useState(false);
@@ -313,18 +313,35 @@ export default function Home() {
     }
   }, [holder.status, publicSale.status, remainingTickets]);
 
+  // useEffect(() => {
+  //   if (isConnected) {
+  //     getTicketsBought();
+  //     getTicketsSold();
+  //     getRaffleOver();
+  //     getTotalSupply()
+  //   } else {
+  //     (async function fetchProviderAndData() {
+  //       await getAlchemyProviderAndData();
+  //     })();
+  //   }
+  // }, [address]);
+
   useEffect(() => {
-    if (isConnected) {
-      getTicketsBought();
-      getTicketsSold();
-      getRaffleOver();
-      getTotalSupply()
-    } else {
-      (async function fetchProviderAndData() {
+    const fetchData = async () => {
+      setLoading(true);
+      if (isConnected) {
+        await getTicketsBought();
+        await getTicketsSold();
+        await getRaffleOver();
+        await getTotalSupply()
+      } else {
         await getAlchemyProviderAndData();
-      })();
+      }
+      setLoading(false);
     }
-  }, [address]);
+    fetchData();
+  }, [address, isConnected]);
+  
 
   useEffect(() => {
     const whitelistObject = isWhitelisted(address);
@@ -413,15 +430,15 @@ export default function Home() {
 
           <div className="flex flex-col-reverse md:flex-row justify-center w-full xl:pl-35">
             <div className="flex flex-col mt-10 w-full gap-6 px-4">
-              <div className="flex flex-row p-0 md:p-3 md:pl-0">
+              <div className="flex justify-between xl:justify-normal items-center p-0 md:p-3 md:pl-0 xl:ml-5">
                 <h1 className="text-6xl font-bold text-white">Boxbies</h1>
-                <div className="flex flex-col md:flex-row items-center ml-5 md:mt-4 gap-3">
+                <div className="flex flex-col md:flex-row items-center gap-3 xl:ml-10">
                   <a href="https://discord.gg/boxbies" target="_blank" rel="noreferrer"><i className="fab fa-discord text-lg text-gray-500"></i></a>
                   <a href="https://twitter.com/dalmatiansnft" target="_blank" rel="noreferrer"><i className="fab fa-twitter text-lg text-gray-500"></i></a>
                   <a href="https://www.boxbies.io/" target="_blank" rel="noreferrer"><i className="fas fa-globe text-lg text-gray-500"></i></a>
                 </div>
               </div>
-              <div className="flex flex-row xl:max-w-[70%] xl:px-4">
+              <div className="flex flex-row xl:max-w-[70%] xl:px-4 pb-3 md:pb-0">
                 <p className="text-justify md:text-lg xl:text-xl font-bold text-gray-500">
                   The dogs ate the toxic fud, they were infected!
                   oh man...
@@ -432,18 +449,18 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="flex flex-col md:flex-row justify-center md:mt-10 sm:max-md:overflow-hidden lg:pb-10 xl:pb-12">
-            <div className="flex justify-center items-center w-full max-w-[400px] lg:min-w-[500px] xl:max-w-[600px] h-auto overflow-hidden xl:overflow-visible pb-7 lg:pb-8">
+          <div className="flex flex-col md:flex-row justify-center lg:mt-10 sm:max-md:overflow-hidden lg:pb-10 xl:pb-12">
+            <div className="flex justify-center items-center w-full max-w-[400px] lg:min-w-[500px] xl:max-w-[600px] h-auto overflow-hidden md:overflow-visible pt-8 pb-12 lg:pb-8">
               <img className="w-full scale-125" src="./Images/prize-maschine-test.png" alt="maschine with a hook to grab prize" />
             </div>
-            <div className="flex flex-col mt-10 w-full md:max-w-[420px] lg:max-w-[510px] xl:max-w-[650px] gap-6">
+            <div className="flex flex-col md:mt-10 w-full md:max-w-[420px] lg:max-w-[510px] xl:max-w-[650px] z-10 gap-6">
 
               <div className="flex flex-row py-4 px-2 md:p-4 xl:px-0 bg-secondary rounded-lg justify-around gap-3 md:gap-7 lg:gap-0 border border-gray-600 bg-opacity-60">
-                <p className="flex flex-col lg:flex-row text-md lg:text-lg xl:text-xl font-bold text-white">Mint price:<span className=" text-sm md:text-md lg:text-lg xl:text-xl text-light">FREE</span><span className=" text-gray-400 text-xs lg:text-sm">+ 1 MATIC ticket fee</span>
+                <p className="flex flex-col xl:flex-row text-md lg:text-lg xl:text-xl font-bold text-white">Mint price:<span className=" text-sm md:text-md lg:text-lg xl:text-xl text-light">FREE</span><span className=" text-gray-400 text-xs lg:text-sm">+ 1 MATIC ticket fee</span>
                 </p>
-                <p className="flex flex-col lg:flex-row text-md lg:text-lg xl:text-xl font-bold text-white">Supply:<span className="text-center text-light"> {nftSupply} / 5000</span>
+                <p className="flex flex-col xl:flex-row text-md lg:text-lg xl:text-xl font-bold text-white">Supply:<span className="text-center text-light"> {nftSupply} / 5000</span>
                 </p>
-                <div className="flex flex-col lg:flex-row text-md lg:text-lg xl:text-xl font-bold text-white">
+                <div className="flex flex-col xl:flex-row text-md lg:text-lg xl:text-xl font-bold text-white">
                   Tickets sold:
                   <div className="flex justify-end">
                     <span className="ml-1 text-light">{ticketsSold}</span>
@@ -452,7 +469,7 @@ export default function Home() {
                 </div>
               </div>
 
-              <div className="flex flex-col gap-6">
+              <div className="flex flex-col gap-3 lg:gap-6">
 
                 <div className="flex flex-col md:flex-row items-center gap-4 lg:gap-2 xl:gap-10 p-4 bg-four rounded-lg border border-gray-600 justify-center md:justify-between">
                   <div className="relative lg:text-lg xl:text-xl font-bold text-white">
@@ -512,7 +529,7 @@ export default function Home() {
                     </span>
                     {showTooltipOG &&
                       <div className="text-center tooltip absolute left-1/2 top-full -translate-x-1/2 transform whitespace-nowrap rounded bg-secondary bg-opacity-80 p-2 text-white z-10">
-                        1 mint per wallet
+                        One mint per wallet
                       </div>
                     }
                   </div>
@@ -692,7 +709,7 @@ export default function Home() {
                 />
 
                 <div className="flex flex-col justify-center items-center lg:min-w-[110px] pr-3">
-                  {isConnected && availableToMint && (
+                  {guaranteed.status === 'Live' && isConnected && availableToMint && (
                     <p className="flex items-center lg:text-xl text-white sm:mt-3 md:mt-1">
                       Available to mint:
                       <span className="ml-12 md:ml-12 lg:ml-8 text-light ">{remainingTickets}</span>
