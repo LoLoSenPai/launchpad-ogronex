@@ -385,7 +385,7 @@ export default function Home() {
   }
   else if (publicSale.status === 'Ended') {
     maxTickets = winnerNbMint;
-    // showInput = false;
+    showInput = false;
   }
   else {
     maxTickets = 1;
