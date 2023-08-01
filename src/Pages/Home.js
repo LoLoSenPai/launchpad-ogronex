@@ -55,7 +55,7 @@ export default function Home() {
   const [hasCheckedWinner, setHasCheckedWinner] = useState(false);
   const [winnerNbMint, setWinnerNbMint] = useState(0);
   const [hasNotMinted, setHasNotMinted] = useState(false);
-  const [isRaffleOver, setIsRaffleOver] = useState(false);
+  const [appIsRaffleOver, setAppIsRaffleOver] = useState(false);
 
   const { holder, guaranteed, whitelistFCFS, publicSale } = useContext(SaleStatusContext);
   // Use `guaranteed.status`, `guaranteed.start`, `guaranteed.end` etc
@@ -74,7 +74,7 @@ export default function Home() {
     const isOver = await contractNftBeforeConnection.isRaffleOver();
     const nftsupply = await contractNftBeforeConnection.totalSupply();
     setTicketsSold(ticketsSold.toNumber());
-    setIsRaffleOver(isOver);
+    setAppIsRaffleOver(isOver);
     setNftSupply(nftsupply.toNumber());
   };
 
@@ -150,7 +150,7 @@ export default function Home() {
     const signer = provider.getSigner();
     const contractNft = new ethers.Contract(contractNftAddress, NftABI, signer);
     const isOver = await contractNft.isRaffleOver();
-    setIsRaffleOver(isOver);
+    setAppIsRaffleOver(isOver);
   };
 
   const getTotalSupply = async () => {
@@ -264,7 +264,7 @@ export default function Home() {
   }
 
   async function checkWinner() {
-    if (!isConnected && !isRaffleOver) return false; // need to be connected and raffleOver
+    if (!isConnected && !appIsRaffleOver) return false; // need to be connected and raffleOver
     try {
       console.log("Checking winner...");
       const provider = new ethers.providers.Web3Provider(window.ethereum);
@@ -649,7 +649,7 @@ export default function Home() {
                   buyTickets={buyTickets}
                   checkWinner={checkWinner}
                   winnerRaffleMint={winnerRaffleMint}
-                  isRaffleOver={isRaffleOver}
+                  isRaffleOver={appIsRaffleOver}
                   setShowModalWinner={setShowModalWinner}
                   showModalWinner={showModalWinner}
                   setShowModalLooser={setShowModalLooser}
