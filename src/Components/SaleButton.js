@@ -31,6 +31,8 @@ export default function SaleButton(props) {
         whitelistFCFS,
         publicSale,
         winnerNbMint,
+        remainingTickets,
+        availableToMint,
     } = props;
 
     const [textButton, setTextButton] = useState("Waiting for next phase");
@@ -39,7 +41,7 @@ export default function SaleButton(props) {
 
     useEffect(() => {
         let newTextButton = "Waiting for next phase";
-        let newButtonOnClick = () => { };
+        let newButtonOnClick = () => {};
         let newButtonDisabled = false;
 
         if (waitingBuy) {
@@ -48,6 +50,8 @@ export default function SaleButton(props) {
         } else if (!isConnected) {
             newButtonDisabled = true;
             newTextButton = "Connect your wallet";
+        } else if ((remainingTickets > availableToMint) && holder && holder.status === 'Live') {
+            newTextButton = "All NFTs are minted";
         } else if (isWhitelisted(address) && holder && holder.status === 'Live') {
             newTextButton = "Holder Mint";
             newButtonOnClick = () => whiteListMint();
@@ -97,7 +101,7 @@ export default function SaleButton(props) {
         setTextButton(newTextButton);
         setButtonOnClick(() => newButtonOnClick);
         setButtonDisabled(newButtonDisabled);
-    }, [isConnected, waitingBuy, hasBalance, address, isWhitelisted, isWinnerRaffle, hasCheckedWinner,holder, guaranteed, whitelistFCFS, publicSale, isRaffleOver]);
+    }, [isConnected, waitingBuy, hasBalance, address, isWhitelisted, isWinnerRaffle, hasCheckedWinner,holder, guaranteed, whitelistFCFS, publicSale, isRaffleOver, remainingTickets, availableToMint]);
 
     return (
         <>

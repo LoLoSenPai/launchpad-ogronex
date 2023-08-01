@@ -6,9 +6,9 @@ import { Network, Alchemy } from 'alchemy-sdk';
 import CountdownComponent from "../Components/Countdown";
 import RaffleABI from "../ABI/launchpadRaffle.json";
 import NftABI from "../ABI/Infected_NFT.json";
-import whitelistGuaranteed from '../Whitelist/whitelistGuaranteed.json';
-import whitelistOG from '../Whitelist/whitelistOG.json';
-import whitelistWL from '../Whitelist/whitelistWL.json';
+// import whitelistGuaranteed from '../Whitelist/whitelistGuaranteed.json';
+// import whitelistOG from '../Whitelist/whitelistOG.json';
+// import whitelistWL from '../Whitelist/whitelistWL.json';
 
 // Just for testing
 import dataWhiteListGuaranteed from '../Whitelist/dataWhiteListGuaranteed.json';
@@ -22,10 +22,10 @@ import { SaleStatusContext } from "../Context/SaleStatusContext";
 import SaleButton from "../Components/SaleButton";
 import TermsAndConditions from "./TermsAndConditions";
 import { ClaimCountdown } from "../Components/ClaimCountdown";
-import ShareButton from "../Components/ShareButton";
+// import ShareButton from "../Components/ShareButton";
 
-const contractNftAddress = "0x23c52B5D1E7a5cC70737BFc1Ad1d12f5515caf17";
-const contractRaffleAddress = "0xB63bc9Af975eEfB37377E9D1a2175428c6CcCf2F";
+const contractNftAddress = "0xe152A5552A9b11751a28981CBe7d1Dc4A6bc6223";
+const contractRaffleAddress = "0xc5A82361f4c945Dd094108b2DD476fA36A1820C0";
 
 export default function Home() {
 
@@ -33,6 +33,7 @@ export default function Home() {
   const balance = useBalance({ address: address });
 
   const [ticketCount, setTicketCount] = useState(1);
+  const [remainingTickets, setRemainingTickets] = useState(0);
   const [ticketsBought, setTicketsBought] = useState(0);
   const [nftSupply, setNftSupply] = useState(0);
   const [ticketsSold, setTicketsSold] = useState(0);
@@ -56,23 +57,8 @@ export default function Home() {
   const [hasNotMinted, setHasNotMinted] = useState(false);
   const [isRaffleOver, setIsRaffleOver] = useState(false);
 
-
   const { holder, guaranteed, whitelistFCFS, publicSale } = useContext(SaleStatusContext);
-  // Use `guaranteed.status`, `guaranteed.start`, `guaranteed.end`, `public.status`, `public.start`, `public.end`, `whitelistFCFS.status`, `whitelistFCFS.start`, `whitelistFCFS.end` to get the status of each sale
-
-
-  const START_TIMESTAMP = 1690895400; //Wed Aug 02 2023 14:00:00 GMT+0
-  const OG_START_TIMESTAMP = 1690896600; //Thu Aug 03 2023 14:00:00 GMT+0
-  const WL_START_TIMESTAMP = 1690897800; //Thu Aug 03 2023 15:00:00 GMT+0
-  const WL_END_TIMESTAMP = 1691078400; //Thu Aug 03 2023 16:00:00 GMT+0
-  const START_RAFFLE_TIMESTAMP = 1691078400;//Thu Aug 03 2023 16:00:00 GMT+0
-  const END_RAFFLE_TIMESTAMP = 1691089200;//Thu Aug 03 2023 19:00:00 GMT+0
-  // const START_TIMESTAMP = 1690984800; //Wed Aug 02 2023 14:00:00 GMT+0
-  // const OG_START_TIMESTAMP = 1691071200; //Thu Aug 03 2023 14:00:00 GMT+0
-  // const WL_START_TIMESTAMP = 1691074800; //Thu Aug 03 2023 15:00:00 GMT+0
-  // const WL_END_TIMESTAMP = 1691078400; //Thu Aug 03 2023 16:00:00 GMT+0
-  // const START_RAFFLE_TIMESTAMP = 1691078400;//Thu Aug 03 2023 16:00:00 GMT+0
-  // const END_RAFFLE_TIMESTAMP = 1691089200;//Thu Aug 03 2023 19:00:00 GMT+0
+  // Use `guaranteed.status`, `guaranteed.start`, `guaranteed.end` etc
 
 
   const getAlchemyProviderAndData = async () => {
@@ -94,17 +80,6 @@ export default function Home() {
 
   const ticketPrice = 0.01;
 
-  // const isWhitelisted = (address) => {
-  //   const now = Date.now();
-  //   if (now < OG_START_TIMESTAMP) { //Thu Aug 03 2023 14:00:00 GMT+0 (OG_START_TIMESTAMP)
-  //     return whitelistGuaranteed.some(item => item.address === address);
-  //   } else if (now < WL_START_TIMESTAMP) { //Thu Aug 03 2023 15:00:00 GMT+0 (WL_START_TIMESTAMP)
-  //     return whitelistOG.some(item => item.address === address);
-  //   } else {
-  //     return whitelistWL.some(item => item.address === address);
-  //   }
-  // }
-  // Just for testing
   const isWhitelisted = useCallback((address) => {
     if (holder.status === "Live") {
       return dataWhiteListGuaranteed.find(item => item.address === address);
@@ -117,8 +92,6 @@ export default function Home() {
       return false;
     }
   }, [holder.status, guaranteed.status, whitelistFCFS.status]);
-  
-
 
 
   // Tooltip for i icon
@@ -151,7 +124,7 @@ export default function Home() {
   };
 
   const handleIncrease = () => {
-    if ((guaranteed.status === 'Live' && ticketCount < 1) || publicSale.status === 'Live') {
+    if (ticketCount < maxTickets) {
       setTicketCount(ticketCount + 1);
     }
   };
@@ -232,63 +205,7 @@ export default function Home() {
     if (!isConnected) return // conditionner aussi a la phase guarranteed Mint
     try {
       // conditionner la WL en function de la phase (holder, og and wl)!
-      const now = Date.now();
       setWaitingBuy(true);
-      // let addressWl;
-      // let proofWl
-      // let availableToMint;
-      // if (now > START_TIMESTAMP && now <= OG_START_TIMESTAMP) {
-      //   const result = dataWhiteListGuaranteed.map((data) => {
-      //     if (data.address === address) {
-      //       addressWl = data.address;
-      //       proofWl = data.proof;
-      //       availableToMint = data.availableToMint;
-      //       console.log(proofWl);
-      //     }
-      //   });
-      //   console.log("test");
-      // } else if (now > OG_START_TIMESTAMP && now <= WL_START_TIMESTAMP) {
-      //   const result = dataWhiteListOG.map((data) => {
-      //     if (data.address === address) {
-      //       addressWl = data.address;
-      //       proofWl = data.proof;
-      //       availableToMint = data.availableToMint;
-      //     }
-      //   });
-      // } else {
-      //   const result = dataWhiteListWL.map((data) => {
-      //     if (data.address === address) {
-      //       addressWl = data.address;
-      //       proofWl = data.proof;
-      //       availableToMint = data.availableToMint;
-      //     }
-      //   });
-      // }
-      // if (now > START_TIMESTAMP && now <= OG_START_TIMESTAMP) {
-        //   const result = whitelistGuaranteed.map((data) => {
-          //     if (data.address === address) {
-      //       addressWl = data.address;
-      //       proofWl = data.proof;
-      //       availableToMint = data.availableToMint;
-      //     }
-      //   });
-      // } else if (now > OG_START_TIMESTAMP && now <= WL_START_TIMESTAMP) {
-      //   const result = whitelistOG.map((data) => {
-      //     if (data.address === address) {
-      //       addressWl = data.address;
-      //       proofWl = data.proof;
-      //       availableToMint = data.availableToMint;
-      //     }
-      //   });
-      // } else {
-      //   const result = whitelistWL.map((data) => {
-      //     if (data.address === address) {
-      //       addressWl = data.address;
-      //       proofWl = data.proof;
-      //       availableToMint = data.availableToMint;
-      //     }
-      //   });
-      // }
       const whitelistObject = isWhitelisted(address);
       const provider = new ethers.providers.Web3Provider(window.ethereum);
       const signer = provider.getSigner();
@@ -297,16 +214,19 @@ export default function Home() {
       await provider.waitForTransaction(tx.hash);
       setWaitingBuy(false);
       toast.success("Success Mint !");
-      if (now > START_TIMESTAMP && now <= OG_START_TIMESTAMP) {
+      if (holder.status === "Live") {
         const alreadyMintGuaranted = await contractNft.alreadyMintedHolders(address)
+        setRemainingTickets(availableToMint - alreadyMintGuaranted);
         toast.success(`You have already mint ${alreadyMintGuaranted} NFT`)
       }
-      if (now > OG_START_TIMESTAMP && now <= WL_START_TIMESTAMP) {
+      if (guaranteed.status === "Live") {
         const alreadyMintOG = await contractNft.alreadyMintedOG(address)
+        setRemainingTickets(availableToMint - alreadyMintOG);
         toast.success(`You have already mint ${alreadyMintOG} NFT`)
       }
-      if (now > WL_START_TIMESTAMP && now <= WL_END_TIMESTAMP) {
+      if (whitelistFCFS.status === "Live") {
         const alreadyMintWL = await contractNft.alreadyMintedWhitelist(address)
+        setRemainingTickets(availableToMint - alreadyMintWL);
         toast.success(`You have already mint ${alreadyMintWL} NFT`)
       }
       await getTotalSupply();
@@ -371,6 +291,18 @@ export default function Home() {
   }
 
   useEffect(() => {
+    setRemainingTickets(availableToMint);
+  }, [availableToMint]);
+
+  useEffect(() => {
+    if (holder.status === 'Live' || publicSale.status === 'Ended') {
+      setTicketCount(remainingTickets);
+    } else {
+      setTicketCount(1);
+    }
+  }, [holder.status, publicSale.status, remainingTickets]);  
+
+  useEffect(() => {
     if (isConnected) {
       getTicketsBought();
       getTicketsSold();
@@ -381,14 +313,14 @@ export default function Home() {
         await getAlchemyProviderAndData();
       })();
     }
-  }, [address]);
+  }, [address, isConnected, getTicketsBought, getTicketsSold]);
 
   useEffect(() => {
     const whitelistObject = isWhitelisted(address);
     setAvailableToMint(whitelistObject ? whitelistObject.availableToMint : undefined);
   }, [address, isWhitelisted]);
 
-  useEffect (() => {
+  useEffect(() => {
     if (!isConnected) return;
     if (balance.data) {
       const userBalanceInWei = balance.data.value;
@@ -398,13 +330,13 @@ export default function Home() {
     } else {
       setHasBalance(false);
     }
-  }, [address]);
+  }, [address, balance, ticketCount, ticketPrice, isConnected]);
 
 
   let maxTickets;
   let showInput = true;
   if (holder.status === 'Live') {
-    maxTickets = availableToMint;
+    maxTickets = remainingTickets;
   }
   else if (guaranteed.status === 'Live') {
     maxTickets = 1;
@@ -730,13 +662,14 @@ export default function Home() {
                   guaranteed={guaranteed}
                   publicSale={publicSale}
                   setIsWinnerRaffle={setIsWinnerRaffle}
+                  remainingTickets={remainingTickets}
                 />
 
                 <div className="flex flex-col justify-center items-center lg:min-w-[110px] pr-3">
                   {isConnected && availableToMint && (
                     <p className="flex items-center lg:text-xl text-white sm:mt-3 md:mt-1">
                       Available to mint:
-                      <span className="ml-12 md:ml-12 lg:ml-8 text-light ">{availableToMint}</span>
+                      <span className="ml-12 md:ml-12 lg:ml-8 text-light ">{remainingTickets}</span>
                     </p>
                   )}
                   <p className="flex justify-content items-end lg:text-xl text-white leading-tight mt-2 xl:mt-0">
@@ -751,7 +684,7 @@ export default function Home() {
                   )}
                 </div>
               </div>
-              <ShareButton />
+              {/* <ShareButton /> */}
               {publicSale.status === "Ended" &&
                 <div className="flex flex-col justify-center items-center mt-4">
                   <div className="text-center text-white text-md md:text-lg lg:text-xl font-bold">
