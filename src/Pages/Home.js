@@ -151,10 +151,21 @@ export default function Home() {
 
   const getTotalSupply = async () => {
     if (!isConnected) return;
+    const now = Date.now();
     const provider = new ethers.providers.Web3Provider(window.ethereum);
     const signer = provider.getSigner();
     const contractNft = new ethers.Contract(contractNftAddress, NftABI.abi, signer);
     const nftsupply = await contractNft.totalSupply();
+    if (now > START_TIMESTAMP && now <= OG_START_TIMESTAMP) {
+      const alreadyMintGuaranted = await contractNft.alreadyMintedHolders(address)
+      toast.success(`you have alredy mint ${alreadyMintGuaranted} NFT`)
+    } else if (now > OG_START_TIMESTAMP && now <= WL_START_TIMESTAMP) {
+      const alreadyMintOG= await contractNft.alreadyMintedOG(address)
+      toast.success(`you have alredy mint ${alreadyMintOG} NFT`)
+    } else {
+      const alreadyMintWhitelist = await contractNft.alreadyMintedWhitelist(address)
+      toast.success(`you have alredy mint ${alreadyMintWhitelist} NFT`)
+    }
     setNftSupply(nftsupply.toNumber());
   };
 
@@ -238,7 +249,7 @@ export default function Home() {
       await provider.waitForTransaction(tx.hash);
       setWaitingBuy(false);
       toast.success("Success Mint !");
-
+      await getTotalSupply();
     } catch (error) {
       if (error.message.includes('execution reverted')) {
         const errorMessage = error.reason.split(':')[1].trim();
