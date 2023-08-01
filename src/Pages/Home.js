@@ -271,23 +271,19 @@ export default function Home() {
   async function checkWinner() {
     if (!isConnected && !appIsRaffleOver) return false; // need to be connected and raffleOver
     try {
-      console.log("Checking winner...");
       const provider = new ethers.providers.Web3Provider(window.ethereum);
       const signer = provider.getSigner();
       const contractNft = new ethers.Contract(contractNftAddress, NftABI, signer);
       const winnerData = await contractNft.winnerByAddress(address);
-      console.log("Winner data:", winnerData);
       const isWinner = winnerData.addressWinner === address && winnerData.numberOfWin > 0;
       const notMinted = winnerData.notMinted;
       setHasNotMinted(notMinted);
       if (isWinner) {
         setIsWinnerRaffle(true);
         setWinnerNbMint(winnerData.numberOfWin.toNumber());
-        console.log("User is a winner");
         toast.success("LUCKY ! GO MINT 🎫");
       } else {
         setIsWinnerRaffle(false);
-        console.log("User is not a winner");
       }
       return isWinner;
     } catch (error) {
@@ -340,7 +336,7 @@ export default function Home() {
     }
     fetchData();
   }, [address]);
-  
+
 
   useEffect(() => {
     const whitelistObject = isWhitelisted(address);
@@ -366,7 +362,6 @@ export default function Home() {
     if (balance.data && typeof ticketCount === 'number' && typeof ticketPrice === 'number') {
       const userBalanceInWei = balance.data.value;
       const ticketCostInWei = ethers.utils.parseEther((ticketCount * ticketPrice).toString());
-      console.log("User balance:", userBalanceInWei.toString());
       setHasBalance(() => ticketCostInWei.lte(userBalanceInWei));
     } else {
       setHasBalance(false);
@@ -374,7 +369,7 @@ export default function Home() {
   }, [address, ticketCount]);
 
 
-  let maxTickets;
+  let maxTickets = 1;
   let showInput = true;
   if (holder.status === 'Live') {
     maxTickets = remainingTickets;
@@ -667,11 +662,11 @@ export default function Home() {
                       max={maxTickets}
                       value={ticketCount}
                       onChange={(e) => {
-                        if (e.target.value === '') {
-                          setTicketCount(1);
-                        } else {
-                          setTicketCount(Math.min(parseInt(e.target.value), maxTickets));
+                        let newTicketCount = parseInt(e.target.value);
+                        if (isNaN(newTicketCount)) {
+                          newTicketCount = 1;
                         }
+                        setTicketCount(Math.min(newTicketCount, maxTickets));
                       }}
                     />
                     <button className="w-10 h-14 rounded-r-lg text-white text-2xl" onClick={handleIncrease}>

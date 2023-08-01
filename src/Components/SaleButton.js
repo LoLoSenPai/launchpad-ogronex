@@ -70,22 +70,16 @@ export default function SaleButton(props) {
         } else if (publicSale && publicSale.status === 'Ended' && !hasCheckedWinner && isConnected) {
             newTextButton = "Verify";
             newButtonOnClick = async () => {
-                console.log(appIsRaffleOver);
                 if (appIsRaffleOver) {
-                    console.log("ICI");
                     const isWinner = await checkWinner();
                     setHasCheckedWinner(true);
-                    console.log("hasCheckedWinner from button", hasCheckedWinner);
                     if (isWinner) {
                         setShowModalWinner(true);
-                        console.log("setShowModalWinner from button", showModalWinner);
                     } else {
                         setShowModalLooser(true);
-                        console.log("setShowModalLooser from button", showModalLooser);
                     }
                 } else {
                     setShowModalPending(true);
-                    console.log("setShowModalPending from button", showModalPending);
                 }
             };
         } else if (publicSale && publicSale.status === 'Ended' && hasCheckedWinner && isWinnerRaffle) {
