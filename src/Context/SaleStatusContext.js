@@ -48,7 +48,8 @@ export const SaleStatusProvider = ({ children }) => {
                 // const END_RAFFLE_TIMESTAMP = 1691089200;//Thu Aug 03 2023 19:00:00 GMT+0
 
                 // holder sale
-                const dateStartNftHolder = 1690984800;
+                const dateStartNftHolder = 1690884103;
+                // const dateStartNftHolder = 1690984800;
                 const dateEndtNftHolder = 1691071200;
                 // OG fcfs
                 const dateStartNft = 1691071200;

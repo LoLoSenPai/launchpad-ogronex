@@ -9,6 +9,13 @@ import NftABI from "../ABI/Infected_NFT.json";
 import whitelistGuaranteed from '../Whitelist/whitelistGuaranteed.json';
 import whitelistOG from '../Whitelist/whitelistOG.json';
 import whitelistWL from '../Whitelist/whitelistWL.json';
+
+// Just for testing
+import dataWhiteListGuaranteed from '../Whitelist/dataWhiteListGuaranteed.json';
+import dataWhiteListOG from '../Whitelist/dataWhiteListOG.json';
+import dataWhiteListWL from '../Whitelist/dataWhiteListWL.json';
+// Just for testing
+
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { SaleStatusContext } from "../Context/SaleStatusContext";
@@ -31,6 +38,8 @@ export default function Home() {
   const [ticketsSold, setTicketsSold] = useState(0);
   const [waitingBuy, setWaitingBuy] = useState(false);
 
+  const [availableToMint, setAvailableToMint] = useState(undefined);
+
   const [showTooltipHolder, setShowTooltipHolder] = useState(false);
   const [showTooltipOG, setShowTooltipOG] = useState(false);
   const [showTooltipWL, setShowTooltipWL] = useState(false);
@@ -52,12 +61,19 @@ export default function Home() {
   // Use `guaranteed.status`, `guaranteed.start`, `guaranteed.end`, `public.status`, `public.start`, `public.end`, `whitelistFCFS.status`, `whitelistFCFS.start`, `whitelistFCFS.end` to get the status of each sale
 
 
-  const START_TIMESTAMP = 1690984800; //Wed Aug 02 2023 14:00:00 GMT+0
+  const START_TIMESTAMP = 1690884103; //Wed Aug 02 2023 14:00:00 GMT+0
   const OG_START_TIMESTAMP = 1691071200; //Thu Aug 03 2023 14:00:00 GMT+0
   const WL_START_TIMESTAMP = 1691074800; //Thu Aug 03 2023 15:00:00 GMT+0
   const WL_END_TIMESTAMP = 1691078400; //Thu Aug 03 2023 16:00:00 GMT+0
   const START_RAFFLE_TIMESTAMP = 1691078400;//Thu Aug 03 2023 16:00:00 GMT+0
   const END_RAFFLE_TIMESTAMP = 1691089200;//Thu Aug 03 2023 19:00:00 GMT+0
+  // const START_TIMESTAMP = 1690984800; //Wed Aug 02 2023 14:00:00 GMT+0
+  // const OG_START_TIMESTAMP = 1691071200; //Thu Aug 03 2023 14:00:00 GMT+0
+  // const WL_START_TIMESTAMP = 1691074800; //Thu Aug 03 2023 15:00:00 GMT+0
+  // const WL_END_TIMESTAMP = 1691078400; //Thu Aug 03 2023 16:00:00 GMT+0
+  // const START_RAFFLE_TIMESTAMP = 1691078400;//Thu Aug 03 2023 16:00:00 GMT+0
+  // const END_RAFFLE_TIMESTAMP = 1691089200;//Thu Aug 03 2023 19:00:00 GMT+0
+
 
   const getAlchemyProviderAndData = async () => {
     const settings = {
@@ -78,16 +94,31 @@ export default function Home() {
 
   const ticketPrice = 1;
 
-  const isWhitelisted = (address) => {
-    const now = Date.now();
-    if (now < OG_START_TIMESTAMP) { //Thu Aug 03 2023 14:00:00 GMT+0 (OG_START_TIMESTAMP)
-      return whitelistGuaranteed.some(item => item.address === address);
-    } else if (now < WL_START_TIMESTAMP) { //Thu Aug 03 2023 15:00:00 GMT+0 (WL_START_TIMESTAMP)
-      return whitelistOG.some(item => item.address === address);
-    } else {
-      return whitelistWL.some(item => item.address === address);
+  // const isWhitelisted = (address) => {
+  //   const now = Date.now();
+  //   if (now < OG_START_TIMESTAMP) { //Thu Aug 03 2023 14:00:00 GMT+0 (OG_START_TIMESTAMP)
+  //     return whitelistGuaranteed.some(item => item.address === address);
+  //   } else if (now < WL_START_TIMESTAMP) { //Thu Aug 03 2023 15:00:00 GMT+0 (WL_START_TIMESTAMP)
+  //     return whitelistOG.some(item => item.address === address);
+  //   } else {
+  //     return whitelistWL.some(item => item.address === address);
+  //   }
+  // }
+  // Just for testing
+  const isWhitelisted = useCallback((address) => {
+    if (holder.status === "Live") {
+      return dataWhiteListGuaranteed.find(item => item.address === address);
+    } else if (guaranteed.status === "Live") {
+      return dataWhiteListOG.find(item => item.address === address);
+    } else if (whitelistFCFS.status === "Live") {
+      return dataWhiteListWL.find(item => item.address === address);
     }
-  }
+    else {
+      return false;
+    }
+  }, [holder.status, guaranteed.status, whitelistFCFS.status]);
+  
+
 
 
   // Tooltip for i icon
@@ -207,7 +238,7 @@ export default function Home() {
       let proofWl;
       let availableToMint;
       if (now > START_TIMESTAMP && now <= OG_START_TIMESTAMP) {
-        const result = whitelistGuaranteed.map((data) => {
+        const result = dataWhiteListGuaranteed.map((data) => {
           if (data.address === address) {
             addressWl = data.address;
             proofWl = data.proof;
@@ -215,7 +246,7 @@ export default function Home() {
           }
         });
       } else if (now > OG_START_TIMESTAMP && now <= WL_START_TIMESTAMP) {
-        const result = whitelistOG.map((data) => {
+        const result = dataWhiteListOG.map((data) => {
           if (data.address === address) {
             addressWl = data.address;
             proofWl = data.proof;
@@ -223,7 +254,7 @@ export default function Home() {
           }
         });
       } else {
-        const result = whitelistWL.map((data) => {
+        const result = dataWhiteListWL.map((data) => {
           if (data.address === address) {
             addressWl = data.address;
             proofWl = data.proof;
@@ -231,6 +262,31 @@ export default function Home() {
           }
         });
       }
+      // if (now > START_TIMESTAMP && now <= OG_START_TIMESTAMP) {
+      //   const result = whitelistGuaranteed.map((data) => {
+      //     if (data.address === address) {
+      //       addressWl = data.address;
+      //       proofWl = data.proof;
+      //       availableToMint = data.availableToMint;
+      //     }
+      //   });
+      // } else if (now > OG_START_TIMESTAMP && now <= WL_START_TIMESTAMP) {
+      //   const result = whitelistOG.map((data) => {
+      //     if (data.address === address) {
+      //       addressWl = data.address;
+      //       proofWl = data.proof;
+      //       availableToMint = data.availableToMint;
+      //     }
+      //   });
+      // } else {
+      //   const result = whitelistWL.map((data) => {
+      //     if (data.address === address) {
+      //       addressWl = data.address;
+      //       proofWl = data.proof;
+      //       availableToMint = data.availableToMint;
+      //     }
+      //   });
+      // }
       const provider = new ethers.providers.Web3Provider(window.ethereum);
       const signer = provider.getSigner();
       const contractNft = new ethers.Contract(contractNftAddress, NftABI.abi, signer);
@@ -313,6 +369,11 @@ export default function Home() {
   }, [address]);
 
   useEffect(() => {
+    const whitelistObject = isWhitelisted(address);
+    setAvailableToMint(whitelistObject ? whitelistObject.availableToMint : undefined);
+  }, [address, isWhitelisted]);
+
+  useEffect(() => {
     if (!isConnected) return;
     if (balance.data) {
       const userBalanceInWei = balance.data.value;
@@ -322,18 +383,21 @@ export default function Home() {
     } else {
       setHasBalance(false);
     }
-  }, [ticketCount, address]);
+  }, [ticketCount, address, isConnected, balance.data]);
 
 
   let maxTickets;
   let showInput = true;
-  if (guaranteed.status === 'Live') {
+  if (holder.status === 'Live') {
+    maxTickets = availableToMint;
+  }
+  else if (guaranteed.status === 'Live') {
     maxTickets = 1;
   } else if (publicSale.status === 'Live') {
     maxTickets = 100000;
   } else if (publicSale.status === 'Ended') {
     maxTickets = winnerNbMint;
-    showInput = false;
+    // showInput = false;
   } else {
     maxTickets = 1;
   }
@@ -374,16 +438,17 @@ export default function Home() {
               <div className="flex flex-row p-0 md:p-3 md:pl-0">
                 <h1 className="text-6xl font-bold text-white">Boxbies</h1>
                 <div className="flex flex-col md:flex-row items-center ml-5 md:mt-4 gap-3">
-                  <a href="https://discord.gg/ogronexnft" target="_blank" rel="noreferrer"><i className="fab fa-discord text-lg text-gray-500"></i></a>
-                  <a href="https://twitter.com/Ogronex" target="_blank" rel="noreferrer"><i className="fab fa-twitter text-lg text-gray-500"></i></a>
-                  <a href="https://ogronex.com/" target="_blank" rel="noreferrer"><i className="fas fa-globe text-lg text-gray-500"></i></a>
+                  <a href="https://discord.gg/boxbies" target="_blank" rel="noreferrer"><i className="fab fa-discord text-lg text-gray-500"></i></a>
+                  <a href="https://twitter.com/dalmatiansnft" target="_blank" rel="noreferrer"><i className="fab fa-twitter text-lg text-gray-500"></i></a>
+                  <a href="https://www.boxbies.io/" target="_blank" rel="noreferrer"><i className="fas fa-globe text-lg text-gray-500"></i></a>
                 </div>
               </div>
               <div className="flex flex-row xl:max-w-[70%] xl:px-4">
                 <p className="text-justify md:text-lg xl:text-xl font-bold text-gray-500">
-                  Introducing the "OG Teddies", a collection of 333 unique and
-                  lovable teddy bears. Own a digital representation of these adorable companions,
-                  unlock exclusive benefits, and immerse yourself in a vibrant community.
+                  The dogs ate the toxic fud, they were infected!
+                  oh man...
+                  now a troop of infected dalmatians are coming your way!
+                  Do you want to catch them or run away?
                 </p>
               </div>
             </div>
@@ -549,7 +614,7 @@ export default function Home() {
                   )}
                 </div>
                 <div className="flex flex-col md:flex-row items-center p-4 bg-four rounded-lg border border-gray-600 gap-4 md:gap-6 md:justify-between">
-                  <p className="relative lg:text-lg xl:text-xl font-bold text-white xl:mr-5">
+                  <div className="relative lg:text-lg xl:text-xl font-bold text-white xl:mr-5">
                     Public
                     <span
                       className="ml-3 text-light border border-light rounded-full px-2 text-sm"
@@ -563,7 +628,7 @@ export default function Home() {
                         All winners will be drawn few minutes after the end.
                       </div>
                     )}
-                  </p>
+                  </div>
                   <div className="flex flew-row justify-center lg:ml-2">
                     <div className={"flex items-center xl:text-xl font-bold text-white bg-secondary py-2 px-6 md:px-2 lg:px-6 rounded-lg border border-gray-600 bg-opacity-60 md:h-[66px] xl:h-[74px] min-w-[160px] md:min-w-[80px] md:max-w-[90px] lg:min-w-[160px] xl:min-w-[180px]"}>
                       <i className={`fas fa-circle pr-2 text-light text-sm animate-pulse ${publicSale.status === 'Live' ? 'text-green-500' : 'text-red-500'}`}></i>
@@ -640,12 +705,19 @@ export default function Home() {
                   showModalPending={showModalPending}
                   setHasCheckedWinner={setHasCheckedWinner}
                   hasCheckedWinner={hasCheckedWinner}
+                  holder={holder}
                   guaranteed={guaranteed}
                   publicSale={publicSale}
                   setIsWinnerRaffle={setIsWinnerRaffle}
                 />
 
                 <div className="flex flex-col justify-center items-center lg:min-w-[110px] pr-3">
+                  {isConnected && availableToMint && (
+                    <p className="flex items-center lg:text-xl text-white sm:mt-3 md:mt-1">
+                      Available to mint:
+                      <span className="ml-12 md:ml-12 lg:ml-8 text-light ">{availableToMint}</span>
+                    </p>
+                  )}
                   <p className="flex justify-content items-end lg:text-xl text-white leading-tight mt-2 xl:mt-0">
                     Your tickets:
                     {isConnected && <span className="ml-1 text-light">{ticketsBought}</span>}

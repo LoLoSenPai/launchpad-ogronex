@@ -26,6 +26,7 @@ export default function SaleButton(props) {
         showModalLooser,
         setShowModalLooser,
         isRaffleOver,
+        holder,
         guaranteed,
         whitelistFCFS,
         publicSale,
@@ -47,19 +48,22 @@ export default function SaleButton(props) {
         } else if (!isConnected) {
             newButtonDisabled = true;
             newTextButton = "Connect your wallet";
-        } else if (isWhitelisted(address) && guaranteed.status === 'Live') {
-            newTextButton = "Mint";
+        } else if (isWhitelisted(address) && holder && holder.status === 'Live') {
+            newTextButton = "Holder Mint";
             newButtonOnClick = () => whiteListMint();
-        } else if (isWhitelisted(address) && whitelistFCFS.status === 'Live') {
-            newTextButton = "Hurry up! Mint now";
+        } else if (isWhitelisted(address) && guaranteed && guaranteed.status === 'Live') {
+            newTextButton = "OG Mint! Hurry up!";
             newButtonOnClick = () => whiteListMint();
-        } else if (!hasBalance && publicSale.status === 'Live') {
+        } else if (isWhitelisted(address) && whitelistFCFS && whitelistFCFS.status === 'Live') {
+            newTextButton = "Whitelist Mint! Hurry up!";
+            newButtonOnClick = () => whiteListMint();
+        } else if (!hasBalance && publicSale && publicSale.status === 'Live') {
             newButtonDisabled = true;
             newTextButton = "Insufficient Balance";
-        } else if (publicSale.status === 'Live') {
+        } else if (publicSale && publicSale.status === 'Live') {
             newTextButton = "Buy Tickets";
             newButtonOnClick = () => buyTickets();
-        } else if (publicSale.status === 'Ended' && !hasCheckedWinner && isConnected) {
+        } else if (publicSale && publicSale.status === 'Ended' && !hasCheckedWinner && isConnected) {
             newTextButton = "Verify";
             newButtonOnClick = async () => {
                 if (isRaffleOver.status) {
@@ -78,10 +82,10 @@ export default function SaleButton(props) {
                     console.log("setShowModalPending from button", showModalPending);
                 }
             };
-        } else if (publicSale.status === 'Ended' && hasCheckedWinner && isWinnerRaffle) {
+        } else if (publicSale && publicSale.status === 'Ended' && hasCheckedWinner && isWinnerRaffle) {
             newTextButton = "Claim";
             newButtonOnClick = () => winnerRaffleMint();
-        } else if (publicSale.status === 'Ended' && hasCheckedWinner && !isWinnerRaffle) {
+        } else if (publicSale && publicSale.status === 'Ended' && hasCheckedWinner && !isWinnerRaffle) {
             newButtonDisabled = true;
             newTextButton = "You didn't win...";
         }
@@ -93,7 +97,7 @@ export default function SaleButton(props) {
         setTextButton(newTextButton);
         setButtonOnClick(() => newButtonOnClick);
         setButtonDisabled(newButtonDisabled);
-    }, [isConnected, waitingBuy, hasBalance, address, isWhitelisted, isWinnerRaffle, hasCheckedWinner, guaranteed, publicSale]);
+    }, [isConnected, waitingBuy, hasBalance, address, isWhitelisted, isWinnerRaffle, hasCheckedWinner,holder, guaranteed, whitelistFCFS, publicSale, isRaffleOver]);
 
     return (
         <>
