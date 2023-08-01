@@ -20,12 +20,22 @@ function TermsAndConditions() {
                         <h1 className="md:text-2xl font-bold text-gray-300 mb-4">Terms and Conditions</h1>
                         <div className="prose max-w-none text-gray-500">
                             <p>Welcome to our NFT collection minting website. Before you proceed, please read the following terms and conditions:</p>
-                            <h2 className="md:text-xl font-bold text-gray-300 mt-4">Phase 1: Guaranteed Mint</h2>
-                            <p>All whitelisted individuals who have provided their wallet addresses have the opportunity to mint 1 NFT. This phase ends with the commencement of the public raffle. Note that whitelisted individuals who have not minted their NFT by the end of this phase will no longer have the opportunity to do so. All sales during this phase are final and non-refundable.</p>
-                            <h2 className="md:text-xl font-bold text-gray-300 mt-4">Phase 2: Public Raffle</h2>
-                            <p>During this phase, everyone is allowed to purchase as many tickets as they wish. Winners will be selected through our smart contract, which ensures fair randomization using Chainlink VRF. This phase ends with the announcement of winners. All ticket purchases are final and non-refundable.</p>
-                            <h2 className="md:text-xl font-bold text-gray-300 mt-4">Claiming of NFTs</h2>
-                            <p>Winners have 24 hours to claim their NFTs after the public raffle phase. Please note that all won NFTs will be claimed at once to save on transaction fees. After the 24-hour window, unclaimed NFTs will no longer be available for claiming. We are not responsible for any unclaimed NFTs.</p>
+
+                            <h2 className="md:text-xl font-bold text-gray-300 mt-4">Rewards for Dalmatians and Boxbies Holders</h2>
+                            <p>For every 3 Dalmatians you hold, you are entitled to 1 free mint (no limit, e.g., if you hold 300 Dalmatians, you can get 100 free mints). For Boxbies holders, the free mints are as follows: 1+ Boxbies = 1 Free Mint, 5+ Boxbies = 5 Free Mints, 10+ Boxbies = 11 Free Mints, 30+ Boxbies = 34 Free Mints, 50+ Boxbies = 58 Free Mints. Sale duration of 1 hour.</p>
+
+                            <h2 className="md:text-xl font-bold text-gray-300 mt-4">OG (Boxbies, Dalmatians, Dead Birds) Sale</h2>
+                            <p>First-come, first-served (FCFS) sale with a duration of 1 hour. Each person can get 1 free mint.</p>
+
+                            <h2 className="md:text-xl font-bold text-gray-300 mt-4">Whitelist</h2>
+                            <p>First-come, first-served (FCFS) sale with a duration of 1 hour. Each person can get 1 free mint.</p>
+
+                            <h2 className="md:text-xl font-bold text-gray-300 mt-4">Public Sale - Ticket Raffle</h2>
+                            <p>The duration is 3 hours. The ticket price is 1 Matic. The 1500 winners will be drawn from this raffle. 15+ ticket buyers will be snapshotted for future benefits. There are extra giveaways depending on how many tickets you buy (announcement soon).</p>
+
+                            <h2 className="md:text-xl font-bold text-gray-300 mt-4">Fees for the free mint</h2>
+                            <p>The fee for the free mint is 0.5 Matic. Alt accounts or same IP accounts for the whitelist are not allowed. The public sale has no fee.</p>
+
                             <h2 className="md:text-xl font-bold text-gray-300 mt-4">Acceptance of Risk</h2>
                             <p>By participating in the minting process, you acknowledge that you are aware of the inherent risks associated with blockchain and NFT transactions, including but not limited to fluctuations in the value of Matic and NFTs, and technological difficulties that could prevent the minting process.</p>
                         </div>
