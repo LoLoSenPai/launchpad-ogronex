@@ -48,18 +48,18 @@ export const SaleStatusProvider = ({ children }) => {
                 // const END_RAFFLE_TIMESTAMP = 1691089200;//Thu Aug 03 2023 19:00:00 GMT+0
 
                 // holder sale
-                const dateStartNftHolder = 1690884103;
+                const dateStartNftHolder = 1690895400;
                 // const dateStartNftHolder = 1690984800;
-                const dateEndtNftHolder = 1691071200;
+                const dateEndtNftHolder = 1690896600;
                 // OG fcfs
-                const dateStartNft = 1691071200;
-                const dateEndtNftGuaranteed = 1691074800;
+                const dateStartNft = 1690896600;
+                const dateEndtNftGuaranteed = 1690897800;
                 // whitelist fcfs
-                const whitelistFcfsStart = 1691074800;
-                const whitelistFcfsEnd = 1691078400;
+                const whitelistFcfsStart = 1690897800;
+                const whitelistFcfsEnd = 1690898400;
                 // public sale
-                const startTime = 1691078400;
-                const deadline = 1691089200;
+                const startTime = 1690898400;
+                const deadline = 1690902000;
                 // const dateStartNft = await contractNft.saleStartTime();
                 // const dateEndtNftGuaranteed = await contractNft.endTimeGuaranteed();
                 // const whitelistFcfsStart = await contractNft.saleStartTime();

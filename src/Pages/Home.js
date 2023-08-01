@@ -24,8 +24,8 @@ import TermsAndConditions from "./TermsAndConditions";
 import { ClaimCountdown } from "../Components/ClaimCountdown";
 import ShareButton from "../Components/ShareButton";
 
-const contractNftAddress = "0x5E82c890a9531784F5c2730C16c76361670D0429";
-const contractRaffleAddress = "0x84D78f7826e4d614B294DD1A65aeAb3e08CbC738";
+const contractNftAddress = "0x23c52B5D1E7a5cC70737BFc1Ad1d12f5515caf17";
+const contractRaffleAddress = "0xB63bc9Af975eEfB37377E9D1a2175428c6CcCf2F";
 
 export default function Home() {
 
@@ -61,9 +61,9 @@ export default function Home() {
   // Use `guaranteed.status`, `guaranteed.start`, `guaranteed.end`, `public.status`, `public.start`, `public.end`, `whitelistFCFS.status`, `whitelistFCFS.start`, `whitelistFCFS.end` to get the status of each sale
 
 
-  const START_TIMESTAMP = 1690884103; //Wed Aug 02 2023 14:00:00 GMT+0
-  const OG_START_TIMESTAMP = 1691071200; //Thu Aug 03 2023 14:00:00 GMT+0
-  const WL_START_TIMESTAMP = 1691074800; //Thu Aug 03 2023 15:00:00 GMT+0
+  const START_TIMESTAMP = 1690895400; //Wed Aug 02 2023 14:00:00 GMT+0
+  const OG_START_TIMESTAMP = 1690896600; //Thu Aug 03 2023 14:00:00 GMT+0
+  const WL_START_TIMESTAMP = 1690897800; //Thu Aug 03 2023 15:00:00 GMT+0
   const WL_END_TIMESTAMP = 1691078400; //Thu Aug 03 2023 16:00:00 GMT+0
   const START_RAFFLE_TIMESTAMP = 1691078400;//Thu Aug 03 2023 16:00:00 GMT+0
   const END_RAFFLE_TIMESTAMP = 1691089200;//Thu Aug 03 2023 19:00:00 GMT+0
@@ -92,7 +92,7 @@ export default function Home() {
     setNftSupply(nftsupply.toNumber());
   };
 
-  const ticketPrice = 1;
+  const ticketPrice = 0.01;
 
   // const isWhitelisted = (address) => {
   //   const now = Date.now();

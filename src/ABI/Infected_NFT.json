@@ -984,6 +984,11 @@
 		"inputs": [
 			{
 				"internalType": "bytes32",
+				"name": "_merkleRootOG",
+				"type": "bytes32"
+			},
+			{
+				"internalType": "bytes32",
 				"name": "_merkleRootHolders",
 				"type": "bytes32"
 			},
