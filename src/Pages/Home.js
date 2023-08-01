@@ -369,7 +369,7 @@ export default function Home() {
   }, [address, ticketCount]);
 
 
-  let maxTickets = 1;
+  let maxTickets = remainingTickets || 1;
   let showInput = true;
   if (holder.status === 'Live') {
     maxTickets = remainingTickets;
