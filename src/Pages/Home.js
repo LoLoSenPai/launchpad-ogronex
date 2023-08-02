@@ -329,15 +329,20 @@ export default function Home() {
     const fetchData = async () => {
       setLoading(true);
       if (isConnected) {
-        await getTicketsBought();
-        await getTicketsSold();
-        await getRaffleOver();
-        await getTotalSupply()
+        try {
+          await getTicketsBought();
+          await getTicketsSold();
+          await getRaffleOver();
+          await getTotalSupply();
+        } catch (error) {
+          console.error("Error fetching data:", error);
+          // Handle the error in some way, such as showing an error message to the user
+        }
       } else {
         await getAlchemyProviderAndData();
       }
       setLoading(false);
-    }
+    };
     fetchData();
   }, [address]);
 
@@ -406,347 +411,348 @@ export default function Home() {
           <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-gray-900"></div>
         </div>
       ) : (
-      <div className="homepage py-10 px-2 lg:px-5 xl:px-0 md:justify-center xl:max-w-[80vw] md:mx-auto">
+        <div className="homepage py-10 px-2 lg:px-5 xl:px-0 md:justify-center xl:max-w-[80vw] md:mx-auto">
 
-        <header className="navbar px-0 -ml-6 md:-ml-0 md:px-2">
-          <nav className="flex justify-center md:justify-between gap-0">
-            <div className="invisible md:visible ">
-              <a href="/" className="">
-                <span className="sr-only">Ogronex</span>
-                <img
-                  className="h-11 md:h-14 w-auto"
-                  src="./Images/logo.png"
-                  alt="Ogronex logo"
-                />
-              </a>
-            </div>
-            <div className="flex flex-row items-center gap-4 md:gap-8 z-30">
-              <TermsAndConditions />
-              <div className="z-30">
-                <DynamicWidget variant='dropdown' />
+          <header className="navbar px-0 -ml-6 md:-ml-0 md:px-2">
+            <nav className="flex justify-center md:justify-between gap-0">
+              <div className="invisible md:visible ">
+                <a href="/" className="">
+                  <span className="sr-only">Ogronex</span>
+                  <img
+                    className="h-11 md:h-14 w-auto"
+                    src="./Images/logo.png"
+                    alt="Ogronex logo"
+                  />
+                </a>
               </div>
-            </div>
-          </nav>
-        </header>
-
-        <main className="relative lg:justify-center">
-
-          <div className="flex flex-col-reverse md:flex-row justify-center w-full xl:pl-35">
-            <div className="flex flex-col mt-10 w-full gap-6 px-4">
-              <div className="flex justify-between xl:justify-normal items-center p-0 md:p-3 md:pl-0 xl:ml-5">
-                <h1 className="text-xl md:text-6xl font-bold text-white">Infected Dalmatians</h1>
-                <div className="flex flex-col md:flex-row items-center gap-3 xl:ml-10">
-                  <a href="https://discord.gg/boxbies" target="_blank" rel="noreferrer"><i className="fab fa-discord text-lg text-gray-500"></i></a>
-                  <a href="https://twitter.com/dalmatiansnft" target="_blank" rel="noreferrer"><i className="fab fa-twitter text-lg text-gray-500"></i></a>
-                  <a href="https://www.boxbies.io/" target="_blank" rel="noreferrer"><i className="fas fa-globe text-lg text-gray-500"></i></a>
+              <div className="flex flex-row items-center gap-4 md:gap-8 z-30">
+                <TermsAndConditions />
+                <div className="z-30">
+                  <DynamicWidget variant='dropdown' />
                 </div>
               </div>
-              <div className="flex flex-row xl:max-w-[70%] xl:px-4 pb-3 md:pb-0">
-                <p className="text-justify md:text-lg xl:text-xl font-bold text-gray-500">
-                  The dogs ate the toxic fud, they were infected!
-                  oh man...
-                  now a troop of infected dalmatians are coming your way!
-                  Do you want to catch them or run away?
-                </p>
-              </div>
-            </div>
-          </div>
+            </nav>
+          </header>
 
-          <div className="flex flex-col md:flex-row justify-center lg:mt-10 sm:max-md:overflow-hidden lg:pb-10 xl:pb-12">
-            <div className="flex justify-center items-center w-full max-w-[400px] lg:min-w-[500px] xl:max-w-[600px] h-auto overflow-hidden md:overflow-visible pt-8 pb-12 lg:pb-8">
-              <img className="w-full scale-125" src="./Images/prize-maschine-infected-dalmatians.png" alt="maschine with a hook to grab prize" />
-            </div>
-            <div className="flex flex-col md:mt-10 w-full md:max-w-[420px] lg:max-w-[510px] xl:max-w-[650px] z-10 gap-6">
+          <main className="relative lg:justify-center">
 
-              <div className="flex flex-row py-4 px-2 md:p-4 xl:px-0 bg-secondary rounded-lg justify-around gap-3 md:gap-7 lg:gap-0 border border-gray-600 bg-opacity-60">
-                <p className="flex flex-col xl:flex-row text-md lg:text-lg xl:text-xl font-bold text-white">Mint price:<span className=" text-sm md:text-md lg:text-lg xl:text-xl text-light">FREE</span><span className=" text-gray-400 text-xs lg:text-sm">+ 1 MATIC ticket fee</span>
-                </p>
-                <p className="flex flex-col xl:flex-row text-md lg:text-lg xl:text-xl font-bold text-white">Supply:<span className="text-center text-light"> {nftSupply} / 5000</span>
-                </p>
-                <div className="flex flex-col xl:flex-row text-md lg:text-lg xl:text-xl font-bold text-white">
-                  Tickets sold:
-                  <div className="flex justify-end">
-                    <span className="ml-1 text-light">{ticketsSold}</span>
-                    <span className="ml-1 text-gray-400 text-md">/ &#8734;</span>
+            <div className="flex flex-col-reverse md:flex-row justify-center w-full xl:pl-35">
+              <div className="flex flex-col mt-10 w-full gap-6 px-4">
+                <div className="flex justify-between xl:justify-normal items-center p-0 md:p-3 md:pl-0 xl:ml-5">
+                  <h1 className="text-xl md:text-6xl font-bold text-white">Infected Dalmatians</h1>
+                  <div className="flex flex-col md:flex-row items-center gap-3 xl:ml-10">
+                    <a href="https://discord.gg/boxbies" target="_blank" rel="noreferrer"><i className="fab fa-discord text-lg text-gray-500"></i></a>
+                    <a href="https://twitter.com/dalmatiansnft" target="_blank" rel="noreferrer"><i className="fab fa-twitter text-lg text-gray-500"></i></a>
+                    <a href="https://www.boxbies.io/" target="_blank" rel="noreferrer"><i className="fas fa-globe text-lg text-gray-500"></i></a>
                   </div>
+                </div>
+                <div className="flex flex-row xl:max-w-[70%] xl:px-4 pb-3 md:pb-0">
+                  <p className="text-justify md:text-lg xl:text-xl font-bold text-gray-500">
+                    The dogs ate the toxic fud, they were infected!
+                    oh man...
+                    now a troop of infected dalmatians are coming your way!
+                    Do you want to catch them or run away?
+                  </p>
                 </div>
               </div>
+            </div>
 
-              <div className="flex flex-col gap-3 lg:gap-6">
+            <div className="flex flex-col md:flex-row justify-center lg:mt-10 sm:max-md:overflow-hidden lg:pb-10 xl:pb-12">
+              <div className="flex justify-center items-center w-full max-w-[400px] lg:min-w-[500px] xl:max-w-[600px] h-auto overflow-hidden md:overflow-visible pt-8 pb-12 lg:pb-8">
+                <img className="w-full scale-125" src="./Images/prize-maschine-infected-dalmatians.png" alt="maschine with a hook to grab prize" />
+              </div>
+              <div className="flex flex-col md:mt-10 w-full md:max-w-[420px] lg:max-w-[510px] xl:max-w-[650px] z-10 gap-6">
 
-                <div className="flex flex-col md:flex-row items-center gap-4 lg:gap-2 xl:gap-10 p-4 bg-four rounded-lg border border-gray-600 justify-center md:justify-between">
-                  <div className="relative lg:text-lg xl:text-xl font-bold text-white">
-                    Holders
-                    <span
-                      className="ml-3 text-light border border-light rounded-full px-2 text-sm"
-                      onMouseEnter={handleMouseEnterHolder}
-                      onMouseLeave={handleMouseLeaveHolder}
-                    >
-                      i
-                    </span>
-                    {showTooltipHolder &&
-                      <div className="text-center tooltip absolute left-1/2 top-full -translate-x-1/2 transform whitespace-nowrap rounded bg-secondary bg-opacity-80 p-2 text-white z-10">
-                        Boxbies and Dalmatians Holders
-                      </div>
-                    }
-                  </div>
-                  <div className="flex flew-row justify-center lg:px-2">
-                    <p className={"flex items-center xl:text-xl font-bold text-white bg-secondary py-2 px-6 md:px-2 lg:px-6 rounded-lg border border-gray-600 bg-opacity-60 md:h-[66px] xl:h-[74px] min-w-[160px] md:min-w-[80px] md:max-w-[90px] lg:min-w-[160px] xl:min-w-[180px]"}>
-                      <i className={`fas fa-circle pr-2 text-light text-sm animate-pulse ${holder.status === 'Live' ? 'text-green-500' : 'text-red-500'}`}></i>
-                      {holder.status}
-                    </p>
-                  </div>
-                  {holder.status !== 'Ended' && (
-                    <div className="flex flex-col justify-end md:-ml-1.5 lg:ml-2 xl:ml-0 min-w-[170px] xl:min-w-[233px]">
-                      <div className="flex flex-col text-center text-md text-gray-400 bg-secondary py-2 px-6 rounded-lg border border-gray-600 bg-opacity-60">
-                        {holder.status === 'Not Started' &&
-                          <>
-                            Live in
-                            <span className="text-white pl-2 xl:text-xl">
-                              <CountdownComponent deadline={holder.start} />
-                            </span>
-                          </>
-                        }
-                        {holder.status === 'Live' &&
-                          <>
-                            Ends in
-                            <span className="text-white pl-2 xl:text-xl">
-                              <CountdownComponent deadline={holder.end} />
-                            </span>
-                          </>
-                        }
-                      </div>
+                <div className="flex flex-row py-4 px-2 md:p-4 xl:px-0 bg-secondary rounded-lg justify-around gap-3 md:gap-7 lg:gap-0 border border-gray-600 bg-opacity-60">
+                  <p className="flex flex-col xl:flex-row text-md lg:text-lg xl:text-xl font-bold text-white">Mint price:<span className=" text-sm md:text-md lg:text-lg xl:text-xl text-light">FREE</span><span className=" text-gray-400 text-xs lg:text-sm">+ 1 MATIC ticket fee</span>
+                  </p>
+                  <p className="flex flex-col xl:flex-row text-md lg:text-lg xl:text-xl font-bold text-white">Supply:<span className="text-center text-light"> {nftSupply} / 5000</span>
+                  </p>
+                  <div className="flex flex-col xl:flex-row text-md lg:text-lg xl:text-xl font-bold text-white">
+                    Tickets sold:
+                    <div className="flex justify-end">
+                      <span className="ml-1 text-light">{ticketsSold}</span>
+                      <span className="ml-1 text-gray-400 text-md">/ &#8734;</span>
                     </div>
-                  )}
+                  </div>
                 </div>
 
-                <div className="flex flex-col md:flex-row items-center gap-4 lg:gap-2 xl:gap-10 p-4 bg-four rounded-lg border border-gray-600 justify-center md:justify-between">
-                  <div className="relative lg:text-lg xl:text-xl font-bold text-white">
-                    OG FCFS
-                    <span
-                      className="ml-3 text-light border border-light rounded-full px-2 text-sm"
-                      onMouseEnter={handleMouseEnter}
-                      onMouseLeave={handleMouseLeave}
-                    >
-                      i
-                    </span>
-                    {showTooltipOG &&
-                      <div className="text-center tooltip absolute left-1/2 top-full -translate-x-1/2 transform whitespace-nowrap rounded bg-secondary bg-opacity-80 p-2 text-white z-10">
-                        One mint per wallet
-                      </div>
-                    }
-                  </div>
-                  <div className="flex flew-row justify-center lg:px-2">
-                    <p className={"flex items-center xl:text-xl font-bold text-white bg-secondary py-2 px-6 md:px-2 lg:px-6 rounded-lg border border-gray-600 bg-opacity-60 md:h-[66px] xl:h-[74px] min-w-[160px] md:min-w-[80px] md:max-w-[90px] lg:min-w-[160px] xl:min-w-[180px]"}>
-                      <i className={`fas fa-circle pr-2 text-light text-sm animate-pulse ${guaranteed.status === 'Live' ? 'text-green-500' : 'text-red-500'}`}></i>
-                      {guaranteed.status}
-                    </p>
-                  </div>
-                  {guaranteed.status !== 'Ended' && (
-                    <div className="flex flex-col justify-end md:-ml-1.5 lg:ml-2 xl:ml-0 min-w-[170px] xl:min-w-[233px]">
-                      <div className="flex flex-col text-center text-md text-gray-400 bg-secondary py-2 px-6 rounded-lg border border-gray-600 bg-opacity-60">
-                        {guaranteed.status === 'Not Started' &&
-                          <>
-                            Live in
-                            <span className="text-white pl-2 xl:text-xl">
-                              <CountdownComponent deadline={guaranteed.start} />
-                            </span>
-                          </>
-                        }
-                        {guaranteed.status === 'Live' &&
-                          <>
-                            Ends in
-                            <span className="text-white pl-2 xl:text-xl">
-                              <CountdownComponent deadline={guaranteed.end} />
-                            </span>
-                          </>
-                        }
-                      </div>
-                    </div>
-                  )}
-                </div>
+                <div className="flex flex-col gap-3 lg:gap-6">
 
-                <div className="flex flex-col md:flex-row items-center gap-4 lg:gap-2 xl:gap-10 p-4 bg-four rounded-lg border border-gray-600 justify-center md:justify-between">
-                  <div className="relative lg:text-lg xl:text-xl font-bold text-white">
-                    Whitelist FCFS
-                    <span
-                      className="ml-3 text-light border border-light rounded-full px-2 text-sm"
-                      onMouseEnter={handleMouseEnterWL}
-                      onMouseLeave={handleMouseLeaveWL}
-                    >
-                      i
-                    </span>
-                    {showTooltipWL &&
-                      <div className="text-center tooltip absolute left-1/2 top-full -translate-x-1/2 transform whitespace-nowrap rounded bg-secondary bg-opacity-80 p-2 text-white z-10">
-                        One mint per wallet
-                      </div>
-                    }
-                  </div>
-                  <div className="flex flew-row justify-center lg:px-2">
-                    <div className={"flex items-center xl:text-xl font-bold text-white bg-secondary py-2 px-6 md:px-2 lg:px-6 rounded-lg border border-gray-600 bg-opacity-60 md:h-[66px] xl:h-[74px] min-w-[160px] md:min-w-[80px] md:max-w-[90px] lg:min-w-[160px] xl:min-w-[180px]"}>
-                      <i className={`fas fa-circle pr-2 text-light text-sm animate-pulse ${whitelistFCFS.status === 'Live' ? 'text-green-500' : 'text-red-500'}`}></i>
-                      {whitelistFCFS.status}
+                  <div className="flex flex-col md:flex-row items-center gap-4 lg:gap-2 xl:gap-10 p-4 bg-four rounded-lg border border-gray-600 justify-center md:justify-between">
+                    <div className="relative lg:text-lg xl:text-xl font-bold text-white">
+                      Holders
+                      <span
+                        className="ml-3 text-light border border-light rounded-full px-2 text-sm"
+                        onMouseEnter={handleMouseEnterHolder}
+                        onMouseLeave={handleMouseLeaveHolder}
+                      >
+                        i
+                      </span>
+                      {showTooltipHolder &&
+                        <div className="text-center tooltip absolute left-1/2 top-full -translate-x-1/2 transform whitespace-nowrap rounded bg-secondary bg-opacity-80 p-2 text-white z-10">
+                          Boxbies and Dalmatians Holders
+                        </div>
+                      }
                     </div>
-                  </div>
-                  {whitelistFCFS.status !== 'Ended' && (
-                    <div className="flex flex-col justify-end md:-ml-1.5 lg:ml-2 xl:ml-0 min-w-[170px] xl:min-w-[233px]">
-                      <div className="flex flex-col text-center text-md text-gray-400 bg-secondary py-2 px-6 rounded-lg border border-gray-600 bg-opacity-60">
-                        {whitelistFCFS.status === 'Not Started' &&
-                          <>
-                            Live in
-                            <span className="text-white pl-2 xl:text-xl">
-                              <CountdownComponent deadline={whitelistFCFS.start} />
-                            </span>
-                          </>
-                        }
-                        {whitelistFCFS.status === 'Live' &&
-                          <>
-                            Ends in
-                            <span className="text-white pl-2 xl:text-xl">
-                              <CountdownComponent deadline={whitelistFCFS.end} />
-                            </span>
-                          </>
-                        }
-                      </div>
+                    <div className="flex flew-row justify-center lg:px-2">
+                      <p className={"flex items-center xl:text-xl font-bold text-white bg-secondary py-2 px-6 md:px-2 lg:px-6 rounded-lg border border-gray-600 bg-opacity-60 md:h-[66px] xl:h-[74px] min-w-[160px] md:min-w-[80px] md:max-w-[90px] lg:min-w-[160px] xl:min-w-[180px]"}>
+                        <i className={`fas fa-circle pr-2 text-light text-sm animate-pulse ${holder.status === 'Live' ? 'text-green-500' : 'text-red-500'}`}></i>
+                        {holder.status}
+                      </p>
                     </div>
-                  )}
-                </div>
-                <div className="flex flex-col md:flex-row items-center p-4 bg-four rounded-lg border border-gray-600 gap-4 md:gap-6 md:justify-between">
-                  <div className="relative lg:text-lg xl:text-xl font-bold text-white xl:mr-5">
-                    Public
-                    <span
-                      className="ml-3 text-light border border-light rounded-full px-2 text-sm"
-                      onMouseEnter={handleMouseEnterPublic}
-                      onMouseLeave={handleMouseLeavePublic}
-                    >
-                      i
-                    </span>
-                    {showTooltipPublic && (
-                      <div className="tooltip absolute left-1/2 top-full -translate-x-1/2 transform whitespace-normal md:whitespace-nowrap rounded bg-secondary bg-opacity-80 p-2 text-white text-center text-md min-w-[75vw] md:min-w-[60vw] xl:min-w-[30vw] overflow-hidden text-overflow-ellipsis z-10">
-                        All winners will be drawn few minutes after the end.
+                    {holder.status !== 'Ended' && (
+                      <div className="flex flex-col justify-end md:-ml-1.5 lg:ml-2 xl:ml-0 min-w-[170px] xl:min-w-[233px]">
+                        <div className="flex flex-col text-center text-md text-gray-400 bg-secondary py-2 px-6 rounded-lg border border-gray-600 bg-opacity-60">
+                          {holder.status === 'Not Started' &&
+                            <>
+                              Live in
+                              <span className="text-white pl-2 xl:text-xl">
+                                <CountdownComponent deadline={holder.start} />
+                              </span>
+                            </>
+                          }
+                          {holder.status === 'Live' &&
+                            <>
+                              Ends in
+                              <span className="text-white pl-2 xl:text-xl">
+                                <CountdownComponent deadline={holder.end} />
+                              </span>
+                            </>
+                          }
+                        </div>
                       </div>
                     )}
                   </div>
-                  <div className="flex flew-row justify-center lg:ml-2">
-                    <div className={"flex items-center xl:text-xl font-bold text-white bg-secondary py-2 px-6 md:px-2 lg:px-6 rounded-lg border border-gray-600 bg-opacity-60 md:h-[66px] xl:h-[74px] min-w-[160px] md:min-w-[80px] md:max-w-[90px] lg:min-w-[160px] xl:min-w-[180px]"}>
-                      <i className={`fas fa-circle pr-2 text-light text-sm animate-pulse ${publicSale.status === 'Live' ? 'text-green-500' : 'text-red-500'}`}></i>
-                      {publicSale.status}
+
+                  <div className="flex flex-col md:flex-row items-center gap-4 lg:gap-2 xl:gap-10 p-4 bg-four rounded-lg border border-gray-600 justify-center md:justify-between">
+                    <div className="relative lg:text-lg xl:text-xl font-bold text-white">
+                      OG FCFS
+                      <span
+                        className="ml-3 text-light border border-light rounded-full px-2 text-sm"
+                        onMouseEnter={handleMouseEnter}
+                        onMouseLeave={handleMouseLeave}
+                      >
+                        i
+                      </span>
+                      {showTooltipOG &&
+                        <div className="text-center tooltip absolute left-1/2 top-full -translate-x-1/2 transform whitespace-nowrap rounded bg-secondary bg-opacity-80 p-2 text-white z-10">
+                          One mint per wallet
+                        </div>
+                      }
                     </div>
+                    <div className="flex flew-row justify-center lg:px-2">
+                      <p className={"flex items-center xl:text-xl font-bold text-white bg-secondary py-2 px-6 md:px-2 lg:px-6 rounded-lg border border-gray-600 bg-opacity-60 md:h-[66px] xl:h-[74px] min-w-[160px] md:min-w-[80px] md:max-w-[90px] lg:min-w-[160px] xl:min-w-[180px]"}>
+                        <i className={`fas fa-circle pr-2 text-light text-sm animate-pulse ${guaranteed.status === 'Live' ? 'text-green-500' : 'text-red-500'}`}></i>
+                        {guaranteed.status}
+                      </p>
+                    </div>
+                    {guaranteed.status !== 'Ended' && (
+                      <div className="flex flex-col justify-end md:-ml-1.5 lg:ml-2 xl:ml-0 min-w-[170px] xl:min-w-[233px]">
+                        <div className="flex flex-col text-center text-md text-gray-400 bg-secondary py-2 px-6 rounded-lg border border-gray-600 bg-opacity-60">
+                          {guaranteed.status === 'Not Started' &&
+                            <>
+                              Live in
+                              <span className="text-white pl-2 xl:text-xl">
+                                <CountdownComponent deadline={guaranteed.start} />
+                              </span>
+                            </>
+                          }
+                          {guaranteed.status === 'Live' &&
+                            <>
+                              Ends in
+                              <span className="text-white pl-2 xl:text-xl">
+                                <CountdownComponent deadline={guaranteed.end} />
+                              </span>
+                            </>
+                          }
+                        </div>
+                      </div>
+                    )}
                   </div>
-                  {publicSale.status !== "Ended" && (
-                    <div className="flex flex-col lg:justify-end min-w-[170px] xl:min-w-[233px]">
-                      <div className="flex flex-col text-center text-md text-gray-400 bg-secondary py-2 xl:py-2.5 px-6 rounded-lg border border-gray-600 bg-opacity-60">
-                        {publicSale.status === "Not Started" &&
-                          <>
-                            Live in
-                            <span className="text-white pl-2 xl:text-xl">
-                              <CountdownComponent deadline={publicSale.start} />
-                            </span>
-                          </>
-                        }
-                        {publicSale.status === "Live" &&
-                          <>
-                            Ends in
-                            <span className="text-white pl-2 xl:text-xl">
-                              <CountdownComponent deadline={publicSale.end} />
-                            </span>
-                          </>
-                        }
+
+                  <div className="flex flex-col md:flex-row items-center gap-4 lg:gap-2 xl:gap-10 p-4 bg-four rounded-lg border border-gray-600 justify-center md:justify-between">
+                    <div className="relative lg:text-lg xl:text-xl font-bold text-white">
+                      Whitelist FCFS
+                      <span
+                        className="ml-3 text-light border border-light rounded-full px-2 text-sm"
+                        onMouseEnter={handleMouseEnterWL}
+                        onMouseLeave={handleMouseLeaveWL}
+                      >
+                        i
+                      </span>
+                      {showTooltipWL &&
+                        <div className="text-center tooltip absolute left-1/2 top-full -translate-x-1/2 transform whitespace-nowrap rounded bg-secondary bg-opacity-80 p-2 text-white z-10">
+                          One mint per wallet
+                        </div>
+                      }
+                    </div>
+                    <div className="flex flew-row justify-center lg:px-2">
+                      <div className={"flex items-center xl:text-xl font-bold text-white bg-secondary py-2 px-6 md:px-2 lg:px-6 rounded-lg border border-gray-600 bg-opacity-60 md:h-[66px] xl:h-[74px] min-w-[160px] md:min-w-[80px] md:max-w-[90px] lg:min-w-[160px] xl:min-w-[180px]"}>
+                        <i className={`fas fa-circle pr-2 text-light text-sm animate-pulse ${whitelistFCFS.status === 'Live' ? 'text-green-500' : 'text-red-500'}`}></i>
+                        {whitelistFCFS.status}
                       </div>
                     </div>
-                  )}
-                </div>
-              </div>
-
-              <div className="grid grid-cols-3 lg:flex flew-row gap-2 md:gap-4 lg:gap-6 xl:gap-11 w-full max-h-[70px] justify-between">
-                {showInput && (
-                  <div className="flex justify-around items-center rounded-lg border border-gray-600 bg-secondary z-10">
-                    <button className="w-10 h-14 rounded-l-lg text-white text-2xl" onClick={handleDecrease}>
-                      -
-                    </button>
-                    <input
-                      type="number"
-                      className="w-4 md:w-6 lg:w-10 h-14 rounded-none bg-secondary text-white text-xl text-center"
-                      min={1}
-                      max={maxTickets}
-                      value={ticketCount}
-                      onChange={(e) => {
-                        if (e.target.value === '') {
-                          setTicketCount(1);
-                        } else {
-                          setTicketCount(Math.min(parseInt(e.target.value), maxTickets));
-                        }
-                      }}
-                    />
-                    <button className="w-10 h-14 rounded-r-lg text-white text-2xl" onClick={handleIncrease}>
-                      +
-                    </button>
+                    {whitelistFCFS.status !== 'Ended' && (
+                      <div className="flex flex-col justify-end md:-ml-1.5 lg:ml-2 xl:ml-0 min-w-[170px] xl:min-w-[233px]">
+                        <div className="flex flex-col text-center text-md text-gray-400 bg-secondary py-2 px-6 rounded-lg border border-gray-600 bg-opacity-60">
+                          {whitelistFCFS.status === 'Not Started' &&
+                            <>
+                              Live in
+                              <span className="text-white pl-2 xl:text-xl">
+                                <CountdownComponent deadline={whitelistFCFS.start} />
+                              </span>
+                            </>
+                          }
+                          {whitelistFCFS.status === 'Live' &&
+                            <>
+                              Ends in
+                              <span className="text-white pl-2 xl:text-xl">
+                                <CountdownComponent deadline={whitelistFCFS.end} />
+                              </span>
+                            </>
+                          }
+                        </div>
+                      </div>
+                    )}
                   </div>
-                )}
-                <SaleButton
-                  isConnected={isConnected}
-                  waitingBuy={waitingBuy}
-                  hasBalance={hasBalance}
-                  address={address}
-                  isWhitelisted={isWhitelisted}
-                  isWinnerRaffle={isWinnerRaffle}
-                  whiteListMint={whiteListMint}
-                  buyTickets={buyTickets}
-                  checkWinner={checkWinner}
-                  winnerRaffleMint={winnerRaffleMint}
-                  appIsRaffleOver={appIsRaffleOver}
-                  setShowModalWinner={setShowModalWinner}
-                  showModalWinner={showModalWinner}
-                  setShowModalLooser={setShowModalLooser}
-                  showModalLooser={showModalLooser}
-                  setShowModalPending={setShowModalPending}
-                  showModalPending={showModalPending}
-                  setHasCheckedWinner={setHasCheckedWinner}
-                  hasCheckedWinner={hasCheckedWinner}
-                  holder={holder}
-                  guaranteed={guaranteed}
-                  whitelistFCFS={whitelistFCFS}
-                  publicSale={publicSale}
-                  setIsWinnerRaffle={setIsWinnerRaffle}
-                  remainingTickets={remainingTickets}
-                />
-
-                <div className="flex flex-col justify-center items-center lg:min-w-[110px] pr-3">
-                  {guaranteed.status === 'Live' && isConnected && availableToMint && (
-                    <p className="flex items-center lg:text-xl text-white sm:mt-3 md:mt-1">
-                      Available to mint:
-                      <span className="ml-12 md:ml-12 lg:ml-8 text-light ">{remainingTickets}</span>
-                    </p>
-                  )}
-                  <p className="flex justify-content items-end lg:text-xl text-white leading-tight mt-2 xl:mt-0">
-                    Your tickets:
-                    {isConnected && <span className="ml-1 text-light">{ticketsBought}</span>}
-                  </p>
-                  {isConnected && hasCheckedWinner && (
-                    <p className="flex items-center lg:text-xl text-white sm:mt-3 md:mt-1">
-                      Won:
-                      <span className="ml-12 md:ml-12 lg:ml-8 text-light ">{winnerNbMint}</span>
-                    </p>
-                  )}
-                </div>
-              </div>
-              {/* <ShareButton /> */}
-              {publicSale.status === "Ended" &&
-                <div className="flex flex-col justify-center items-center mt-4">
-                  <div className="text-center text-white text-md md:text-lg lg:text-xl font-bold">
-                    <ClaimCountdown deadline={publicSale.end} />
+                  <div className="flex flex-col md:flex-row items-center p-4 bg-four rounded-lg border border-gray-600 gap-4 md:gap-6 md:justify-between">
+                    <div className="relative lg:text-lg xl:text-xl font-bold text-white xl:mr-5">
+                      Public
+                      <span
+                        className="ml-3 text-light border border-light rounded-full px-2 text-sm"
+                        onMouseEnter={handleMouseEnterPublic}
+                        onMouseLeave={handleMouseLeavePublic}
+                      >
+                        i
+                      </span>
+                      {showTooltipPublic && (
+                        <div className="tooltip absolute left-1/2 top-full -translate-x-1/2 transform whitespace-normal md:whitespace-nowrap rounded bg-secondary bg-opacity-80 p-2 text-white text-center text-md min-w-[75vw] md:min-w-[60vw] xl:min-w-[30vw] overflow-hidden text-overflow-ellipsis z-10">
+                          All winners will be drawn few minutes after the end.
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex flew-row justify-center lg:ml-2">
+                      <div className={"flex items-center xl:text-xl font-bold text-white bg-secondary py-2 px-6 md:px-2 lg:px-6 rounded-lg border border-gray-600 bg-opacity-60 md:h-[66px] xl:h-[74px] min-w-[160px] md:min-w-[80px] md:max-w-[90px] lg:min-w-[160px] xl:min-w-[180px]"}>
+                        <i className={`fas fa-circle pr-2 text-light text-sm animate-pulse ${publicSale.status === 'Live' ? 'text-green-500' : 'text-red-500'}`}></i>
+                        {publicSale.status}
+                      </div>
+                    </div>
+                    {publicSale.status !== "Ended" && (
+                      <div className="flex flex-col lg:justify-end min-w-[170px] xl:min-w-[233px]">
+                        <div className="flex flex-col text-center text-md text-gray-400 bg-secondary py-2 xl:py-2.5 px-6 rounded-lg border border-gray-600 bg-opacity-60">
+                          {publicSale.status === "Not Started" &&
+                            <>
+                              Live in
+                              <span className="text-white pl-2 xl:text-xl">
+                                <CountdownComponent deadline={publicSale.start} />
+                              </span>
+                            </>
+                          }
+                          {publicSale.status === "Live" &&
+                            <>
+                              Ends in
+                              <span className="text-white pl-2 xl:text-xl">
+                                <CountdownComponent deadline={publicSale.end} />
+                              </span>
+                            </>
+                          }
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
-              }
+
+                <div className="grid grid-cols-3 lg:flex flew-row gap-2 md:gap-4 lg:gap-6 xl:gap-11 w-full max-h-[70px] justify-between">
+                  {showInput && (
+                    <div className="flex justify-around items-center rounded-lg border border-gray-600 bg-secondary z-10">
+                      <button className="w-10 h-14 rounded-l-lg text-white text-2xl" onClick={handleDecrease}>
+                        -
+                      </button>
+                      <input
+                        type="number"
+                        className="w-4 md:w-6 lg:w-10 h-14 rounded-none bg-secondary text-white text-xl text-center"
+                        min={1}
+                        max={maxTickets}
+                        value={ticketCount}
+                        onChange={(e) => {
+                          const value = parseInt(e.target.value);
+                          if (isNaN(value) || value < 1) {
+                            setTicketCount(1);
+                          } else {
+                            setTicketCount(Math.min(value, maxTickets));
+                          }
+                        }}
+                      />
+                      <button className="w-10 h-14 rounded-r-lg text-white text-2xl" onClick={handleIncrease}>
+                        +
+                      </button>
+                    </div>
+                  )}
+                  <SaleButton
+                    isConnected={isConnected}
+                    waitingBuy={waitingBuy}
+                    hasBalance={hasBalance}
+                    address={address}
+                    isWhitelisted={isWhitelisted}
+                    isWinnerRaffle={isWinnerRaffle}
+                    whiteListMint={whiteListMint}
+                    buyTickets={buyTickets}
+                    checkWinner={checkWinner}
+                    winnerRaffleMint={winnerRaffleMint}
+                    appIsRaffleOver={appIsRaffleOver}
+                    setShowModalWinner={setShowModalWinner}
+                    showModalWinner={showModalWinner}
+                    setShowModalLooser={setShowModalLooser}
+                    showModalLooser={showModalLooser}
+                    setShowModalPending={setShowModalPending}
+                    showModalPending={showModalPending}
+                    setHasCheckedWinner={setHasCheckedWinner}
+                    hasCheckedWinner={hasCheckedWinner}
+                    holder={holder}
+                    guaranteed={guaranteed}
+                    whitelistFCFS={whitelistFCFS}
+                    publicSale={publicSale}
+                    setIsWinnerRaffle={setIsWinnerRaffle}
+                    remainingTickets={remainingTickets}
+                  />
+
+                  <div className="flex flex-col justify-center items-center lg:min-w-[110px] pr-3">
+                    {guaranteed.status === 'Live' && isConnected && availableToMint && (
+                      <p className="flex items-center lg:text-xl text-white sm:mt-3 md:mt-1">
+                        Available to mint:
+                        <span className="ml-12 md:ml-12 lg:ml-8 text-light ">{remainingTickets}</span>
+                      </p>
+                    )}
+                    <p className="flex justify-content items-end lg:text-xl text-white leading-tight mt-2 xl:mt-0">
+                      Your tickets:
+                      {isConnected && <span className="ml-1 text-light">{ticketsBought}</span>}
+                    </p>
+                    {isConnected && hasCheckedWinner && (
+                      <p className="flex items-center lg:text-xl text-white sm:mt-3 md:mt-1">
+                        Won:
+                        <span className="ml-12 md:ml-12 lg:ml-8 text-light ">{winnerNbMint}</span>
+                      </p>
+                    )}
+                  </div>
+                </div>
+                {/* <ShareButton /> */}
+                {publicSale.status === "Ended" &&
+                  <div className="flex flex-col justify-center items-center mt-4">
+                    <div className="text-center text-white text-md md:text-lg lg:text-xl font-bold">
+                      <ClaimCountdown deadline={publicSale.end} />
+                    </div>
+                  </div>
+                }
+              </div>
             </div>
-          </div>
-          <div className="flex flex-row justify-end mt-10 lg:mt-0 mr-2 md:mr-5">
-            <p className="text-xl font-bold text-gray-400">Powered by <span className="text-light">Ogronex</span>
-            </p>
-          </div>
-        </main>
-      </div>
-    )}
+            <div className="flex flex-row justify-end mt-10 lg:mt-0 mr-2 md:mr-5">
+              <p className="text-xl font-bold text-gray-400">Powered by <span className="text-light">Ogronex</span>
+              </p>
+            </div>
+          </main>
+        </div>
+      )}
     </>
   )
 }
