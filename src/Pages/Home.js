@@ -66,16 +66,20 @@ export default function Home() {
       apiKey: "kKaUsI3UwlljF-I3np_9fWNG--9i9RlF",
       network: Network.MATIC_MAINNET,
     };
-    const alchemy = new Alchemy(settings);
-    const maticProvider = await alchemy.config.getProvider();
-    const contractRaffleBeforeConnection = new ethers.Contract(contractRaffleAddress, RaffleABI, maticProvider);
-    const contractNftBeforeConnection = new ethers.Contract(contractNftAddress, NftABI, maticProvider);
-    const ticketsSold = await contractRaffleBeforeConnection.nbTicketSell();
-    const isOver = await contractNftBeforeConnection.isRaffleOver();
-    const nftsupply = await contractNftBeforeConnection.totalSupply();
-    setTicketsSold(ticketsSold.toNumber());
-    setAppIsRaffleOver(isOver);
-    setNftSupply(nftsupply.toNumber());
+    try {
+      const alchemy = new Alchemy(settings);
+      const maticProvider = await alchemy.config.getProvider();
+      const contractRaffleBeforeConnection = new ethers.Contract(contractRaffleAddress, RaffleABI, maticProvider);
+      const contractNftBeforeConnection = new ethers.Contract(contractNftAddress, NftABI, maticProvider);
+      const ticketsSold = await contractRaffleBeforeConnection.nbTicketSell();
+      const isOver = await contractNftBeforeConnection.isRaffleOver();
+      const nftsupply = await contractNftBeforeConnection.totalSupply();
+      setTicketsSold(ticketsSold.toNumber());
+      setAppIsRaffleOver(isOver);
+      setNftSupply(nftsupply.toNumber());
+    } catch (error) {
+      console.error("An error occurred while fetching data:", error);
+    }
   };
 
   const ticketPrice = 0.01;
@@ -336,7 +340,7 @@ export default function Home() {
     }
     fetchData();
   }, [address]);
-  
+
 
   useEffect(() => {
     const whitelistObject = isWhitelisted(address);
