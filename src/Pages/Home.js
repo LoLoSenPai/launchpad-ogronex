@@ -667,7 +667,7 @@ export default function Home() {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-3 lg:flex flew-row gap-2 md:gap-4 lg:gap-6 xl:gap-11 w-full max-h-[70px] justify-between">
+                {/* <div className="grid grid-cols-3 lg:flex flew-row gap-2 md:gap-4 lg:gap-6 xl:gap-11 w-full max-h-[70px] justify-between">
                   {showInput && (
                     <div className="flex justify-around items-center rounded-lg border border-gray-600 bg-secondary z-10">
                       <button className="w-10 h-14 rounded-l-lg text-white text-2xl" onClick={handleDecrease}>
@@ -718,14 +718,14 @@ export default function Home() {
                     remainingTickets={remainingTickets}
                   />
 
-                  <div className="flex flex-col justify-center items-center lg:min-w-[110px] pr-3">
+                  <div className="flex flex-col justify-center items-center lg:min-w-[110px] pr-3"> */}
                     {/* {holder.status === 'Live' && isConnected && availableToMint != undefined &&(
                       <p className="flex items-center lg:text-xl text-white sm:mt-3 md:mt-1">
                         Available to mint:
                         <span className="ml-12 md:ml-12 lg:ml-8 text-light ">{isWhitelisted(address).availableToMint}</span>
                       </p>
                     )} */}
-                    <p className="flex justify-content items-end lg:text-xl text-white leading-tight mt-2 xl:mt-0">
+                    {/* <p className="flex justify-content items-end lg:text-xl text-white leading-tight mt-2 xl:mt-0">
                       Your tickets:
                       {isConnected && ticketsBought !== undefined && <span className="ml-1 text-light">{ticketsBought}</span>}
                     </p>
@@ -736,13 +736,13 @@ export default function Home() {
                       </p>
                     )}
                   </div>
-                </div>
+                </div> */}
                 {/* <ShareButton /> */}
                 {publicSale.status === "Ended" &&
                   <div className="flex flex-col justify-center items-center mt-4">
-                    <div className="text-center text-white text-md md:text-lg lg:text-xl font-bold">
-                      <ClaimCountdown deadline={publicSale.end} />
-                    </div>
+                    <button className="lg:py-2 w-full rounded-lg text-xl xl:text-2xl bg-light font-bold text-black col-span-2 min-h-[60px] max-h-[80px] md:max-h-auto btn-shadow flex justify-center items-center">
+                      All NFTs have been airdropped to the winners!
+                    </button>
                   </div>
                 }
               </div>
