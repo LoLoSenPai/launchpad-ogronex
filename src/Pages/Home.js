@@ -305,12 +305,12 @@ export default function Home() {
   }, [availableToMint]);
 
   useEffect(() => {
-    if (holder.status === 'Live' || publicSale.status === 'Ended') {
+    if ((holder.status === 'Live' || publicSale.status === 'Ended') && remainingTickets > 0) {
       setTicketCount(remainingTickets);
     } else {
       setTicketCount(1);
     }
-  }, [holder.status, publicSale.status, remainingTickets]);
+}, [holder.status, publicSale.status, remainingTickets]);
 
   // useEffect(() => {
   //   if (isConnected) {
@@ -674,8 +674,12 @@ export default function Home() {
                         className="w-4 md:w-6 lg:w-10 h-14 rounded-none bg-secondary text-white text-xl text-center"
                         min={1}
                         max={maxTickets}
-                        value={ticketCount}
-                        onChange={(e) => setTicketCount(e.target.value)}
+                        value={ticketCount || 1}
+                        onChange={(e) => {
+                          if (!isNaN(e.target.value)) {
+                              setTicketCount(parseInt(e.target.value));
+                          }
+                      }}
                       />
                       <button className="w-10 h-14 rounded-r-lg text-white text-2xl" onClick={handleIncrease}>
                         +
@@ -711,7 +715,7 @@ export default function Home() {
                   />
 
                   <div className="flex flex-col justify-center items-center lg:min-w-[110px] pr-3">
-                    {guaranteed.status === 'Live' && isConnected && availableToMint && (
+                    {guaranteed.status === 'Live' && isConnected && (
                       <p className="flex items-center lg:text-xl text-white sm:mt-3 md:mt-1">
                         Available to mint:
                         <span className="ml-12 md:ml-12 lg:ml-8 text-light ">{remainingTickets}</span>
