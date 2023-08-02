@@ -213,7 +213,7 @@ export default function Home() {
       const provider = new ethers.providers.Web3Provider(window.ethereum);
       const signer = provider.getSigner();
       const contractNft = new ethers.Contract(contractNftAddress, NftABI, signer);
-      const tx = await contractNft.whitelistMint(availableToMint, whitelistObject.proof, ticketCount, { value: ethers.utils.parseEther((ticketCount * 0.5).toString()) });
+      const tx = await contractNft.whitelistMint(whitelistObject.availableToMint, whitelistObject.proof, ticketCount, { value: ethers.utils.parseEther((ticketCount * 0.5).toString()) });
       await provider.waitForTransaction(tx.hash);
       setWaitingBuy(false);
       toast.success("Success Mint !");
@@ -240,6 +240,7 @@ export default function Home() {
       localStorage.setItem('remainingTickets', newRemainingTickets.toString());
       await getTotalSupply();
     } catch (error) {
+      console.log(error);
       if (error.message.includes('execution reverted')) {
         const errorMessage = error.reason.split(':')[1].trim();
         toast.error(errorMessage)
