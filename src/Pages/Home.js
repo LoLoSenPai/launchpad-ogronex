@@ -675,14 +675,7 @@ export default function Home() {
                         min={1}
                         max={maxTickets}
                         value={ticketCount}
-                        onChange={(e) => {
-                          const value = parseInt(e.target.value);
-                          if (isNaN(value) || value < 1) {
-                            setTicketCount(1);
-                          } else {
-                            setTicketCount(Math.min(value, maxTickets));
-                          }
-                        }}
+                        onChange={(e) => setTicketCount(e.target.value)}
                       />
                       <button className="w-10 h-14 rounded-r-lg text-white text-2xl" onClick={handleIncrease}>
                         +
