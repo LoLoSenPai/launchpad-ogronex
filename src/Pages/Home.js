@@ -401,6 +401,11 @@ export default function Home() {
         position="bottom-center"
         theme="dark"
       />
+      {loading ? (
+        <div className="flex justify-center items-center h-screen">
+          <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-gray-900"></div>
+        </div>
+      ) : (
       <div className="homepage py-10 px-2 lg:px-5 xl:px-0 md:justify-center xl:max-w-[80vw] md:mx-auto">
 
         <header className="navbar px-0 -ml-6 md:-ml-0 md:px-2">
@@ -741,7 +746,7 @@ export default function Home() {
           </div>
         </main>
       </div>
-
+    )}
     </>
   )
 }
