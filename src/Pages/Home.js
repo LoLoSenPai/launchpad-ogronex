@@ -327,7 +327,7 @@ export default function Home() {
 
   useEffect(() => {
     getTicketsBought();
-  }, []);
+  }, [ticketsBought]);
 
   useEffect(() => {
     const fetchData = async () => {
