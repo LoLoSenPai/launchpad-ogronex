@@ -24,7 +24,7 @@ import TermsAndConditions from "./TermsAndConditions";
 import { ClaimCountdown } from "../Components/ClaimCountdown";
 // import ShareButton from "../Components/ShareButton";
 
-const contractNftAddress = "0xe152A5552A9b11751a28981CBe7d1Dc4A6bc6223";
+const contractNftAddress = "0xe4b528300ef4e839097f74fa2551c6f1b47e9853";
 const contractRaffleAddress = "0xFA820767b124d6537a39F949De036f534f2ACE6B";
 
 export default function Home() {
