@@ -6,9 +6,9 @@ import { Network, Alchemy } from 'alchemy-sdk';
 import CountdownComponent from "../Components/Countdown";
 import RaffleABI from "../ABI/launchpadRaffle.json";
 import NftABI from "../ABI/Infected_NFT.json";
-import whitelistGuaranteed from '../Whitelist/whitelistGuaranteed.json';
-import whitelistOG from '../Whitelist/whitelistOG.json';
-import whitelistWL from '../Whitelist/whitelistWL.json';
+// import whitelistGuaranteed from '../Whitelist/whitelistGuaranteed.json';
+// import whitelistOG from '../Whitelist/whitelistOG.json';
+// import whitelistWL from '../Whitelist/whitelistWL.json';
 
 // Just for testing
 import dataWhiteListGuaranteed from '../Whitelist/whitelistGuaranteed.json';
