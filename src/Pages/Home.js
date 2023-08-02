@@ -126,12 +126,11 @@ export default function Home() {
   const handleMouseLeavePublic = () => {
     setShowTooltipPublic(false);
   };
-
   const handleIncrease = () => {
-    if (ticketCount < maxTickets) {
-      setTicketCount(ticketCount + 1);
-    }
+    const numericTicketCount = parseInt(ticketCount, 10);
+    setTicketCount((numericTicketCount || 0) + 1);
   };
+  
 
   const handleDecrease = () => {
     if (ticketCount > 1) {
