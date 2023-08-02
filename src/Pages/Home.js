@@ -82,7 +82,7 @@ export default function Home() {
     }
   };
 
-  const ticketPrice = 0.01;
+  const ticketPrice = 1;
 
   const isWhitelisted = useCallback((address) => {
     if (holder.status === "Live") {
@@ -214,7 +214,7 @@ export default function Home() {
       const provider = new ethers.providers.Web3Provider(window.ethereum);
       const signer = provider.getSigner();
       const contractNft = new ethers.Contract(contractNftAddress, NftABI, signer);
-      const tx = await contractNft.whitelistMint(availableToMint, whitelistObject.proof, ticketCount, { value: ethers.utils.parseEther((ticketCount * 1).toString()) });
+      const tx = await contractNft.whitelistMint(availableToMint, whitelistObject.proof, ticketCount, { value: ethers.utils.parseEther((ticketCount * 0.5).toString()) });
       await provider.waitForTransaction(tx.hash);
       setWaitingBuy(false);
       toast.success("Success Mint !");
