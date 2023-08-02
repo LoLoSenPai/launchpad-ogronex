@@ -130,7 +130,7 @@ export default function Home() {
     const numericTicketCount = parseInt(ticketCount, 10);
     setTicketCount((numericTicketCount || 0) + 1);
   };
-  
+
 
   const handleDecrease = () => {
     if (ticketCount > 1) {
@@ -310,7 +310,7 @@ export default function Home() {
     } else {
       setTicketCount(1);
     }
-}, [holder.status, publicSale.status, remainingTickets]);
+  }, [holder.status, publicSale.status, remainingTickets]);
 
   // useEffect(() => {
   //   if (isConnected) {
@@ -324,6 +324,10 @@ export default function Home() {
   //     })();
   //   }
   // }, [address]);
+
+  useEffect(() => {
+    getTicketsBought();
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -677,9 +681,9 @@ export default function Home() {
                         value={ticketCount || 1}
                         onChange={(e) => {
                           if (!isNaN(e.target.value)) {
-                              setTicketCount(parseInt(e.target.value));
+                            setTicketCount(parseInt(e.target.value));
                           }
-                      }}
+                        }}
                       />
                       <button className="w-10 h-14 rounded-r-lg text-white text-2xl" onClick={handleIncrease}>
                         +
@@ -723,7 +727,7 @@ export default function Home() {
                     )} */}
                     <p className="flex justify-content items-end lg:text-xl text-white leading-tight mt-2 xl:mt-0">
                       Your tickets:
-                      {isConnected && <span className="ml-1 text-light">{ticketsBought}</span>}
+                      {isConnected && ticketsBought !== undefined && <span className="ml-1 text-light">{ticketsBought}</span>}
                     </p>
                     {isConnected && hasCheckedWinner && (
                       <p className="flex items-center lg:text-xl text-white sm:mt-3 md:mt-1">
