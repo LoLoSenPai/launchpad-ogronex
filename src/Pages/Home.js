@@ -213,7 +213,7 @@ export default function Home() {
       const provider = new ethers.providers.Web3Provider(window.ethereum);
       const signer = provider.getSigner();
       const contractNft = new ethers.Contract(contractNftAddress, NftABI, signer);
-      const tx = await contractNft.whitelistMint(whitelistObject.availableToMint, whitelistObject.proof, ticketCount, { value: ethers.utils.parseEther((ticketCount * 0.5).toString()) });
+      const tx = await contractNft.whitelistMint(1, whitelistObject.proof, ticketCount, { value: ethers.utils.parseEther((1 * 0.5).toString()) });
       await provider.waitForTransaction(tx.hash);
       setWaitingBuy(false);
       toast.success("Success Mint !");
