@@ -336,7 +336,7 @@ export default function Home() {
     }
     fetchData();
   }, [address]);
-
+  
 
   useEffect(() => {
     const whitelistObject = isWhitelisted(address);
@@ -369,7 +369,7 @@ export default function Home() {
   }, [address, ticketCount]);
 
 
-  let maxTickets = remainingTickets || 1;
+  let maxTickets = 1;
   let showInput = true;
   if (holder.status === 'Live') {
     maxTickets = remainingTickets;
@@ -662,13 +662,11 @@ export default function Home() {
                       max={maxTickets}
                       value={ticketCount}
                       onChange={(e) => {
-                        let newTicketCount = parseInt(e.target.value, 10);
-                        if (isNaN(newTicketCount)) {
-                          newTicketCount = 1;
-                        } else if (newTicketCount > maxTickets) {
-                          newTicketCount = maxTickets;
+                        if (e.target.value === '') {
+                          setTicketCount(1);
+                        } else {
+                          setTicketCount(Math.min(parseInt(e.target.value), maxTickets));
                         }
-                        setTicketCount(newTicketCount);
                       }}
                     />
                     <button className="w-10 h-14 rounded-r-lg text-white text-2xl" onClick={handleIncrease}>
