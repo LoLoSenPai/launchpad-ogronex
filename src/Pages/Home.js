@@ -711,16 +711,16 @@ export default function Home() {
                     whitelistFCFS={whitelistFCFS}
                     publicSale={publicSale}
                     setIsWinnerRaffle={setIsWinnerRaffle}
-                    remainingTickets={isWhitelisted(address).availableToMint}
+                    remainingTickets={remainingTickets}
                   />
 
                   <div className="flex flex-col justify-center items-center lg:min-w-[110px] pr-3">
-                    {holder.status === 'Live' && isConnected && (
+                    {/* {holder.status === 'Live' && isConnected && availableToMint != undefined &&(
                       <p className="flex items-center lg:text-xl text-white sm:mt-3 md:mt-1">
                         Available to mint:
                         <span className="ml-12 md:ml-12 lg:ml-8 text-light ">{isWhitelisted(address).availableToMint}</span>
                       </p>
-                    )}
+                    )} */}
                     <p className="flex justify-content items-end lg:text-xl text-white leading-tight mt-2 xl:mt-0">
                       Your tickets:
                       {isConnected && <span className="ml-1 text-light">{ticketsBought}</span>}
