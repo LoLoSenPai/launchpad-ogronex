@@ -1,9 +1,9 @@
+import React, { useState, useEffect } from 'react';
+import { PuffLoader } from 'react-spinners';
 import { createPortal } from 'react-dom';
 import ModalWinner from '../Modals/ModalWinner';
 import ModalPending from '../Modals/ModalPending';
 import ModalLooser from '../Modals/ModalLooser';
-import useSaleButtonText from '../Hooks/useSaleButtonText';
-import useSaleButtonAction from '../Hooks/useSaleButtonAction';
 
 export default function SaleButton(props) {
     const {
@@ -41,7 +41,7 @@ export default function SaleButton(props) {
 
     useEffect(() => {
         let newTextButton = "Waiting for next phase";
-        let newButtonOnClick = () => { };
+        let newButtonOnClick = () => {};
         let newButtonDisabled = false;
 
         if (waitingBuy) {
@@ -50,39 +50,42 @@ export default function SaleButton(props) {
         } else if (!isConnected) {
             newButtonDisabled = true;
             newTextButton = "Connect your wallet";
-        } else if (isWhitelisted(address) && guaranteed.status === 'Live') {
-            newTextButton = "Mint";
+        } else if ((remainingTickets > availableToMint) && holder && holder.status === 'Live') {
+            newTextButton = "All NFTs are minted";
+        } else if (isWhitelisted(address) && holder && holder.status === 'Live') {
+            newTextButton = "Holder Mint";
             newButtonOnClick = () => whiteListMint();
-        } else if (!hasBalance && publicSale.status === 'Live') {
+        } else if (isWhitelisted(address) && guaranteed && guaranteed.status === 'Live') {
+            newTextButton = "OG Mint! Hurry up!";
+            newButtonOnClick = () => whiteListMint();
+        } else if (isWhitelisted(address) && whitelistFCFS && whitelistFCFS.status === 'Live') {
+            newTextButton = "Whitelist Mint! Hurry up!";
+            newButtonOnClick = () => whiteListMint();
+        } else if (!hasBalance && publicSale && publicSale.status === 'Live') {
             newButtonDisabled = true;
             newTextButton = "Insufficient Balance";
-        } else if (publicSale.status === 'Live') {
+        } else if (publicSale && publicSale.status === 'Live') {
             newTextButton = "Buy Tickets";
             newButtonOnClick = () => buyTickets();
-        } else if (publicSale.status === 'Ended' && !hasCheckedWinner && isConnected) {
+        } else if (publicSale && publicSale.status === 'Ended' && !hasCheckedWinner && isConnected) {
             newTextButton = "Verify";
             newButtonOnClick = async () => {
-                const isRaffleOver = await contractNft.isRaffleOver();
-                if (isRaffleOver) {
+                if (appIsRaffleOver) {
                     const isWinner = await checkWinner();
                     setHasCheckedWinner(true);
-                    console.log("hasCheckedWinner from button", hasCheckedWinner);
                     if (isWinner) {
                         setShowModalWinner(true);
-                        console.log("setShowModalWinner from button", showModalWinner);
                     } else {
                         setShowModalLooser(true);
-                        console.log("setShowModalLooser from button", showModalLooser);
                     }
                 } else {
                     setShowModalPending(true);
-                    console.log("setShowModalPending from button", showModalPending);
                 }
             };
-        } else if (publicSale.status === 'Ended' && hasCheckedWinner && isWinnerRaffle) {
+        } else if (publicSale && publicSale.status === 'Ended' && hasCheckedWinner && isWinnerRaffle) {
             newTextButton = "Claim";
             newButtonOnClick = () => winnerRaffleMint();
-        } else if (publicSale.status === 'Ended' && hasCheckedWinner && !isWinnerRaffle) {
+        } else if (publicSale && publicSale.status === 'Ended' && hasCheckedWinner && !isWinnerRaffle) {
             newButtonDisabled = true;
             newTextButton = "You didn't win...";
         }
@@ -94,7 +97,7 @@ export default function SaleButton(props) {
         setTextButton(newTextButton);
         setButtonOnClick(() => newButtonOnClick);
         setButtonDisabled(newButtonDisabled);
-    }, [isConnected, waitingBuy, hasBalance, address, isWhitelisted, isWinnerRaffle, hasCheckedWinner, guaranteed, publicSale]);
+    }, [isConnected, waitingBuy, hasBalance, address, isWhitelisted, isWinnerRaffle, hasCheckedWinner,holder, guaranteed, whitelistFCFS, publicSale, appIsRaffleOver, remainingTickets, availableToMint, whiteListMint, buyTickets, checkWinner, winnerRaffleMint, setHasCheckedWinner, setShowModalWinner, setShowModalPending, setShowModalLooser]);
 
     return (
         <>
