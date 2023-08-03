@@ -22,7 +22,7 @@ function TermsAndConditions() {
                             <p>Welcome to our NFT collection minting website. Before you proceed, please read the following terms and conditions:</p>
 
                             <h2 className="md:text-xl font-bold text-gray-300 mt-4">Rewards for Dalmatians and Boxbies Holders</h2>
-                            <p>For every 3 Dalmatians you hold, you are entitled to 1 free mint (no limit, e.g., if you hold 300 Dalmatians, you can get 100 free mints). For Boxbies holders, the free mints are as follows: 1+ Boxbies = 1 Free Mint, 5+ Boxbies = 5 Free Mints, 10+ Boxbies = 11 Free Mints, 30+ Boxbies = 34 Free Mints, 50+ Boxbies = 58 Free Mints. Sale duration of 1 hour.</p>
+                            <p>For every 3 Dalmatians you hold, you are entitled to 1 free mint (no limit, e.g., if you hold 300 Dalmatians, you can get 100 free mints). For Boxbies holders, the free mints are as follows: 1+ Boxbies = 1 Free Mint, 5+ Boxbies = 5 Free Mints, 10+ Boxbies = 11 Free Mints, 30+ Boxbies = 34 Free Mints, 50+ Boxbies = 58 Free Mints. Sale duration of 3 hour.</p>
 
                             <h2 className="md:text-xl font-bold text-gray-300 mt-4">OG (Boxbies, Dalmatians, Dead Birds) Sale</h2>
                             <p>First-come, first-served (FCFS) sale with a duration of 1 hour. Each person can get 1 free mint.</p>

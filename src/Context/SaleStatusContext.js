@@ -41,17 +41,17 @@ export const SaleStatusProvider = ({ children }) => {
                 const block = await maticProvider.getBlock();
 
                 // holder sale
-                const dateStartNftHolder = 1690915500;
-                const dateEndtNftHolder = 1690917300;
+                const dateStartNftHolder = 1690977600; //     Wed Aug 02 2023 12:00:00 GMT+0 START HOLDERS PHASE
+                const dateEndtNftHolder = 1690988400; //     Wed Aug 02 2023 15:00:00 GMT+0 END HOLDERS PHASE
                 // OG fcfs
-                const dateStartNft = 1690917300;
-                const dateEndtNftGuaranteed = 1690919100;
+                const dateStartNft = 1690988400; //     Wed Aug 02 2023 15:00:00 GMT+0 START OG PHASE
+                const dateEndtNftGuaranteed = 1690992000; //     Wed Aug 02 2023 16:00:00 GMT+0 END OG PHASE
                 // whitelist fcfs
-                const whitelistFcfsStart = 1690919100;
-                const whitelistFcfsEnd = 1690920900;
+                const whitelistFcfsStart =1690992000; //     Wed Aug 02 2023 16:00:00 GMT+0 START WL PHASE
+                const whitelistFcfsEnd = 1690995600; //    Wed Aug 02 2023 17:00:00 GMT+0 END WL PHASE
                 // public sale
-                const startTime = 1690928580;
-                const deadline = 1690928580;
+                const startTime = 1690995600; //    Wed Aug 02 2023 17:00:00 GMT+0 START PUBLIC PHASE
+                const deadline = 1691006400; //     Wed Aug 02 2023 20:00:00 GMT+0 END PUBLIC
                 // const dateStartNft = await contractNft.saleStartTime();
                 // const dateEndtNftGuaranteed = await contractNft.endTimeGuaranteed();
                 // const whitelistFcfsStart = await contractNft.saleStartTime();
