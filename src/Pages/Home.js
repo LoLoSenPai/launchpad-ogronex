@@ -19,7 +19,7 @@ import dataWhiteListWL from '../Whitelist/whitelistWL.json';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { SaleStatusContext } from "../Context/SaleStatusContext";
-import SaleButton from "../Components/SaleButton";
+import SaleButton from "../Components/Button/SaleButton";
 import TermsAndConditions from "./TermsAndConditions";
 import { ClaimCountdown } from "../Components/ClaimCountdown";
 // import ShareButton from "../Components/ShareButton";
@@ -204,50 +204,61 @@ export default function Home() {
     }
   }
 
+  function handleError(error) {
+    console.log(error);
+    if (error.message.includes('execution reverted')) {
+      const errorMessage = error.reason.split(':')[1].trim();
+      toast.error(errorMessage)
+    } else {
+      toast.error("Transaction error! But don't worry, even the best stumble sometimes!")
+    }
+    setWaitingBuy(false);
+  }
+
+  async function mintFromContract() {
+    const whitelistObject = isWhitelisted(address);
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    const signer = provider.getSigner();
+    const contractNft = new ethers.Contract(contractNftAddress, NftABI, signer);
+    const tx = await contractNft.whitelistMint(1, whitelistObject.proof, 1, { value: ethers.utils.parseEther((1 * 0.5).toString()) });
+    await provider.waitForTransaction(tx.hash);
+  }
+
+  async function updateRemainingTicketsState(contractNft) {
+    let alreadyMintGuaranted = 0;
+    let alreadyMintOG = 0;
+    let alreadyMintWL = 0;
+    if (holder.status === "Live") {
+      alreadyMintGuaranted = await contractNft.alreadyMintedHolders(address)
+      setRemainingTickets(availableToMint - alreadyMintGuaranted);
+      toast.success(`You have already mint ${alreadyMintGuaranted} NFT`)
+    }
+    if (guaranteed.status === "Live") {
+      alreadyMintOG = await contractNft.alreadyMintedOG(address)
+      setRemainingTickets(availableToMint - alreadyMintOG);
+      toast.success(`You have already mint ${alreadyMintOG} NFT`)
+    }
+    if (whitelistFCFS.status === "Live") {
+      alreadyMintWL = await contractNft.alreadyMintedWhitelist(address)
+      setRemainingTickets(availableToMint - alreadyMintWL);
+      toast.success(`You have already mint ${alreadyMintWL} NFT`)
+    }
+    const newRemainingTickets = availableToMint - alreadyMintGuaranted - alreadyMintOG - alreadyMintWL;
+    setRemainingTickets(newRemainingTickets);
+    localStorage.setItem('remainingTickets', newRemainingTickets.toString());
+    await getTotalSupply();
+  }
+
   async function whiteListMint() {
-    if (!isConnected) return // conditionner aussi a la phase guarranteed Mint
+    if (!isConnected) return;
     try {
-      // conditionner la WL en function de la phase (holder, og and wl)!
       setWaitingBuy(true);
-      const whitelistObject = isWhitelisted(address);
-      const provider = new ethers.providers.Web3Provider(window.ethereum);
-      const signer = provider.getSigner();
-      const contractNft = new ethers.Contract(contractNftAddress, NftABI, signer);
-      const tx = await contractNft.whitelistMint(1, whitelistObject.proof, 1, { value: ethers.utils.parseEther((1 * 0.5).toString()) });
-      await provider.waitForTransaction(tx.hash);
+      await mintFromContract();
       setWaitingBuy(false);
       toast.success("Success Mint !");
-      let alreadyMintGuaranted = 0;
-      let alreadyMintOG = 0;
-      let alreadyMintWL = 0;
-      if (holder.status === "Live") {
-        alreadyMintGuaranted = await contractNft.alreadyMintedHolders(address)
-        setRemainingTickets(availableToMint - alreadyMintGuaranted);
-        toast.success(`You have already mint ${alreadyMintGuaranted} NFT`)
-      }
-      if (guaranteed.status === "Live") {
-        alreadyMintOG = await contractNft.alreadyMintedOG(address)
-        setRemainingTickets(availableToMint - alreadyMintOG);
-        toast.success(`You have already mint ${alreadyMintOG} NFT`)
-      }
-      if (whitelistFCFS.status === "Live") {
-        alreadyMintWL = await contractNft.alreadyMintedWhitelist(address)
-        setRemainingTickets(availableToMint - alreadyMintWL);
-        toast.success(`You have already mint ${alreadyMintWL} NFT`)
-      }
-      const newRemainingTickets = availableToMint - alreadyMintGuaranted - alreadyMintOG - alreadyMintWL;
-      setRemainingTickets(newRemainingTickets);
-      localStorage.setItem('remainingTickets', newRemainingTickets.toString());
-      await getTotalSupply();
+      await updateRemainingTicketsState();
     } catch (error) {
-      console.log(error);
-      if (error.message.includes('execution reverted')) {
-        const errorMessage = error.reason.split(':')[1].trim();
-        toast.error(errorMessage)
-      } else (
-        toast.error("Transaction error! But don't worry, even the best stumble sometimes!")
-      )
-      setWaitingBuy(false);
+      handleError(error);
     }
   }
 
@@ -667,7 +678,7 @@ export default function Home() {
                   </div>
                 </div>
 
-                {/* <div className="grid grid-cols-3 lg:flex flew-row gap-2 md:gap-4 lg:gap-6 xl:gap-11 w-full max-h-[70px] justify-between">
+                <div className="grid grid-cols-3 lg:flex flew-row gap-2 md:gap-4 lg:gap-6 xl:gap-11 w-full max-h-[70px] justify-between">
                   {showInput && (
                     <div className="flex justify-around items-center rounded-lg border border-gray-600 bg-secondary z-10">
                       <button className="w-10 h-14 rounded-l-lg text-white text-2xl" onClick={handleDecrease}>
@@ -718,14 +729,14 @@ export default function Home() {
                     remainingTickets={remainingTickets}
                   />
 
-                  <div className="flex flex-col justify-center items-center lg:min-w-[110px] pr-3"> */}
-                    {/* {holder.status === 'Live' && isConnected && availableToMint != undefined &&(
+                  <div className="flex flex-col justify-center items-center lg:min-w-[110px] pr-3">
+                    {holder.status === 'Live' && isConnected && availableToMint !== undefined && (
                       <p className="flex items-center lg:text-xl text-white sm:mt-3 md:mt-1">
                         Available to mint:
                         <span className="ml-12 md:ml-12 lg:ml-8 text-light ">{isWhitelisted(address).availableToMint}</span>
                       </p>
-                    )} */}
-                    {/* <p className="flex justify-content items-end lg:text-xl text-white leading-tight mt-2 xl:mt-0">
+                    )}
+                    <p className="flex justify-content items-end lg:text-xl text-white leading-tight mt-2 xl:mt-0">
                       Your tickets:
                       {isConnected && ticketsBought !== undefined && <span className="ml-1 text-light">{ticketsBought}</span>}
                     </p>
@@ -736,7 +747,7 @@ export default function Home() {
                       </p>
                     )}
                   </div>
-                </div> */}
+                </div>
                 {/* <ShareButton /> */}
                 {publicSale.status === "Ended" &&
                   <div className="flex flex-col justify-center items-center mt-4">

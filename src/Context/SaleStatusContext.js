@@ -52,12 +52,6 @@ export const SaleStatusProvider = ({ children }) => {
                 // public sale
                 const startTime = 1690995600; //    Wed Aug 02 2023 17:00:00 GMT+0 START PUBLIC PHASE
                 const deadline = 1691006400; //     Wed Aug 02 2023 20:00:00 GMT+0 END PUBLIC
-                // const dateStartNft = await contractNft.saleStartTime();
-                // const dateEndtNftGuaranteed = await contractNft.endTimeGuaranteed();
-                // const whitelistFcfsStart = await contractNft.saleStartTime();
-                // const whitelistFcfsEnd = await contractNft.endTimeGuaranteed();
-                // const startTime = await contractRaffleBeforeConnection.startDate();
-                // const deadline = await contractRaffleBeforeConnection.deadline();
 
                 let holderStatus = '';
                 if (block.timestamp < dateStartNftHolder) {
