@@ -11,17 +11,17 @@ export default function useContracts() {
   const [isRaffleOver, setIsRaffleOver] = useState(false);
   const [nftSupply, setNftSupply] = useState(0);
 
-  const contractRaffleAddress = '0xYourRaffleContractAddress';
-  const contractNftAddress = '0xYourNftContractAddress';
+  const contractNftAddress = "0xe4b528300ef4e839097f74fa2551c6f1b47e9853";
+  const contractRaffleAddress = "0xFA820767b124d6537a39F949De036f534f2ACE6B";
 
   useEffect(() => {
     const getProviderAndData = async () => {
       try {
         const alchemyProvider = new ethers.providers.AlchemyProvider('MATIC_MAINNET', 'kKaUsI3UwlljF-I3np_9fWNG--9i9RlF');
-        
+
         const contractRaffleInstance = new ethers.Contract(contractRaffleAddress, RaffleABI, alchemyProvider);
         const contractNftInstance = new ethers.Contract(contractNftAddress, NftABI, alchemyProvider);
-        
+
         const ticketsSold = await contractRaffleInstance.nbTicketSell();
         const isOver = await contractNftInstance.isRaffleOver();
         const nftSupply = await contractNftInstance.totalSupply();

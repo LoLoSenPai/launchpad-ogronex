@@ -1,15 +1,9 @@
-import React, { useState, useEffect, useCallback, useContext } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { DynamicWidget } from "@dynamic-labs/sdk-react";
 import { useAccount, useBalance } from "wagmi";
 import { ethers } from "ethers";
-import { Network, Alchemy } from 'alchemy-sdk';
 import CountdownComponent from "../Components/Countdown";
-import RaffleABI from "../ABI/launchpadRaffle.json";
-import NftABI from "../ABI/Infected_NFT.json";
-import dataWhiteListGuaranteed from '../Whitelist/whitelistGuaranteed.json';
-import dataWhiteListOG from '../Whitelist/whitelistOG.json';
-import dataWhiteListWL from '../Whitelist/whitelistWL.json';
-import { ToastContainer, toast } from 'react-toastify';
+import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { SaleStatusContext } from "../Context/SaleStatusContext";
 import SaleButton from "../Components/SaleButton";
@@ -19,7 +13,6 @@ import { useContracts } from "../Hooks/useContracts";
 import useTicketManagement from "../Hooks/useTicketManagement";
 import useWhitelistManagement from "../Hooks/useWhitelistManagement";
 import useRaffleWinnerManagement from "../Hooks/useRaffleWinnerManagement";
-// import { ClaimCountdown } from "../Components/ClaimCountdown";
 
 
 export default function Home() {
@@ -28,8 +21,7 @@ export default function Home() {
   const balance = useBalance({ address: address });
 
   const [ticketCount, setTicketCount] = useState(1);
-  // const [nftSupply, setNftSupply] = useState(0);
-  const [loading, setLoading] = useState(false);
+  const [loading] = useState(false);
   const [availableToMint, setAvailableToMint] = useState(0);
 
   const [showTooltipHolder, setShowTooltipHolder] = useState(false);
@@ -43,43 +35,15 @@ export default function Home() {
 
   //winner state
   const [hasCheckedWinner, setHasCheckedWinner] = useState(false);
-  const [appIsRaffleOver, setAppIsRaffleOver] = useState(false);
 
   const { holder, guaranteed, whitelistFCFS, publicSale } = useContext(SaleStatusContext);
-  // Use `guaranteed.status`, `guaranteed.start`, `guaranteed.end` etc
-
-  const { getTicketsBought, buyTickets, getTicketsSold } = useTicketManagement();
+  
+  const { buyTickets, ticketsBought, ticketsSold } = useTicketManagement();
   const { whiteListMint, isWhitelisted, remainingTickets } = useWhitelistManagement();
-  const { winnerRaffleMint, checkWinner, waitingBuy, winnerNbMint, isWinnerRaffle } = useRaffleWinnerManagement();
-  // const { buyTickets, getTicketsSold, whiteListMint, getTotalSupply, ticketsSold, nftSupply, remainingTickets, waitingBuy } = useContracts();
-
-
-
-  const getAlchemyProviderAndData = async () => {
-    const settings = {
-      apiKey: "kKaUsI3UwlljF-I3np_9fWNG--9i9RlF",
-      network: Network.MATIC_MAINNET,
-    };
-    try {
-      const alchemy = new Alchemy(settings);
-      const maticProvider = await alchemy.config.getProvider();
-      const contractRaffleBeforeConnection = new ethers.Contract(contractRaffleAddress, RaffleABI, maticProvider);
-      const contractNftBeforeConnection = new ethers.Contract(contractNftAddress, NftABI, maticProvider);
-      const ticketsSold = await contractRaffleBeforeConnection.nbTicketSell();
-      const isOver = await contractNftBeforeConnection.isRaffleOver();
-      const nftsupply = await contractNftBeforeConnection.totalSupply();
-      setTicketsSold(ticketsSold.toNumber());
-      setAppIsRaffleOver(isOver);
-      setNftSupply(nftsupply.toNumber());
-    } catch (error) {
-      console.error("An error occurred while fetching data:", error);
-    }
-  };
+  const { winnerRaffleMint, checkWinner, waitingBuy, winnerNbMint, isWinnerRaffle, appIsRaffleOver } = useRaffleWinnerManagement();
+  const { nftSupply } = useContracts();
 
   const ticketPrice = 1;
-
-
-
 
   // Tooltip for i icon
   const handleMouseEnter = (tooltipType) => {
@@ -126,58 +90,11 @@ export default function Home() {
     setTicketCount((numericTicketCount || 0) + 1);
   };
 
-
   const handleDecrease = () => {
     if (ticketCount > 1) {
       setTicketCount(ticketCount - 1);
     }
   };
-
-
-
-
-  useEffect(() => {
-    const remainingTicketsFromLocalStorage = localStorage.getItem('remainingTickets');
-    if (remainingTicketsFromLocalStorage) {
-      setRemainingTickets(Number(remainingTicketsFromLocalStorage));
-    } else {
-      setRemainingTickets(availableToMint);
-    }
-  }, [availableToMint]);
-
-  useEffect(() => {
-    if ((holder.status === 'Live' || publicSale.status === 'Ended') && remainingTickets > 0) {
-      setTicketCount(remainingTickets);
-    } else {
-      setTicketCount(1);
-    }
-  }, [holder.status, publicSale.status, remainingTickets]);
-
-
-  useEffect(() => {
-    getTicketsBought();
-  }, [ticketsBought, getTicketsBought]);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      if (isConnected) {
-        try {
-          await getTicketsBought();
-          await getTicketsSold();
-          await getRaffleOver();
-          await getTotalSupply();
-        } catch (error) {
-          console.error("Error fetching data:", error);
-          // Handle the error in some way, such as showing an error message to the user
-        }
-      } else {
-        await getAlchemyProviderAndData();
-      }
-      setLoading(false);
-    };
-    fetchData();
-  }, [address, isConnected]);
 
 
   useEffect(() => {
@@ -510,7 +427,6 @@ export default function Home() {
                     guaranteed={guaranteed}
                     whitelistFCFS={whitelistFCFS}
                     publicSale={publicSale}
-                    setIsWinnerRaffle={setIsWinnerRaffle}
                     remainingTickets={remainingTickets}
                   />
 
