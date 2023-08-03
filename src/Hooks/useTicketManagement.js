@@ -3,7 +3,7 @@ import { ethers } from 'ethers';
 import { toast } from 'react-toastify';
 import { useAccount } from 'wagmi';
 import { SaleStatusContext } from '../Context/SaleStatusContext';
-import { useContracts } from './useContracts';
+import useContracts from './useContracts';
 
 export default function useTicketManagement() {
     const [ticketsBought, setTicketsBought] = useState(0);

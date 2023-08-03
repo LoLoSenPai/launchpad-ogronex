@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { ethers } from 'ethers';
-import RaffleABI from '../Contracts/Raffle.json';
-import NftABI from '../Contracts/NFT.json';
+import RaffleABI from '../ABI/RaffleG_0.json';
+import NftABI from '../ABI/TBT_NFT.json';
 
 export default function useContracts() {
   const [provider, setProvider] = useState(null);

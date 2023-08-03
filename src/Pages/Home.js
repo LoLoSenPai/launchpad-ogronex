@@ -9,7 +9,7 @@ import { SaleStatusContext } from "../Context/SaleStatusContext";
 import SaleButton from "../Components/SaleButton";
 import TermsAndConditions from "./TermsAndConditions";
 import Tooltip from "../Components/Tooltip";
-import { useContracts } from "../Hooks/useContracts";
+import useContracts from "../Hooks/useContracts";
 import useTicketManagement from "../Hooks/useTicketManagement";
 import useWhitelistManagement from "../Hooks/useWhitelistManagement";
 import useRaffleWinnerManagement from "../Hooks/useRaffleWinnerManagement";
@@ -37,7 +37,7 @@ export default function Home() {
   const [hasCheckedWinner, setHasCheckedWinner] = useState(false);
 
   const { holder, guaranteed, whitelistFCFS, publicSale } = useContext(SaleStatusContext);
-  
+
   const { buyTickets, ticketsBought, ticketsSold } = useTicketManagement();
   const { whiteListMint, isWhitelisted, remainingTickets } = useWhitelistManagement();
   const { winnerRaffleMint, checkWinner, waitingBuy, winnerNbMint, isWinnerRaffle, appIsRaffleOver } = useRaffleWinnerManagement();
@@ -218,14 +218,13 @@ export default function Home() {
 
                   <div className="flex flex-col md:flex-row items-center gap-4 lg:gap-2 xl:gap-10 p-4 bg-four rounded-lg border border-gray-600 justify-center md:justify-between">
                     <div className="relative lg:text-lg xl:text-xl font-bold text-white">
-                      Holders
                       <Tooltip
                         onMouseEnter={() => handleMouseEnter('holder')}
                         onMouseLeave={() => handleMouseLeave('holder')}
                         showTooltip={showTooltipHolder}
-                      >
-                        Boxbies and Dalmatians holders.
-                      </Tooltip>
+                        tooltipText="Boxbies and Dalmatians holders."
+                      />
+                      Holders
                     </div>
                     <div className="flex flew-row justify-center lg:px-2">
                       <p className={"flex items-center xl:text-xl font-bold text-white bg-secondary py-2 px-6 md:px-2 lg:px-6 rounded-lg border border-gray-600 bg-opacity-60 md:h-[66px] xl:h-[74px] min-w-[160px] md:min-w-[80px] md:max-w-[90px] lg:min-w-[160px] xl:min-w-[180px]"}>
@@ -264,9 +263,8 @@ export default function Home() {
                         onMouseEnter={() => handleMouseEnter('og')}
                         onMouseLeave={() => handleMouseLeave('og')}
                         showTooltip={showTooltipOG}
-                      >
-                        Boxbies and Dalmatians holders.
-                      </Tooltip>
+                        tooltipText="Boxbies and Dalmatians holders."
+                      />
                     </div>
                     <div className="flex flew-row justify-center lg:px-2">
                       <p className={"flex items-center xl:text-xl font-bold text-white bg-secondary py-2 px-6 md:px-2 lg:px-6 rounded-lg border border-gray-600 bg-opacity-60 md:h-[66px] xl:h-[74px] min-w-[160px] md:min-w-[80px] md:max-w-[90px] lg:min-w-[160px] xl:min-w-[180px]"}>

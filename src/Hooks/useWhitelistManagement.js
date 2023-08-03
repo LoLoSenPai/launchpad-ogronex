@@ -2,7 +2,7 @@ import { useState, useCallback, useContext } from 'react';
 import { toast } from "react-toastify";
 import { useAccount } from "wagmi";
 import { SaleStatusContext } from "../Context/SaleStatusContext";
-import { useContracts } from '../Hooks/useContracts';
+import useContracts from './useContracts';
 import { ethers } from 'ethers';
 import dataWhiteListGuaranteed from '../Lib/dataWhiteListGuaranteed.json';
 import dataWhiteListOG from '../Lib/dataWhiteListOG.json';
