@@ -66,7 +66,6 @@ export default function Home() {
   const [hasNotMinted, setHasNotMinted] = useState(false);
   const [appIsRaffleOver, setAppIsRaffleOver] = useState(false);
 
-<<<<<<< HEAD
   const { guaranteed, whitelist, publicSale } = useContext(SaleStatusContext);
   // Use `guaranteed.status`, `guaranteed.start`, `guaranteed.end`, `public.status`, `public.start`, `public.end`
 
@@ -83,48 +82,6 @@ export default function Home() {
   const isWhitelisted = (address) => {
     return Whitelist.some(item => item.address === address);
   }
-=======
-  const { holder, guaranteed, whitelistFCFS, publicSale } = useContext(SaleStatusContext);
-  // Use `guaranteed.status`, `guaranteed.start`, `guaranteed.end` etc
-
-
-  const getAlchemyProviderAndData = async () => {
-    const settings = {
-      apiKey: "kKaUsI3UwlljF-I3np_9fWNG--9i9RlF",
-      network: Network.MATIC_MAINNET,
-    };
-    try {
-      const alchemy = new Alchemy(settings);
-      const maticProvider = await alchemy.config.getProvider();
-      const contractRaffleBeforeConnection = new ethers.Contract(contractRaffleAddress, RaffleABI, maticProvider);
-      const contractNftBeforeConnection = new ethers.Contract(contractNftAddress, NftABI, maticProvider);
-      const ticketsSold = await contractRaffleBeforeConnection.nbTicketSell();
-      const isOver = await contractNftBeforeConnection.isRaffleOver();
-      const nftsupply = await contractNftBeforeConnection.totalSupply();
-      setTicketsSold(ticketsSold.toNumber());
-      setAppIsRaffleOver(isOver);
-      setNftSupply(nftsupply.toNumber());
-    } catch (error) {
-      console.error("An error occurred while fetching data:", error);
-    }
-  };
-
-  const ticketPrice = 1;
-
-  const isWhitelisted = useCallback((address) => {
-    if (holder.status === "Live") {
-      return dataWhiteListGuaranteed.find(item => item.address === address);
-    } else if (guaranteed.status === "Live") {
-      return dataWhiteListOG.find(item => item.address === address);
-    } else if (whitelistFCFS.status === "Live") {
-      return dataWhiteListWL.find(item => item.address === address);
-    }
-    else {
-      return false;
-    }
-  }, [holder.status, guaranteed.status, whitelistFCFS.status]);
-
->>>>>>> master
 
   // Tooltip for i icon
   const handleMouseEnterHolder = () => {
