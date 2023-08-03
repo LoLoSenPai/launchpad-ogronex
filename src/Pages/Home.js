@@ -6,22 +6,15 @@ import { Network, Alchemy } from 'alchemy-sdk';
 import CountdownComponent from "../Components/Countdown";
 import RaffleABI from "../ABI/launchpadRaffle.json";
 import NftABI from "../ABI/Infected_NFT.json";
-// import whitelistGuaranteed from '../Whitelist/whitelistGuaranteed.json';
-// import whitelistOG from '../Whitelist/whitelistOG.json';
-// import whitelistWL from '../Whitelist/whitelistWL.json';
-
-// Just for testing
 import dataWhiteListGuaranteed from '../Whitelist/whitelistGuaranteed.json';
 import dataWhiteListOG from '../Whitelist/whitelistOG.json';
 import dataWhiteListWL from '../Whitelist/whitelistWL.json';
-// Just for testing
-
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { SaleStatusContext } from "../Context/SaleStatusContext";
 import SaleButton from "../Components/SaleButton";
 import TermsAndConditions from "./TermsAndConditions";
-import { ClaimCountdown } from "../Components/ClaimCountdown";
+// import { ClaimCountdown } from "../Components/ClaimCountdown";
 // import ShareButton from "../Components/ShareButton";
 
 const contractNftAddress = "0xe4b528300ef4e839097f74fa2551c6f1b47e9853";
@@ -182,7 +175,7 @@ export default function Home() {
     } catch (error) {
       console.error("Error getting tickets bought:", error);
     }
-  }, [address]);
+  }, [address, isConnected]);
 
   async function buyTickets() {
     if (isConnected) {
@@ -312,22 +305,10 @@ export default function Home() {
     }
   }, [holder.status, publicSale.status, remainingTickets]);
 
-  // useEffect(() => {
-  //   if (isConnected) {
-  //     getTicketsBought();
-  //     getTicketsSold();
-  //     getRaffleOver();
-  //     getTotalSupply()
-  //   } else {
-  //     (async function fetchProviderAndData() {
-  //       await getAlchemyProviderAndData();
-  //     })();
-  //   }
-  // }, [address]);
 
   useEffect(() => {
     getTicketsBought();
-  }, [ticketsBought]);
+  }, [ticketsBought, getTicketsBought]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -348,7 +329,7 @@ export default function Home() {
       setLoading(false);
     };
     fetchData();
-  }, [address]);
+  }, [address, isConnected]);
 
 
   useEffect(() => {
@@ -379,7 +360,7 @@ export default function Home() {
     } else {
       setHasBalance(false);
     }
-  }, [address, ticketCount]);
+  }, [address, ticketCount, ticketPrice, balance.data, isConnected]);
 
 
   let maxTickets = 1;
@@ -387,21 +368,12 @@ export default function Home() {
   if (holder.status === 'Live') {
     maxTickets = remainingTickets;
   }
-  else if (guaranteed.status === 'Live') {
-    maxTickets = 1;
-  }
-  else if (whitelistFCFS.status === 'Live') {
-    maxTickets = 1;
-  }
   else if (publicSale.status === 'Live') {
     maxTickets = 100000;
   }
   else if (publicSale.status === 'Ended') {
     maxTickets = winnerNbMint;
     showInput = false;
-  }
-  else {
-    maxTickets = 1;
   }
 
   return (
@@ -667,7 +639,7 @@ export default function Home() {
                   </div>
                 </div>
 
-                {/* <div className="grid grid-cols-3 lg:flex flew-row gap-2 md:gap-4 lg:gap-6 xl:gap-11 w-full max-h-[70px] justify-between">
+                <div className="grid grid-cols-3 lg:flex flew-row gap-2 md:gap-4 lg:gap-6 xl:gap-11 w-full max-h-[70px] justify-between">
                   {showInput && (
                     <div className="flex justify-around items-center rounded-lg border border-gray-600 bg-secondary z-10">
                       <button className="w-10 h-14 rounded-l-lg text-white text-2xl" onClick={handleDecrease}>
@@ -718,14 +690,14 @@ export default function Home() {
                     remainingTickets={remainingTickets}
                   />
 
-                  <div className="flex flex-col justify-center items-center lg:min-w-[110px] pr-3"> */}
-                    {/* {holder.status === 'Live' && isConnected && availableToMint != undefined &&(
+                  <div className="flex flex-col justify-center items-center lg:min-w-[110px] pr-3">
+                    {holder.status === 'Live' && isConnected && availableToMint !== undefined &&(
                       <p className="flex items-center lg:text-xl text-white sm:mt-3 md:mt-1">
                         Available to mint:
                         <span className="ml-12 md:ml-12 lg:ml-8 text-light ">{isWhitelisted(address).availableToMint}</span>
                       </p>
-                    )} */}
-                    {/* <p className="flex justify-content items-end lg:text-xl text-white leading-tight mt-2 xl:mt-0">
+                    )}
+                    <p className="flex justify-content items-end lg:text-xl text-white leading-tight mt-2 xl:mt-0">
                       Your tickets:
                       {isConnected && ticketsBought !== undefined && <span className="ml-1 text-light">{ticketsBought}</span>}
                     </p>
@@ -736,15 +708,15 @@ export default function Home() {
                       </p>
                     )}
                   </div>
-                </div> */}
+                </div>
                 {/* <ShareButton /> */}
-                {publicSale.status === "Ended" &&
+                {/* {publicSale.status === "Ended" &&
                   <div className="flex flex-col justify-center items-center mt-4">
                     <button className="lg:py-2 w-full rounded-lg text-xl xl:text-2xl bg-light font-bold text-black col-span-2 min-h-[60px] max-h-[80px] md:max-h-auto btn-shadow flex justify-center items-center">
                       All NFTs have been airdropped to the winners!
                     </button>
                   </div>
-                }
+                } */}
               </div>
             </div>
             <div className="flex flex-row justify-end mt-10 lg:mt-0 mr-2 md:mr-5">
