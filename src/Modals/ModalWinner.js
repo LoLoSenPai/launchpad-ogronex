@@ -2,7 +2,7 @@ export default function ModalWinner({ closeModal }) {
 
     return (
         <div
-            className='fixed inset-0 bg-four/80 flex items-center justify-center'
+            className='fixed inset-0 bg-four/80 flex items-center justify-center z-50'
             onClick={closeModal}
         >
             <div

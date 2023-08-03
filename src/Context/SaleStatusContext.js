@@ -1,7 +1,5 @@
-import React, { createContext, useState, useEffect, useMemo } from 'react';
-import { useEthereumProvider } from '../Hooks/EthereumProvider';
-import { useContracts } from '../Hooks/Contracts';
-import useAlchemy from '../Hooks/AlchemyProvider';
+import React, { createContext, useState, useEffect } from 'react';
+import { Network, Alchemy } from 'alchemy-sdk';
 
 export const SaleStatusContext = createContext();
 
@@ -11,12 +9,12 @@ export const SaleStatusProvider = ({ children }) => {
     const { contractNft, contractRaffle } = useContracts(provider);
     const [error, setError] = useState(null);
     const [saleStatus, setSaleStatus] = useState({
-        guaranteed: {
+        holder: {
             status: '',
             start: null,
             end: null,
         },
-        whitelistSale: {
+        guaranteed: {
             status: '',
             start: null,
             end: null,
@@ -28,30 +26,20 @@ export const SaleStatusProvider = ({ children }) => {
         },
     });
 
-    const contextValue = useMemo(() => ({ saleStatus, error }), [saleStatus, error]);
-
     useEffect(() => {
         const interval = setInterval(async () => {
             try {
+                const maticProvider = await alchemy.config.getProvider();
                 const block = await maticProvider.getBlock();
-
-                const dateStartNft = 1690658413;
-                const dateEndtNftGuaranteed = 1690834813;
-
-                const whitelistStartTime = 1690838413;
-                const whitelistEndTime = 1690842013;
-
-                const startTime = 1690845613;
-                const deadline = 1690847953;
-                // const dateStartNft = await contractNft.saleStartTime();
-                // const dateEndtNftGuaranteed = await contractNft.endTimeGuaranteed();
-
-                // const whitelistStartTime = await contractRaffle.saleStartTime();
-                // const whitelistEndTime = await contractRaffle.endTimeGuaranteed();
-
-                // const startTime = await contractRaffle.startDate();
-                // const deadline = await contractRaffle.deadline();
-
+    
+                const contractNft = new ethers.Contract(contractNftAddress, NftABI.abi, maticProvider);
+                const contractRaffleBeforeConnection = new ethers.Contract(contractRaffleAddress, RaffleABI.abi, maticProvider)
+    
+                const dateStartNft = await contractNft.saleStartTime();
+                const dateEndtNftGuaranteed = await contractNft.endTimeGuaranteed();
+                const startTime = await contractRaffleBeforeConnection.startDate();
+                const deadline = await contractRaffleBeforeConnection.deadline();
+    
                 let guaranteedStatus = '';
                 if (block.timestamp < dateStartNft) {
                     guaranteedStatus = "Not Started";
@@ -60,16 +48,7 @@ export const SaleStatusProvider = ({ children }) => {
                 } else {
                     guaranteedStatus = "Ended";
                 }
-
-                let whitelistStatus = '';
-                if (block.timestamp < dateStartNft) {
-                    whitelistStatus = "Not Started";
-                } else if (block.timestamp >= dateStartNft && block.timestamp <= dateEndtNftGuaranteed) {
-                    whitelistStatus = "Live";
-                } else {
-                    whitelistStatus = "Ended";
-                }
-
+    
                 let publicSaleStatus = '';
                 if (block.timestamp < startTime) {
                     publicSaleStatus = "Not Started";
@@ -81,17 +60,17 @@ export const SaleStatusProvider = ({ children }) => {
 
                 setSaleStatus((prevStatus) => ({
                     ...prevStatus,
+                    holder: {
+                        ...prevStatus.holder,
+                        status: holderStatus,
+                        start: dateStartNftHolder,
+                        end: dateEndtNftHolder,
+                    },
                     guaranteed: {
                         ...prevStatus.guaranteed,
                         status: guaranteedStatus,
                         start: dateStartNft,
                         end: dateEndtNftGuaranteed,
-                    },
-                    whitelistSale: {
-                        ...prevStatus.whitelist,
-                        status: whitelistStatus,
-                        start: whitelistStartTime,
-                        end: whitelistEndTime,
                     },
                     publicSale: {
                         ...prevStatus.publicSale,
@@ -107,7 +86,9 @@ export const SaleStatusProvider = ({ children }) => {
         }, 1000);
 
         return () => clearInterval(interval);
-    }, [setSaleStatus, contractNft, contractRaffle, maticProvider]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
 
     return (
         <SaleStatusContext.Provider value={contextValue}>
