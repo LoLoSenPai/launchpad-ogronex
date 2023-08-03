@@ -2,11 +2,8 @@ import React, { useState, useEffect, useCallback, useContext } from "react";
 import { DynamicWidget } from "@dynamic-labs/sdk-react";
 import { useAccount, useBalance } from "wagmi";
 import { ethers } from "ethers";
+import { Network, Alchemy } from 'alchemy-sdk';
 import CountdownComponent from "../Components/Countdown";
-<<<<<<< HEAD
-
-import Whitelist from "../Lib/whitelist";
-=======
 import RaffleABI from "../ABI/launchpadRaffle.json";
 import NftABI from "../ABI/Infected_NFT.json";
 // import whitelistGuaranteed from '../Whitelist/whitelistGuaranteed.json';
@@ -19,23 +16,16 @@ import dataWhiteListOG from '../Whitelist/whitelistOG.json';
 import dataWhiteListWL from '../Whitelist/whitelistWL.json';
 // Just for testing
 
->>>>>>> master
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { SaleStatusContext } from "../Context/SaleStatusContext";
 import SaleButton from "../Components/SaleButton";
 import TermsAndConditions from "./TermsAndConditions";
 import { ClaimCountdown } from "../Components/ClaimCountdown";
-<<<<<<< HEAD
-import { useEthereumProvider } from "../Hooks/EthereumProvider";
-import { useContracts } from "../Hooks/Contracts";
-import useAlchemy from "../Hooks/AlchemyProvider";
-=======
 // import ShareButton from "../Components/ShareButton";
 
 const contractNftAddress = "0xe4b528300ef4e839097f74fa2551c6f1b47e9853";
 const contractRaffleAddress = "0xFA820767b124d6537a39F949De036f534f2ACE6B";
->>>>>>> master
 
 export default function Home() {
 
@@ -60,28 +50,53 @@ export default function Home() {
   const [showModalLooser, setShowModalLooser] = useState(false);
   const [showModalPending, setShowModalPending] = useState(false);
 
+  //winner state
   const [isWinnerRaffle, setIsWinnerRaffle] = useState(false);
   const [hasCheckedWinner, setHasCheckedWinner] = useState(false);
   const [winnerNbMint, setWinnerNbMint] = useState(0);
   const [hasNotMinted, setHasNotMinted] = useState(false);
   const [appIsRaffleOver, setAppIsRaffleOver] = useState(false);
 
-  const { guaranteed, whitelist, publicSale } = useContext(SaleStatusContext);
-  // Use `guaranteed.status`, `guaranteed.start`, `guaranteed.end`, `public.status`, `public.start`, `public.end`
+  const { holder, guaranteed, whitelistFCFS, publicSale } = useContext(SaleStatusContext);
+  // Use `guaranteed.status`, `guaranteed.start`, `guaranteed.end` etc
 
 
-
+  const getAlchemyProviderAndData = async () => {
+    const settings = {
+      apiKey: "kKaUsI3UwlljF-I3np_9fWNG--9i9RlF",
+      network: Network.MATIC_MAINNET,
+    };
+    try {
+      const alchemy = new Alchemy(settings);
+      const maticProvider = await alchemy.config.getProvider();
+      const contractRaffleBeforeConnection = new ethers.Contract(contractRaffleAddress, RaffleABI, maticProvider);
+      const contractNftBeforeConnection = new ethers.Contract(contractNftAddress, NftABI, maticProvider);
+      const ticketsSold = await contractRaffleBeforeConnection.nbTicketSell();
+      const isOver = await contractNftBeforeConnection.isRaffleOver();
+      const nftsupply = await contractNftBeforeConnection.totalSupply();
+      setTicketsSold(ticketsSold.toNumber());
+      setAppIsRaffleOver(isOver);
+      setNftSupply(nftsupply.toNumber());
+    } catch (error) {
+      console.error("An error occurred while fetching data:", error);
+    }
+  };
 
   const ticketPrice = 1;
 
-  const alchemy = useAlchemy();
+  const isWhitelisted = useCallback((address) => {
+    if (holder.status === "Live") {
+      return dataWhiteListGuaranteed.find(item => item.address === address);
+    } else if (guaranteed.status === "Live") {
+      return dataWhiteListOG.find(item => item.address === address);
+    } else if (whitelistFCFS.status === "Live") {
+      return dataWhiteListWL.find(item => item.address === address);
+    }
+    else {
+      return false;
+    }
+  }, [holder.status, guaranteed.status, whitelistFCFS.status]);
 
-  const provider = useEthereumProvider();
-  const { contractNft, contractRaffle } = useContracts(provider);
-
-  const isWhitelisted = (address) => {
-    return Whitelist.some(item => item.address === address);
-  }
 
   // Tooltip for i icon
   const handleMouseEnterHolder = () => {
@@ -111,18 +126,9 @@ export default function Home() {
   const handleMouseLeavePublic = () => {
     setShowTooltipPublic(false);
   };
-<<<<<<< HEAD
-
-  // Input number of tickets
-  const handleIncrease = () => {
-    if ((guaranteed.status === 'Live' && ticketCount < 1) || whitelist.status || publicSale.status === 'Live') {
-      setTicketCount(ticketCount + 1);
-    }
-=======
   const handleIncrease = () => {
     const numericTicketCount = parseInt(ticketCount, 10);
     setTicketCount((numericTicketCount || 0) + 1);
->>>>>>> master
   };
 
 
@@ -289,8 +295,6 @@ export default function Home() {
     }
   }
 
-<<<<<<< HEAD
-=======
   useEffect(() => {
     const remainingTicketsFromLocalStorage = localStorage.getItem('remainingTickets');
     if (remainingTicketsFromLocalStorage) {
@@ -320,7 +324,6 @@ export default function Home() {
   //     })();
   //   }
   // }, [address]);
->>>>>>> master
 
   useEffect(() => {
     getTicketsBought();
@@ -381,16 +384,6 @@ export default function Home() {
 
   let maxTickets = 1;
   let showInput = true;
-<<<<<<< HEAD
-  if (guaranteed.status || whitelist.status === 'Live') {
-    maxTickets = 1;
-  } else if (publicSale.status === 'Live') {
-    maxTickets = 100000;
-  } else if (publicSale.status === 'Ended') {
-    maxTickets = winnerNbMint;
-    showInput = false;
-  } else {
-=======
   if (holder.status === 'Live') {
     maxTickets = remainingTickets;
   }
@@ -408,7 +401,6 @@ export default function Home() {
     showInput = false;
   }
   else {
->>>>>>> master
     maxTickets = 1;
   }
 
@@ -488,66 +480,6 @@ export default function Home() {
                     </div>
                   </div>
                 </div>
-<<<<<<< HEAD
-                <div className="flex flex-col md:flex-row items-center gap-4 lg:gap-2 xl:gap-10 p-4 bg-four rounded-lg border border-gray-600 justify-center md:justify-between">
-                  <div className="relative lg:text-lg xl:text-xl font-bold text-white">
-                    Whitelist FCFS
-                    <span
-                      className="ml-3 text-light border border-light rounded-full px-2 text-sm"
-                      onMouseEnter={handleMouseEnter}
-                      onMouseLeave={handleMouseLeave}
-                    >
-                      i
-                    </span>
-                    {showTooltipOG &&
-                      <div className="text-center tooltip absolute left-1/2 top-full -translate-x-1/2 transform whitespace-nowrap rounded bg-secondary bg-opacity-80 p-2 text-white z-10">
-                        One mint per wallet (FCFS)
-                      </div>
-                    }
-                  </div>
-                  <div className="flex flew-row justify-center lg:px-2">
-                    <p className={"flex items-center xl:text-xl font-bold text-white bg-secondary py-2 px-6 md:px-2 lg:px-6 rounded-lg border border-gray-600 bg-opacity-60 md:h-[66px] xl:h-[74px] min-w-[160px] md:min-w-[80px] md:max-w-[90px] lg:min-w-[160px] xl:min-w-[180px]"}>
-                      <i className={`fas fa-circle pr-2 text-light text-sm animate-pulse ${whitelist.status === 'Live' ? 'text-green-500' : 'text-red-500'}`}></i>
-                      {whitelist.status}
-                    </p>
-                  </div>
-                  {whitelist.status !== 'Ended' && (
-                    <div className="flex flex-col justify-end md:-ml-1.5 lg:ml-2 xl:ml-0 min-w-[170px] xl:min-w-[233px]">
-                      <div className="flex flex-col text-center text-md text-gray-400 bg-secondary py-2 px-6 rounded-lg border border-gray-600 bg-opacity-60">
-                        {whitelist.status === 'Not Started' &&
-                          <>
-                            Live in
-                            <span className="text-white pl-2 xl:text-xl">
-                              <CountdownComponent deadline={whitelist.start} />
-                            </span>
-                          </>
-                        }
-                        {whitelist.status === 'Live' &&
-                          <>
-                            Ends in
-                            <span className="text-white pl-2 xl:text-xl">
-                              <CountdownComponent deadline={whitelist.end} />
-                            </span>
-                          </>
-                        }
-                      </div>
-                    </div>
-                  )}
-                </div>
-                <div className="flex flex-col md:flex-row items-center p-4 bg-four rounded-lg border border-gray-600 gap-4 md:gap-6 md:justify-between">
-                  <p className="relative lg:text-lg xl:text-xl font-bold text-white xl:mr-5">
-                    Public
-                    <span
-                      className="ml-3 text-light border border-light rounded-full px-2 text-sm"
-                      onMouseEnter={handleMouseEnterPublic}
-                      onMouseLeave={handleMouseLeavePublic}
-                    >
-                      i
-                    </span>
-                    {showTooltipPublic && (
-                      <div className="tooltip absolute left-1/2 top-full -translate-x-1/2 transform whitespace-normal md:whitespace-nowrap rounded bg-secondary bg-opacity-80 p-2 text-white text-center text-md min-w-[75vw] md:min-w-[60vw] xl:min-w-[30vw] overflow-hidden text-overflow-ellipsis z-10">
-                        All winners will be drawn few minutes after the end.
-=======
 
                 <div className="flex flex-col gap-3 lg:gap-6">
 
@@ -593,7 +525,6 @@ export default function Home() {
                             </>
                           }
                         </div>
->>>>>>> master
                       </div>
                     )}
                   </div>
