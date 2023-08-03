@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { ethers } from 'ethers';
 import RaffleABI from '../ABI/RaffleG_0.json';
 import NftABI from '../ABI/TBT_NFT.json';
+import { Alchemy, Network } from 'alchemy-sdk'
 
 export default function useContracts() {
   const [provider, setProvider] = useState(null);
@@ -16,8 +17,13 @@ export default function useContracts() {
 
   useEffect(() => {
     const getProviderAndData = async () => {
+      const settings = {
+        apiKey: "kKaUsI3UwlljF-I3np_9fWNG--9i9RlF",
+        network: Network.MATIC_MAINNET,
+      };
       try {
-        const alchemyProvider = new ethers.providers.AlchemyProvider('MATIC_MAINNET', 'kKaUsI3UwlljF-I3np_9fWNG--9i9RlF');
+        const alchemy = new Alchemy(settings);
+        const alchemyProvider = await alchemy.config.getProvider();
 
         const contractRaffleInstance = new ethers.Contract(contractRaffleAddress, RaffleABI, alchemyProvider);
         const contractNftInstance = new ethers.Contract(contractNftAddress, NftABI, alchemyProvider);
