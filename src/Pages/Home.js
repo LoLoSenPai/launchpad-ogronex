@@ -14,11 +14,13 @@ import 'react-toastify/dist/ReactToastify.css';
 import { SaleStatusContext } from "../Context/SaleStatusContext";
 import SaleButton from "../Components/SaleButton";
 import TermsAndConditions from "./TermsAndConditions";
+import Tooltip from "../Components/Tooltip";
+import { useContracts } from "../Hooks/useContracts";
+import useTicketManagement from "../Hooks/useTicketManagement";
+import useWhitelistManagement from "../Hooks/useWhitelistManagement";
+import useRaffleWinnerManagement from "../Hooks/useRaffleWinnerManagement";
 // import { ClaimCountdown } from "../Components/ClaimCountdown";
-// import ShareButton from "../Components/ShareButton";
 
-const contractNftAddress = "0xe4b528300ef4e839097f74fa2551c6f1b47e9853";
-const contractRaffleAddress = "0xFA820767b124d6537a39F949De036f534f2ACE6B";
 
 export default function Home() {
 
@@ -26,11 +28,7 @@ export default function Home() {
   const balance = useBalance({ address: address });
 
   const [ticketCount, setTicketCount] = useState(1);
-  const [remainingTickets, setRemainingTickets] = useState(0);
-  const [ticketsBought, setTicketsBought] = useState(0);
-  const [nftSupply, setNftSupply] = useState(0);
-  const [ticketsSold, setTicketsSold] = useState(0);
-  const [waitingBuy, setWaitingBuy] = useState(false);
+  // const [nftSupply, setNftSupply] = useState(0);
   const [loading, setLoading] = useState(false);
   const [availableToMint, setAvailableToMint] = useState(0);
 
@@ -44,14 +42,17 @@ export default function Home() {
   const [showModalPending, setShowModalPending] = useState(false);
 
   //winner state
-  const [isWinnerRaffle, setIsWinnerRaffle] = useState(false);
   const [hasCheckedWinner, setHasCheckedWinner] = useState(false);
-  const [winnerNbMint, setWinnerNbMint] = useState(0);
-  const [hasNotMinted, setHasNotMinted] = useState(false);
   const [appIsRaffleOver, setAppIsRaffleOver] = useState(false);
 
   const { holder, guaranteed, whitelistFCFS, publicSale } = useContext(SaleStatusContext);
   // Use `guaranteed.status`, `guaranteed.start`, `guaranteed.end` etc
+
+  const { getTicketsBought, buyTickets, getTicketsSold } = useTicketManagement();
+  const { whiteListMint, isWhitelisted, remainingTickets } = useWhitelistManagement();
+  const { winnerRaffleMint, checkWinner, waitingBuy, winnerNbMint, isWinnerRaffle } = useRaffleWinnerManagement();
+  // const { buyTickets, getTicketsSold, whiteListMint, getTotalSupply, ticketsSold, nftSupply, remainingTickets, waitingBuy } = useContracts();
+
 
 
   const getAlchemyProviderAndData = async () => {
@@ -77,48 +78,49 @@ export default function Home() {
 
   const ticketPrice = 1;
 
-  const isWhitelisted = useCallback((address) => {
-    if (holder.status === "Live") {
-      return dataWhiteListGuaranteed.find(item => item.address === address);
-    } else if (guaranteed.status === "Live") {
-      return dataWhiteListOG.find(item => item.address === address);
-    } else if (whitelistFCFS.status === "Live") {
-      return dataWhiteListWL.find(item => item.address === address);
-    }
-    else {
-      return false;
-    }
-  }, [holder.status, guaranteed.status, whitelistFCFS.status]);
+
 
 
   // Tooltip for i icon
-  const handleMouseEnterHolder = () => {
-    setShowTooltipHolder(true);
-  };
-  const handleMouseLeaveHolder = () => {
-    setShowTooltipHolder(false);
-  };
-
-  const handleMouseEnter = () => {
-    setShowTooltipOG(true);
-  };
-  const handleMouseLeave = () => {
-    setShowTooltipOG(false);
-  };
-
-  const handleMouseEnterWL = () => {
-    setShowTooltipWL(true);
-  };
-  const handleMouseLeaveWL = () => {
-    setShowTooltipWL(false);
+  const handleMouseEnter = (tooltipType) => {
+    switch (tooltipType) {
+      case 'holder':
+        setShowTooltipHolder(true);
+        break;
+      case 'og':
+        setShowTooltipOG(true);
+        break;
+      case 'wl':
+        setShowTooltipWL(true);
+        break;
+      case 'public':
+        setShowTooltipPublic(true);
+        break;
+      default:
+        break;
+    }
   };
 
-  const handleMouseEnterPublic = () => {
-    setShowTooltipPublic(true);
+  const handleMouseLeave = (tooltipType) => {
+    switch (tooltipType) {
+      case 'holder':
+        setShowTooltipHolder(false);
+        break;
+      case 'og':
+        setShowTooltipOG(false);
+        break;
+      case 'wl':
+        setShowTooltipWL(false);
+        break;
+      case 'public':
+        setShowTooltipPublic(false);
+        break;
+      default:
+        break;
+    }
   };
-  const handleMouseLeavePublic = () => {
-    setShowTooltipPublic(false);
-  };
+
+
   const handleIncrease = () => {
     const numericTicketCount = parseInt(ticketCount, 10);
     setTicketCount((numericTicketCount || 0) + 1);
@@ -131,162 +133,8 @@ export default function Home() {
     }
   };
 
-  const getTicketsSold = async () => {
-    if (!isConnected) return;
-    const provider = new ethers.providers.Web3Provider(window.ethereum);
-    const signer = provider.getSigner();
-    const contractRaffle = new ethers.Contract(contractRaffleAddress, RaffleABI, signer);
-    const ticketsSold = await contractRaffle.nbTicketSell();
-    setTicketsSold(ticketsSold.toNumber());
-  };
 
-  const getRaffleOver = async () => {
-    if (!isConnected) return;
-    const provider = new ethers.providers.Web3Provider(window.ethereum);
-    const signer = provider.getSigner();
-    const contractNft = new ethers.Contract(contractNftAddress, NftABI, signer);
-    const isOver = await contractNft.isRaffleOver();
-    setAppIsRaffleOver(isOver);
-  };
 
-  const getTotalSupply = async () => {
-    if (!isConnected) return;
-    const provider = new ethers.providers.Web3Provider(window.ethereum);
-    const signer = provider.getSigner();
-    const contractNft = new ethers.Contract(contractNftAddress, NftABI, signer);
-    const nftsupply = await contractNft.totalSupply();
-    setNftSupply(nftsupply.toNumber());
-  };
-
-  const getTicketsBought = useCallback(async () => {
-    if (!isConnected) return;
-    try {
-      const provider = new ethers.providers.Web3Provider(window.ethereum);
-      const signer = provider.getSigner();
-      const contractRaffle = new ethers.Contract(contractRaffleAddress, RaffleABI, signer);
-      const idPlayer = await contractRaffle.idByAddress(address);
-      const player = await contractRaffle.playersList(idPlayer);
-      if (player.addressPlayer === address) {
-        const ticketsBought = player.ticketsBought;
-        setTicketsBought(ticketsBought.toNumber());
-      } else {
-        setTicketsBought(0);
-      }
-    } catch (error) {
-      console.error("Error getting tickets bought:", error);
-    }
-  }, [address, isConnected]);
-
-  async function buyTickets() {
-    if (isConnected) {
-      try {
-        setWaitingBuy(true);
-        const provider = new ethers.providers.Web3Provider(window.ethereum);
-        const signer = provider.getSigner();
-        const contractRaffle = new ethers.Contract(contractRaffleAddress, RaffleABI, signer);
-        const tx = await contractRaffle.buyTicket(ticketCount, { value: ethers.utils.parseEther((ticketCount * ticketPrice).toString()) });
-        await provider.waitForTransaction(tx.hash);
-        toast.success("You're in the game! Good luck for the draw!");
-        setWaitingBuy(false);
-        await getTicketsBought();
-        await getTicketsSold();
-      } catch (error) {
-        toast.error("Transaction error! But don't worry, even the best stumble sometimes!");
-        setWaitingBuy(false);
-      }
-    }
-  }
-
-  async function whiteListMint() {
-    if (!isConnected) return // conditionner aussi a la phase guarranteed Mint
-    try {
-      // conditionner la WL en function de la phase (holder, og and wl)!
-      setWaitingBuy(true);
-      const whitelistObject = isWhitelisted(address);
-      const provider = new ethers.providers.Web3Provider(window.ethereum);
-      const signer = provider.getSigner();
-      const contractNft = new ethers.Contract(contractNftAddress, NftABI, signer);
-      const tx = await contractNft.whitelistMint(1, whitelistObject.proof, 1, { value: ethers.utils.parseEther((1 * 0.5).toString()) });
-      await provider.waitForTransaction(tx.hash);
-      setWaitingBuy(false);
-      toast.success("Success Mint !");
-      let alreadyMintGuaranted = 0;
-      let alreadyMintOG = 0;
-      let alreadyMintWL = 0;
-      if (holder.status === "Live") {
-        alreadyMintGuaranted = await contractNft.alreadyMintedHolders(address)
-        setRemainingTickets(availableToMint - alreadyMintGuaranted);
-        toast.success(`You have already mint ${alreadyMintGuaranted} NFT`)
-      }
-      if (guaranteed.status === "Live") {
-        alreadyMintOG = await contractNft.alreadyMintedOG(address)
-        setRemainingTickets(availableToMint - alreadyMintOG);
-        toast.success(`You have already mint ${alreadyMintOG} NFT`)
-      }
-      if (whitelistFCFS.status === "Live") {
-        alreadyMintWL = await contractNft.alreadyMintedWhitelist(address)
-        setRemainingTickets(availableToMint - alreadyMintWL);
-        toast.success(`You have already mint ${alreadyMintWL} NFT`)
-      }
-      const newRemainingTickets = availableToMint - alreadyMintGuaranted - alreadyMintOG - alreadyMintWL;
-      setRemainingTickets(newRemainingTickets);
-      localStorage.setItem('remainingTickets', newRemainingTickets.toString());
-      await getTotalSupply();
-    } catch (error) {
-      console.log(error);
-      if (error.message.includes('execution reverted')) {
-        const errorMessage = error.reason.split(':')[1].trim();
-        toast.error(errorMessage)
-      } else (
-        toast.error("Transaction error! But don't worry, even the best stumble sometimes!")
-      )
-      setWaitingBuy(false);
-    }
-  }
-
-  async function winnerRaffleMint() {
-    if (!isConnected && !isWinnerRaffle) return; // conditionner aussi a la phase winner Mint
-    try {
-      if (!hasNotMinted) {
-        toast.error("You have already minted your winning ticket!");
-        return;
-      }
-      setWaitingBuy(true);
-      const provider = new ethers.providers.Web3Provider(window.ethereum);
-      const signer = provider.getSigner();
-      const contractNft = new ethers.Contract(contractNftAddress, NftABI, signer);
-      const tx = await contractNft.winnerRaffleSaleMint();
-      await provider.waitForTransaction(tx.hash);
-      toast.success("Success Mint !");
-    } catch (error) {
-      toast.error("Transaction error! But don't worry, even the best stumble sometimes!")
-    } finally {
-      setWaitingBuy(false);
-    }
-  }
-
-  async function checkWinner() {
-    if (!isConnected && !appIsRaffleOver) return false; // need to be connected and raffleOver
-    try {
-      const provider = new ethers.providers.Web3Provider(window.ethereum);
-      const signer = provider.getSigner();
-      const contractNft = new ethers.Contract(contractNftAddress, NftABI, signer);
-      const winnerData = await contractNft.winnerByAddress(address);
-      const isWinner = winnerData.addressWinner === address && winnerData.numberOfWin > 0;
-      const notMinted = winnerData.notMinted;
-      setHasNotMinted(notMinted);
-      if (isWinner) {
-        setIsWinnerRaffle(true);
-        setWinnerNbMint(winnerData.numberOfWin.toNumber());
-        toast.success("LUCKY ! GO MINT 🎫");
-      } else {
-        setIsWinnerRaffle(false);
-      }
-      return isWinner;
-    } catch (error) {
-      console.log("Error checking winner:", error);
-    }
-  }
 
   useEffect(() => {
     const remainingTicketsFromLocalStorage = localStorage.getItem('remainingTickets');
@@ -346,10 +194,6 @@ export default function Home() {
     localStorage.setItem('availableToMint', newAvailableToMint);
   }, [address, isWhitelisted]);
 
-  // useEffect(() => {
-  //   const whitelistObject = isWhitelisted(address);
-  //   setAvailableToMint(whitelistObject ? whitelistObject.availableToMint : undefined);
-  // }, [address, isWhitelisted]);
 
   useEffect(() => {
     if (!isConnected) return;
@@ -458,18 +302,13 @@ export default function Home() {
                   <div className="flex flex-col md:flex-row items-center gap-4 lg:gap-2 xl:gap-10 p-4 bg-four rounded-lg border border-gray-600 justify-center md:justify-between">
                     <div className="relative lg:text-lg xl:text-xl font-bold text-white">
                       Holders
-                      <span
-                        className="ml-3 text-light border border-light rounded-full px-2 text-sm"
-                        onMouseEnter={handleMouseEnterHolder}
-                        onMouseLeave={handleMouseLeaveHolder}
+                      <Tooltip
+                        onMouseEnter={() => handleMouseEnter('holder')}
+                        onMouseLeave={() => handleMouseLeave('holder')}
+                        showTooltip={showTooltipHolder}
                       >
-                        i
-                      </span>
-                      {showTooltipHolder &&
-                        <div className="text-center tooltip absolute left-1/2 top-full -translate-x-1/2 transform whitespace-nowrap rounded bg-secondary bg-opacity-80 p-2 text-white z-10">
-                          Boxbies and Dalmatians Holders
-                        </div>
-                      }
+                        Boxbies and Dalmatians holders.
+                      </Tooltip>
                     </div>
                     <div className="flex flew-row justify-center lg:px-2">
                       <p className={"flex items-center xl:text-xl font-bold text-white bg-secondary py-2 px-6 md:px-2 lg:px-6 rounded-lg border border-gray-600 bg-opacity-60 md:h-[66px] xl:h-[74px] min-w-[160px] md:min-w-[80px] md:max-w-[90px] lg:min-w-[160px] xl:min-w-[180px]"}>
@@ -504,18 +343,13 @@ export default function Home() {
                   <div className="flex flex-col md:flex-row items-center gap-4 lg:gap-2 xl:gap-10 p-4 bg-four rounded-lg border border-gray-600 justify-center md:justify-between">
                     <div className="relative lg:text-lg xl:text-xl font-bold text-white">
                       OG FCFS
-                      <span
-                        className="ml-3 text-light border border-light rounded-full px-2 text-sm"
-                        onMouseEnter={handleMouseEnter}
-                        onMouseLeave={handleMouseLeave}
+                      <Tooltip
+                        onMouseEnter={() => handleMouseEnter('og')}
+                        onMouseLeave={() => handleMouseLeave('og')}
+                        showTooltip={showTooltipOG}
                       >
-                        i
-                      </span>
-                      {showTooltipOG &&
-                        <div className="text-center tooltip absolute left-1/2 top-full -translate-x-1/2 transform whitespace-nowrap rounded bg-secondary bg-opacity-80 p-2 text-white z-10">
-                          One mint per wallet
-                        </div>
-                      }
+                        Boxbies and Dalmatians holders.
+                      </Tooltip>
                     </div>
                     <div className="flex flew-row justify-center lg:px-2">
                       <p className={"flex items-center xl:text-xl font-bold text-white bg-secondary py-2 px-6 md:px-2 lg:px-6 rounded-lg border border-gray-600 bg-opacity-60 md:h-[66px] xl:h-[74px] min-w-[160px] md:min-w-[80px] md:max-w-[90px] lg:min-w-[160px] xl:min-w-[180px]"}>
@@ -550,18 +384,13 @@ export default function Home() {
                   <div className="flex flex-col md:flex-row items-center gap-4 lg:gap-2 xl:gap-10 p-4 bg-four rounded-lg border border-gray-600 justify-center md:justify-between">
                     <div className="relative lg:text-lg xl:text-xl font-bold text-white">
                       Whitelist FCFS
-                      <span
-                        className="ml-3 text-light border border-light rounded-full px-2 text-sm"
-                        onMouseEnter={handleMouseEnterWL}
-                        onMouseLeave={handleMouseLeaveWL}
+                      <Tooltip
+                        onMouseEnter={() => handleMouseEnter('wl')}
+                        onMouseLeave={() => handleMouseLeave('wl')}
+                        showTooltip={showTooltipWL}
                       >
-                        i
-                      </span>
-                      {showTooltipWL &&
-                        <div className="text-center tooltip absolute left-1/2 top-full -translate-x-1/2 transform whitespace-nowrap rounded bg-secondary bg-opacity-80 p-2 text-white z-10">
-                          One mint per wallet
-                        </div>
-                      }
+                        Boxbies and Dalmatians holders.
+                      </Tooltip>
                     </div>
                     <div className="flex flew-row justify-center lg:px-2">
                       <div className={"flex items-center xl:text-xl font-bold text-white bg-secondary py-2 px-6 md:px-2 lg:px-6 rounded-lg border border-gray-600 bg-opacity-60 md:h-[66px] xl:h-[74px] min-w-[160px] md:min-w-[80px] md:max-w-[90px] lg:min-w-[160px] xl:min-w-[180px]"}>
@@ -595,18 +424,13 @@ export default function Home() {
                   <div className="flex flex-col md:flex-row items-center p-4 bg-four rounded-lg border border-gray-600 gap-4 md:gap-6 md:justify-between">
                     <div className="relative lg:text-lg xl:text-xl font-bold text-white xl:mr-5">
                       Public
-                      <span
-                        className="ml-3 text-light border border-light rounded-full px-2 text-sm"
-                        onMouseEnter={handleMouseEnterPublic}
-                        onMouseLeave={handleMouseLeavePublic}
+                      <Tooltip
+                        onMouseEnter={() => handleMouseEnter('public')}
+                        onMouseLeave={() => handleMouseLeave('public')}
+                        showTooltip={showTooltipPublic}
                       >
-                        i
-                      </span>
-                      {showTooltipPublic && (
-                        <div className="tooltip absolute left-1/2 top-full -translate-x-1/2 transform whitespace-normal md:whitespace-nowrap rounded bg-secondary bg-opacity-80 p-2 text-white text-center text-md min-w-[75vw] md:min-w-[60vw] xl:min-w-[30vw] overflow-hidden text-overflow-ellipsis z-10">
-                          All winners will be drawn few minutes after the end.
-                        </div>
-                      )}
+                        All winners will be drawn after the sale ends.
+                      </Tooltip>
                     </div>
                     <div className="flex flew-row justify-center lg:ml-2">
                       <div className={"flex items-center xl:text-xl font-bold text-white bg-secondary py-2 px-6 md:px-2 lg:px-6 rounded-lg border border-gray-600 bg-opacity-60 md:h-[66px] xl:h-[74px] min-w-[160px] md:min-w-[80px] md:max-w-[90px] lg:min-w-[160px] xl:min-w-[180px]"}>
@@ -691,7 +515,7 @@ export default function Home() {
                   />
 
                   <div className="flex flex-col justify-center items-center lg:min-w-[110px] pr-3">
-                    {holder.status === 'Live' && isConnected && availableToMint !== undefined &&(
+                    {holder.status === 'Live' && isConnected && availableToMint !== undefined && (
                       <p className="flex items-center lg:text-xl text-white sm:mt-3 md:mt-1">
                         Available to mint:
                         <span className="ml-12 md:ml-12 lg:ml-8 text-light ">{isWhitelisted(address).availableToMint}</span>
@@ -709,14 +533,6 @@ export default function Home() {
                     )}
                   </div>
                 </div>
-                {/* <ShareButton /> */}
-                {/* {publicSale.status === "Ended" &&
-                  <div className="flex flex-col justify-center items-center mt-4">
-                    <button className="lg:py-2 w-full rounded-lg text-xl xl:text-2xl bg-light font-bold text-black col-span-2 min-h-[60px] max-h-[80px] md:max-h-auto btn-shadow flex justify-center items-center">
-                      All NFTs have been airdropped to the winners!
-                    </button>
-                  </div>
-                } */}
               </div>
             </div>
             <div className="flex flex-row justify-end mt-10 lg:mt-0 mr-2 md:mr-5">
