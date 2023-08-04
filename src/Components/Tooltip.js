@@ -23,6 +23,8 @@ const Tooltip = ({ onMouseEnter, onMouseLeave, showTooltip, children, tooltipTex
           padding: 15,
           borderRadius: 7,
           zIndex: 1,
+          minWidth: 300,
+          textAlign: "center",
         }}
       >
         <p>

@@ -224,13 +224,18 @@ export default function Home() {
 
                   <div className="flex flex-col md:flex-row items-center gap-4 lg:gap-2 xl:gap-10 p-4 bg-four rounded-lg border border-gray-600 justify-center md:justify-between">
                     <div className="relative lg:text-lg xl:text-xl font-bold text-white">
-                      <Tooltip
+                      Holders
+                      <span
                         onMouseEnter={() => handleMouseEnter('holder')}
                         onMouseLeave={() => handleMouseLeave('holder')}
-                        showTooltip={showTooltipHolder}
-                        tooltipText="Boxbies and Dalmatians holders."
-                      />
-                      Holders
+                        className="text-light text-sm ml-3 border border-radius-50 border-light bg-secondary rounded-full px-3 py-1"
+                      >
+                        i
+                        <Tooltip
+                          showTooltip={showTooltipHolder}
+                          tooltipText="Boxbies and Dalmatians holders."
+                        />
+                      </span>
                     </div>
                     <div className="flex flew-row justify-center lg:px-2">
                       <p className={"flex items-center xl:text-xl font-bold text-white bg-secondary py-2 px-6 md:px-2 lg:px-6 rounded-lg border border-gray-600 bg-opacity-60 md:h-[66px] xl:h-[74px] min-w-[160px] md:min-w-[80px] md:max-w-[90px] lg:min-w-[160px] xl:min-w-[180px]"}>
@@ -265,12 +270,17 @@ export default function Home() {
                   <div className="flex flex-col md:flex-row items-center gap-4 lg:gap-2 xl:gap-10 p-4 bg-four rounded-lg border border-gray-600 justify-center md:justify-between">
                     <div className="relative lg:text-lg xl:text-xl font-bold text-white">
                       OG FCFS
-                      <Tooltip
+                      <span
                         onMouseEnter={() => handleMouseEnter('og')}
                         onMouseLeave={() => handleMouseLeave('og')}
-                        showTooltip={showTooltipOG}
-                        tooltipText="Boxbies and Dalmatians holders."
-                      />
+                        className="text-light text-sm ml-3 border border-radius-50 border-light bg-secondary rounded-full px-3 py-1"
+                      >
+                        i
+                        <Tooltip
+                          showTooltip={showTooltipOG}
+                          tooltipText="OG Teddies 1 mint per wallet / 2 hour."
+                        />
+                      </span>
                     </div>
                     <div className="flex flew-row justify-center lg:px-2">
                       <p className={"flex items-center xl:text-xl font-bold text-white bg-secondary py-2 px-6 md:px-2 lg:px-6 rounded-lg border border-gray-600 bg-opacity-60 md:h-[66px] xl:h-[74px] min-w-[160px] md:min-w-[80px] md:max-w-[90px] lg:min-w-[160px] xl:min-w-[180px]"}>
@@ -305,13 +315,17 @@ export default function Home() {
                   <div className="flex flex-col md:flex-row items-center gap-4 lg:gap-2 xl:gap-10 p-4 bg-four rounded-lg border border-gray-600 justify-center md:justify-between">
                     <div className="relative lg:text-lg xl:text-xl font-bold text-white">
                       Whitelist FCFS
-                      <Tooltip
+                      <span
                         onMouseEnter={() => handleMouseEnter('wl')}
                         onMouseLeave={() => handleMouseLeave('wl')}
-                        showTooltip={showTooltipWL}
+                        className="text-light text-sm ml-3 border border-radius-50 border-light bg-secondary rounded-full px-3 py-1"
                       >
-                        Boxbies and Dalmatians holders.
-                      </Tooltip>
+                        i
+                        <Tooltip
+                          showTooltip={showTooltipWL}
+                          tooltipText="1 mint per wallet / 1 hour."
+                        />
+                      </span>
                     </div>
                     <div className="flex flew-row justify-center lg:px-2">
                       <div className={"flex items-center xl:text-xl font-bold text-white bg-secondary py-2 px-6 md:px-2 lg:px-6 rounded-lg border border-gray-600 bg-opacity-60 md:h-[66px] xl:h-[74px] min-w-[160px] md:min-w-[80px] md:max-w-[90px] lg:min-w-[160px] xl:min-w-[180px]"}>
@@ -345,13 +359,17 @@ export default function Home() {
                   <div className="flex flex-col md:flex-row items-center p-4 bg-four rounded-lg border border-gray-600 gap-4 md:gap-6 md:justify-between">
                     <div className="relative lg:text-lg xl:text-xl font-bold text-white xl:mr-5">
                       Public
-                      <Tooltip
+                      <span
                         onMouseEnter={() => handleMouseEnter('public')}
                         onMouseLeave={() => handleMouseLeave('public')}
-                        showTooltip={showTooltipPublic}
+                        className="text-light text-sm ml-3 border border-radius-50 border-light bg-secondary rounded-full px-3 py-1"
                       >
-                        All winners will be drawn after the sale ends.
-                      </Tooltip>
+                        i
+                        <Tooltip
+                          showTooltip={showTooltipPublic}
+                          tooltipText="24h to claim your NFTs."
+                        />
+                      </span>
                     </div>
                     <div className="flex flew-row justify-center lg:ml-2">
                       <div className={"flex items-center xl:text-xl font-bold text-white bg-secondary py-2 px-6 md:px-2 lg:px-6 rounded-lg border border-gray-600 bg-opacity-60 md:h-[66px] xl:h-[74px] min-w-[160px] md:min-w-[80px] md:max-w-[90px] lg:min-w-[160px] xl:min-w-[180px]"}>
