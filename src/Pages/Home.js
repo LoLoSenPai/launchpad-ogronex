@@ -21,7 +21,6 @@ export default function Home() {
   const balance = useBalance({ address: address });
 
   const [ticketCount, setTicketCount] = useState(1);
-  const [loading] = useState(false);
   const [availableToMint, setAvailableToMint] = useState(0);
 
   const [showTooltipHolder, setShowTooltipHolder] = useState(false);
@@ -41,7 +40,7 @@ export default function Home() {
   const { getTicketsBought, getTicketsSold, buyTickets, ticketsBought, ticketsSold } = useTicketManagement();
   const { whiteListMint, isWhitelisted, remainingTickets } = useWhitelistManagement();
   const { winnerRaffleMint, checkWinner, waitingBuy, winnerNbMint, isWinnerRaffle, appIsRaffleOver } = useRaffleWinnerManagement();
-  const { nftSupply } = useContracts();
+  const { nftSupply, loading } = useContracts();
 
   const ticketPrice = 1;
 

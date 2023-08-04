@@ -5,6 +5,7 @@ import NftABI from "../ABI/Infected_NFT.json";
 import { Alchemy, Network } from 'alchemy-sdk'
 
 export default function useContracts() {
+  const [loading, setLoading] = useState(false);
   const [provider, setProvider] = useState(null);
   const [contractRaffle, setContractRaffle] = useState(null);
   const [contractNft, setContractNft] = useState(null);
@@ -21,6 +22,7 @@ export default function useContracts() {
         apiKey: "kKaUsI3UwlljF-I3np_9fWNG--9i9RlF",
         network: Network.MATIC_MAINNET,
       };
+      setLoading(true);
       try {
         const alchemy = new Alchemy(settings);
         const alchemyProvider = await alchemy.config.getProvider();
@@ -42,10 +44,11 @@ export default function useContracts() {
       } catch (error) {
         console.error("An error occurred while fetching data:", error);
       }
+      setLoading(false);
     };
 
     getProviderAndData();
   }, []);
 
-  return { provider, contractRaffle, contractNft, ticketsSold, isRaffleOver, nftSupply };
+  return { provider, contractRaffle, contractNft, ticketsSold, isRaffleOver, nftSupply, loading };
 }
