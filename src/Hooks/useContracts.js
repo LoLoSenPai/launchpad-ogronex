@@ -3,6 +3,7 @@ import { ethers } from 'ethers';
 import RaffleABI from "../ABI/launchpadRaffle.json";
 import NftABI from "../ABI/Infected_NFT.json";
 import { Alchemy, Network } from 'alchemy-sdk'
+import { CONTRACT_RAFFLE, CONTRACT_NFT } from '../Lib/constants';
 
 export default function useContracts() {
   const [loading, setLoading] = useState(false);
@@ -13,8 +14,6 @@ export default function useContracts() {
   const [isRaffleOver, setIsRaffleOver] = useState(false);
   const [nftSupply, setNftSupply] = useState(0);
 
-  const contractNftAddress = "0xe4b528300ef4e839097f74fa2551c6f1b47e9853";
-  const contractRaffleAddress = "0xFA820767b124d6537a39F949De036f534f2ACE6B";
 
   useEffect(() => {
     const getProviderAndData = async () => {
@@ -27,8 +26,8 @@ export default function useContracts() {
         const alchemy = new Alchemy(settings);
         const alchemyProvider = await alchemy.config.getProvider();
 
-        const contractRaffleInstance = new ethers.Contract(contractRaffleAddress, RaffleABI, alchemyProvider);
-        const contractNftInstance = new ethers.Contract(contractNftAddress, NftABI, alchemyProvider);
+        const contractRaffleInstance = new ethers.Contract(CONTRACT_RAFFLE, RaffleABI, alchemyProvider);
+        const contractNftInstance = new ethers.Contract(CONTRACT_NFT, NftABI, alchemyProvider);
 
         const ticketsSold = await contractRaffleInstance.nbTicketSell();
         const isOver = await contractNftInstance.isRaffleOver();
