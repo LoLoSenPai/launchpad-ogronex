@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { ethers } from 'ethers';
-import RaffleABI from '../ABI/RaffleG_0.json';
-import NftABI from '../ABI/TBT_NFT.json';
+import RaffleABI from "../ABI/launchpadRaffle.json";
+import NftABI from "../ABI/Infected_NFT.json";
 import { Alchemy, Network } from 'alchemy-sdk'
 
 export default function useContracts() {

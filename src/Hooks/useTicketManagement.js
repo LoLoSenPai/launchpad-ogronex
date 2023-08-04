@@ -26,7 +26,7 @@ export default function useTicketManagement() {
     }, [contractRaffle, provider]);
 
     const getTicketsBought = useCallback(async () => {
-        if (!isConnected) return;
+        if (!isConnected || !contractRaffle) return;
         try {
             const idPlayer = await contractRaffle.idByAddress(address);
             const player = await contractRaffle.playersList(idPlayer);

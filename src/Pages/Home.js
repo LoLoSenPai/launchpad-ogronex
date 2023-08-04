@@ -38,7 +38,7 @@ export default function Home() {
 
   const { holder, guaranteed, whitelistFCFS, publicSale } = useContext(SaleStatusContext);
 
-  const { buyTickets, ticketsBought, ticketsSold } = useTicketManagement();
+  const { getTicketsBought, getTicketsSold, buyTickets, ticketsBought, ticketsSold } = useTicketManagement();
   const { whiteListMint, isWhitelisted, remainingTickets } = useWhitelistManagement();
   const { winnerRaffleMint, checkWinner, waitingBuy, winnerNbMint, isWinnerRaffle, appIsRaffleOver } = useRaffleWinnerManagement();
   const { nftSupply } = useContracts();
@@ -96,6 +96,13 @@ export default function Home() {
     }
   };
 
+  useEffect(() => {
+    getTicketsSold();
+  }, [getTicketsSold]);
+
+  useEffect(() => {
+    getTicketsBought();
+  }, [getTicketsBought]);
 
   useEffect(() => {
     const whitelistObject = isWhitelisted(address);
