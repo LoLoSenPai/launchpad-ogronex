@@ -1,4 +1,4 @@
-import { useState, useCallback, useContext } from 'react';
+import { useState, useCallback, useContext, useEffect } from 'react';
 import { toast } from "react-toastify";
 import { useAccount } from "wagmi";
 import { SaleStatusContext } from "../Context/SaleStatusContext";
@@ -11,7 +11,7 @@ import dataWhiteListWL from '../Lib/dataWhiteListWL.json';
 export default function useWhitelistManagement() {
 
     const [waitingBuy, setWaitingBuy] = useState(false);
-    const [remainingTickets, setRemainingTickets] = useState(0);
+    const [totalRemainingTickets, setTotalRemainingTickets] = useState(0);
 
     const { provider, contractNft } = useContracts();
     const { holder, guaranteed, whitelistFCFS } = useContext(SaleStatusContext);
@@ -35,51 +35,101 @@ export default function useWhitelistManagement() {
     }, [holder.status, guaranteed.status, whitelistFCFS.status]);
 
 
+    // const getTotalRemainingTickets = useCallback(async () => {
+    //     let totalRemainingTickets = 0;
+
+    //     if (!contractNft) {
+    //         console.log("The user is not connected to a wallet.");
+    //         return;
+    //     }
+
+    //     try {
+    //         if (holder.status === "Live") {
+    //             totalRemainingTickets += await contractNft.availableToMintHolders();
+    //         }
+    //         if (guaranteed.status === "Live") {
+    //             totalRemainingTickets += await contractNft.availableToMintOG();
+    //         }
+    //         if (whitelistFCFS.status === "Live") {
+    //             totalRemainingTickets += await contractNft.availableToMintWL();
+    //         }
+    //     } catch (error) {
+    //         console.log(error);
+    //         toast.error("Error getting the total remaining tickets.");
+    //     }
+
+    //     setTotalRemainingTickets(totalRemainingTickets);
+    // }, [contractNft, holder.status, guaranteed.status, whitelistFCFS.status]);
+
+    const getTotalRemainingTickets = useCallback(() => {
+        let totalRemainingTickets = 0;
+
+        try {
+            if (holder.status === "Live") {
+                totalRemainingTickets += dataWhiteListGuaranteed
+                    .filter(item => item.address === address)
+                    .reduce((total, item) => total + parseInt(item.availableToMint), 0);
+                console.log('total from holder', totalRemainingTickets);
+            }
+            if (guaranteed.status === "Live") {
+                totalRemainingTickets += dataWhiteListOG
+                    .filter(item => item.address === address)
+                    .reduce((total, item) => total + parseInt(item.availableToMint), 0);
+                console.log('total from og', totalRemainingTickets);
+            }
+            if (whitelistFCFS.status === "Live") {
+                totalRemainingTickets += dataWhiteListWL
+                    .filter(item => item.address === address)
+                    .reduce((total, item) => total + parseInt(item.availableToMint), 0);
+                console.log('total from wl', totalRemainingTickets);
+            }
+        } catch (error) {
+            console.log(error);
+            toast.error("Error getting the total remaining tickets.");
+        }
+
+        setTotalRemainingTickets(totalRemainingTickets);
+    }, [holder.status, guaranteed.status, whitelistFCFS.status]);
+
+
+
     const whiteListMint = useCallback(async () => {
-        // Code pour le mint de la whitelist ici
         if (!provider || !contractNft) return;
         try {
-            // conditionner la WL en function de la phase (holder, og and wl)!
+            // conditionner la WL en fonction de la phase (holder, og and wl)
             setWaitingBuy(true);
             const whitelistObject = isWhitelisted(address);
             const tx = await contractNft.whitelistMint(1, whitelistObject.proof, 1, { value: ethers.utils.parseEther((1 * 0.5).toString()) });
             await provider.waitForTransaction(tx.hash);
             setWaitingBuy(false);
             toast.success("Success Mint !");
-            const availableToMint = await contractNft.availableToMint();
-            let alreadyMintGuaranted = 0;
-            let alreadyMintOG = 0;
-            let alreadyMintWL = 0;
-            if (holder.status === "Live") {
-                alreadyMintGuaranted = await contractNft.alreadyMintedHolders(address)
-                setRemainingTickets(availableToMint - alreadyMintGuaranted);
-                toast.success(`You have already mint ${alreadyMintGuaranted} NFT`)
-            }
-            if (guaranteed.status === "Live") {
-                alreadyMintOG = await contractNft.alreadyMintedOG(address)
-                setRemainingTickets(availableToMint - alreadyMintOG);
-                toast.success(`You have already mint ${alreadyMintOG} NFT`)
-            }
-            if (whitelistFCFS.status === "Live") {
-                alreadyMintWL = await contractNft.alreadyMintedWhitelist(address)
-                setRemainingTickets(availableToMint - alreadyMintWL);
-                toast.success(`You have already mint ${alreadyMintWL} NFT`)
-            }
-            const newRemainingTickets = availableToMint - alreadyMintGuaranted - alreadyMintOG - alreadyMintWL;
-            setRemainingTickets(newRemainingTickets);
-            localStorage.setItem('remainingTickets', newRemainingTickets.toString());
-            // await getTotalSupply();
+            await getTotalRemainingTickets();
         } catch (error) {
             console.log(error);
-            if (error.message.includes('execution reverted')) {
-                const errorMessage = error.reason.split(':')[1].trim();
-                toast.error(errorMessage)
-            } else (
-                toast.error("Transaction error! But don't worry, even the best stumble sometimes!")
-            )
             setWaitingBuy(false);
-        }
-    }, [provider, contractNft, isWhitelisted, address, holder.status, guaranteed.status, whitelistFCFS.status]);
 
-    return { whiteListMint, isWhitelisted, waitingBuy, remainingTickets };
+            if (error.code === ethers.utils.Logger.errors.NONCE_EXPIRED) {
+                toast.error("Transaction failed. The transaction nonce is too low. Try again.");
+            } else if (error.code === ethers.utils.Logger.errors.INSUFFICIENT_FUNDS) {
+                toast.error("Transaction failed. You don't have enough funds to perform this transaction.");
+            } else if (error.code === ethers.utils.Logger.errors.UNPREDICTABLE_GAS_LIMIT) {
+                toast.error("Transaction failed. The gas limit could not be estimated.");
+            } else if (error.message.includes('execution reverted')) {
+                const errorMessage = error.reason.split(':')[1].trim();
+                toast.error(errorMessage);
+            } else {
+                toast.error("Unexpected error occurred. Please try again.");
+            }
+        }
+    }, [provider, contractNft, isWhitelisted, address, holder.status, guaranteed.status, whitelistFCFS.status, getTotalRemainingTickets]);
+
+
+
+    useEffect(() => {
+        getTotalRemainingTickets();
+    }, [holder.status, guaranteed.status, whitelistFCFS.status, getTotalRemainingTickets]);
+
+
+
+    return { whiteListMint, isWhitelisted, waitingBuy, totalRemainingTickets };
 }

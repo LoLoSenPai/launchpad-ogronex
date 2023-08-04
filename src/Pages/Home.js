@@ -7,7 +7,7 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { SaleStatusContext } from "../Context/SaleStatusContext";
 import SaleButton from "../Components/SaleButton";
-import TermsAndConditions from "./TermsAndConditions";
+import TermsAndConditions from "../Modals/TermsAndConditions";
 import Tooltip from "../Components/Tooltip";
 import useContracts from "../Hooks/useContracts";
 import useTicketManagement from "../Hooks/useTicketManagement";
@@ -38,7 +38,7 @@ export default function Home() {
   const { holder, guaranteed, whitelistFCFS, publicSale } = useContext(SaleStatusContext);
 
   const { getTicketsBought, getTicketsSold, buyTickets, ticketsBought, ticketsSold } = useTicketManagement();
-  const { whiteListMint, isWhitelisted, remainingTickets } = useWhitelistManagement();
+  const { whiteListMint, isWhitelisted, remainingTickets, totalRemainingTickets } = useWhitelistManagement();
   const { winnerRaffleMint, checkWinner, waitingBuy, winnerNbMint, isWinnerRaffle, appIsRaffleOver } = useRaffleWinnerManagement();
   const { nftSupply, loading } = useContracts();
 
@@ -225,17 +225,17 @@ export default function Home() {
                   <div className="flex flex-col md:flex-row items-center gap-4 lg:gap-2 xl:gap-10 p-4 bg-four rounded-lg border border-gray-600 justify-center md:justify-between">
                     <div className="relative lg:text-lg xl:text-xl font-bold text-white">
                       Holders
-                      <span
+                      <div
                         onMouseEnter={() => handleMouseEnter('holder')}
                         onMouseLeave={() => handleMouseLeave('holder')}
-                        className="text-light text-sm ml-3 border border-radius-50 border-light bg-secondary rounded-full px-3 py-1"
+                        className="text-light text-sm ml-5 border border-radius-50 border-light bg-secondary rounded-full px-3 w-5 h-6"
                       >
                         i
                         <Tooltip
                           showTooltip={showTooltipHolder}
                           tooltipText="Boxbies and Dalmatians holders."
                         />
-                      </span>
+                      </div>
                     </div>
                     <div className="flex flew-row justify-center lg:px-2">
                       <p className={"flex items-center xl:text-xl font-bold text-white bg-secondary py-2 px-6 md:px-2 lg:px-6 rounded-lg border border-gray-600 bg-opacity-60 md:h-[66px] xl:h-[74px] min-w-[160px] md:min-w-[80px] md:max-w-[90px] lg:min-w-[160px] xl:min-w-[180px]"}>
@@ -270,17 +270,17 @@ export default function Home() {
                   <div className="flex flex-col md:flex-row items-center gap-4 lg:gap-2 xl:gap-10 p-4 bg-four rounded-lg border border-gray-600 justify-center md:justify-between">
                     <div className="relative lg:text-lg xl:text-xl font-bold text-white">
                       OG FCFS
-                      <span
+                      <div
                         onMouseEnter={() => handleMouseEnter('og')}
                         onMouseLeave={() => handleMouseLeave('og')}
-                        className="text-light text-sm ml-3 border border-radius-50 border-light bg-secondary rounded-full px-3 py-1"
+                        className="text-light text-sm ml-3 border border-radius-50 border-light bg-secondary rounded-full px-3 w-5 h-6"
                       >
                         i
                         <Tooltip
                           showTooltip={showTooltipOG}
                           tooltipText="OG Teddies 1 mint per wallet / 2 hour."
                         />
-                      </span>
+                      </div>
                     </div>
                     <div className="flex flew-row justify-center lg:px-2">
                       <p className={"flex items-center xl:text-xl font-bold text-white bg-secondary py-2 px-6 md:px-2 lg:px-6 rounded-lg border border-gray-600 bg-opacity-60 md:h-[66px] xl:h-[74px] min-w-[160px] md:min-w-[80px] md:max-w-[90px] lg:min-w-[160px] xl:min-w-[180px]"}>
@@ -315,17 +315,17 @@ export default function Home() {
                   <div className="flex flex-col md:flex-row items-center gap-4 lg:gap-2 xl:gap-10 p-4 bg-four rounded-lg border border-gray-600 justify-center md:justify-between">
                     <div className="relative lg:text-lg xl:text-xl font-bold text-white">
                       Whitelist FCFS
-                      <span
+                      <div
                         onMouseEnter={() => handleMouseEnter('wl')}
                         onMouseLeave={() => handleMouseLeave('wl')}
-                        className="text-light text-sm ml-3 border border-radius-50 border-light bg-secondary rounded-full px-3 py-1"
+                        className="text-light text-sm ml-3 border border-radius-50 border-light bg-secondary rounded-full px-3 w-5 h-6"
                       >
                         i
                         <Tooltip
                           showTooltip={showTooltipWL}
                           tooltipText="1 mint per wallet / 1 hour."
                         />
-                      </span>
+                      </div>
                     </div>
                     <div className="flex flew-row justify-center lg:px-2">
                       <div className={"flex items-center xl:text-xl font-bold text-white bg-secondary py-2 px-6 md:px-2 lg:px-6 rounded-lg border border-gray-600 bg-opacity-60 md:h-[66px] xl:h-[74px] min-w-[160px] md:min-w-[80px] md:max-w-[90px] lg:min-w-[160px] xl:min-w-[180px]"}>
@@ -359,17 +359,17 @@ export default function Home() {
                   <div className="flex flex-col md:flex-row items-center p-4 bg-four rounded-lg border border-gray-600 gap-4 md:gap-6 md:justify-between">
                     <div className="relative lg:text-lg xl:text-xl font-bold text-white xl:mr-5">
                       Public
-                      <span
+                      <div
                         onMouseEnter={() => handleMouseEnter('public')}
                         onMouseLeave={() => handleMouseLeave('public')}
-                        className="text-light text-sm ml-3 border border-radius-50 border-light bg-secondary rounded-full px-3 py-1"
+                        className="text-light text-sm ml-3 border border-radius-50 border-light bg-secondary rounded-full px-3 w-5 h-6"
                       >
                         i
                         <Tooltip
                           showTooltip={showTooltipPublic}
                           tooltipText="24h to claim your NFTs."
                         />
-                      </span>
+                      </div>
                     </div>
                     <div className="flex flew-row justify-center lg:ml-2">
                       <div className={"flex items-center xl:text-xl font-bold text-white bg-secondary py-2 px-6 md:px-2 lg:px-6 rounded-lg border border-gray-600 bg-opacity-60 md:h-[66px] xl:h-[74px] min-w-[160px] md:min-w-[80px] md:max-w-[90px] lg:min-w-[160px] xl:min-w-[180px]"}>
@@ -453,16 +453,20 @@ export default function Home() {
                   />
 
                   <div className="flex flex-col justify-center items-center lg:min-w-[110px] pr-3">
-                    {holder.status === 'Live' && isConnected && availableToMint !== undefined && (
-                      <p className="flex items-center lg:text-xl text-white sm:mt-3 md:mt-1">
+                    {isConnected && availableToMint !== undefined && (
+                      <div className="flex items-center lg:text-xl text-white sm:mt-3 md:mt-1">
                         Available to mint:
-                        <span className="ml-12 md:ml-12 lg:ml-8 text-light ">{isWhitelisted(address).availableToMint}</span>
+                        <span className="ml-12 md:ml-12 lg:ml-8 text-light ">
+                          {totalRemainingTickets}
+                        </span>
+                      </div>
+                    )}
+                    {isConnected && ticketsBought !== undefined && publicSale.status === 'Live' && (
+                      <p className="flex justify-content items-end lg:text-xl text-white leading-tight mt-2 xl:mt-0">
+                        Your tickets:
+                        <span className="ml-1 text-light">{ticketsBought}</span>
                       </p>
                     )}
-                    <p className="flex justify-content items-end lg:text-xl text-white leading-tight mt-2 xl:mt-0">
-                      Your tickets:
-                      {isConnected && ticketsBought !== undefined && <span className="ml-1 text-light">{ticketsBought}</span>}
-                    </p>
                     {isConnected && hasCheckedWinner && (
                       <p className="flex items-center lg:text-xl text-white sm:mt-3 md:mt-1">
                         Won:

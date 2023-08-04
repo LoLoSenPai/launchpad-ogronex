@@ -17,10 +17,10 @@ const CountdownComponent = ({deadline}) => {
         } else {
             return (
                 <div>
-                    {days > 0 && `${days} Day${days === 1 ? "" : "s"} `}
-                    {hours > 0 && `${hours} Hour${hours === 1 ? "" : "s"} `}
-                    {minutes > 0 && `${minutes} Minute${minutes === 1 ? "" : "s"} `}
-                    {seconds >= 0 && `${seconds} Second${seconds === 1 ? '' : 's'}`}
+                    {days > 0 && `${days}D `}
+                    {hours > 0 && `${hours}H `}
+                    {minutes >= 0 && `${minutes}m `}
+                    {seconds >= 0 && `${seconds}`}
                 </div>
             );
         }
@@ -28,7 +28,7 @@ const CountdownComponent = ({deadline}) => {
 
     return (
         <div className={classNames("", { "opacity-50": isCompleted })}>
-            <Countdown date={deadline} renderer={renderer} />
+            <Countdown date={deadline * 1000} renderer={renderer} />
         </div>
     );
 }

@@ -26,7 +26,7 @@ export default function useTicketManagement() {
     }, [contractRaffle, provider]);
 
     const getTicketsBought = useCallback(async () => {
-        if (!isConnected || !contractRaffle) return;
+        if (!isConnected || !contractRaffle || !publicSale.status === "Live") return;
         try {
             const idPlayer = await contractRaffle.idByAddress(address);
             const player = await contractRaffle.playersList(idPlayer);
@@ -39,7 +39,7 @@ export default function useTicketManagement() {
         } catch (error) {
             console.error("Error getting tickets bought:", error);
         }
-    }, [address, isConnected, contractRaffle]);
+    }, [address, isConnected, contractRaffle, publicSale.status]);
 
 
     const buyTickets = useCallback(async (ticketCount, ticketPrice) => {
