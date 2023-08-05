@@ -13,8 +13,8 @@ import useContracts from "../Hooks/useContracts";
 import useTicketManagement from "../Hooks/useTicketManagement";
 import useWhitelistManagement from "../Hooks/useWhitelistManagement";
 import useRaffleWinnerManagement from "../Hooks/useRaffleWinnerManagement";
-import { TiTicket } from "react-icons/ti";
 import TicketCounter from "../Components/TicketCounter";
+import PhaseCard from "../Components/PhaseCard";
 
 export default function Home() {
 
@@ -24,10 +24,7 @@ export default function Home() {
   const [ticketCount, setTicketCount] = useState(1);
   const [availableToMint, setAvailableToMint] = useState(0);
 
-  const [showTooltipHolder, setShowTooltipHolder] = useState(false);
-  const [showTooltipOG, setShowTooltipOG] = useState(false);
-  const [showTooltipWL, setShowTooltipWL] = useState(false);
-  const [showTooltipPublic, setShowTooltipPublic] = useState(false);
+
   const [hasBalance, setHasBalance] = useState(false);
   const [showModalWinner, setShowModalWinner] = useState(false);
   const [showModalLooser, setShowModalLooser] = useState(false);
@@ -45,44 +42,6 @@ export default function Home() {
 
   const ticketPrice = 1;
 
-  // Tooltip for i icon
-  const handleMouseEnter = (tooltipType) => {
-    switch (tooltipType) {
-      case 'holder':
-        setShowTooltipHolder(true);
-        break;
-      case 'og':
-        setShowTooltipOG(true);
-        break;
-      case 'wl':
-        setShowTooltipWL(true);
-        break;
-      case 'public':
-        setShowTooltipPublic(true);
-        break;
-      default:
-        break;
-    }
-  };
-
-  const handleMouseLeave = (tooltipType) => {
-    switch (tooltipType) {
-      case 'holder':
-        setShowTooltipHolder(false);
-        break;
-      case 'og':
-        setShowTooltipOG(false);
-        break;
-      case 'wl':
-        setShowTooltipWL(false);
-        break;
-      case 'public':
-        setShowTooltipPublic(false);
-        break;
-      default:
-        break;
-    }
-  };
 
 
   const handleIncrease = () => {
@@ -227,253 +186,80 @@ export default function Home() {
                 </div>
 
                 <div className="flex flex-col gap-3 lg:gap-6">
+                  <div className="flex flex-col gap-2 md:gap-4 lg:gap-6 w-full max-h-[70px] justify-between">
+                    <PhaseCard title="Holders" status={holder.status} start={holder.start} end={holder.end} tooltipText={'Boxbies and Dalmatians Holders'} />
+                    <PhaseCard title="OG FCFS" status={guaranteed.status} start={guaranteed.start} end={guaranteed.end} tooltipText={'1 mint per wallet'} />
+                    <PhaseCard title="WL FCFS" status={whitelistFCFS.status} start={whitelistFCFS.start} end={whitelistFCFS.end} tooltipText={'1 min per wallet'} />
+                    <PhaseCard title="Public Raffle" status={publicSale.status} start={publicSale.start} end={publicSale.end} tooltipText={'All winners will be drawn few minutes after the end'} />
 
-                  <div className="flex flex-col md:flex-row items-center gap-4 lg:gap-2 xl:gap-10 p-4 bg-four rounded-lg border border-gray-600 justify-center md:justify-between">
-                    <div className="relative lg:text-lg xl:text-xl font-bold text-white">
-                      Holders
-                      <div
-                        onMouseEnter={() => handleMouseEnter('holder')}
-                        onMouseLeave={() => handleMouseLeave('holder')}
-                        className="text-light text-sm ml-5 border border-radius-50 border-light bg-secondary rounded-full px-3 w-5 h-6"
-                      >
-                        i
-                        <Tooltip
-                          showTooltip={showTooltipHolder}
-                          tooltipText="Boxbies and Dalmatians holders."
-                        />
-                      </div>
-                    </div>
-                    <div className="flex flew-row justify-center lg:px-2">
-                      <p className={"flex items-center xl:text-xl font-bold text-white bg-secondary py-2 px-6 md:px-2 lg:px-6 rounded-lg border border-gray-600 bg-opacity-60 md:h-[66px] xl:h-[74px] min-w-[160px] md:min-w-[80px] md:max-w-[90px] lg:min-w-[160px] xl:min-w-[180px]"}>
-                        <i className={`fas fa-circle pr-2 text-light text-sm animate-pulse ${holder.status === 'Live' ? 'text-green-500' : 'text-red-500'}`}></i>
-                        {holder.status}
-                      </p>
-                    </div>
-                    {holder.status !== 'Ended' && (
-                      <div className="flex flex-col justify-end md:-ml-1.5 lg:ml-2 xl:ml-0 min-w-[170px] xl:min-w-[233px]">
-                        <div className="flex flex-col text-center text-md text-gray-400 bg-secondary py-2 px-6 rounded-lg border border-gray-600 bg-opacity-60">
-                          {holder.status === 'Not Started' &&
-                            <>
-                              Live in
-                              <span className="text-white pl-2 xl:text-xl">
-                                <CountdownComponent deadline={holder.start} />
-                              </span>
-                            </>
-                          }
-                          {holder.status === 'Live' &&
-                            <>
-                              Ends in
-                              <span className="text-white pl-2 xl:text-xl">
-                                <CountdownComponent deadline={holder.end} />
-                              </span>
-                            </>
-                          }
+                    <div className="grid grid-cols-3 lg:flex flew-row gap-2 md:gap-4 lg:gap-6 xl:gap-11 w-full max-h-[70px] justify-between">
+                      {showInput && (
+                        <div className="flex justify-around items-center rounded-lg border border-gray-600 bg-secondary z-10">
+                          <button className="w-10 h-14 rounded-l-lg text-white text-2xl" onClick={handleDecrease}>
+                            -
+                          </button>
+                          <input
+                            type="number"
+                            className="w-4 md:w-6 lg:w-10 h-14 rounded-none bg-secondary text-white text-xl text-center"
+                            min={1}
+                            max={maxTickets}
+                            value={ticketCount || 1}
+                            onChange={(e) => {
+                              if (!isNaN(e.target.value)) {
+                                setTicketCount(parseInt(e.target.value));
+                              }
+                            }}
+                          />
+                          <button className="w-10 h-14 rounded-r-lg text-white text-2xl" onClick={handleIncrease}>
+                            +
+                          </button>
                         </div>
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="flex flex-col md:flex-row items-center gap-4 lg:gap-2 xl:gap-10 p-4 bg-four rounded-lg border border-gray-600 justify-center md:justify-between">
-                    <div className="relative lg:text-lg xl:text-xl font-bold text-white">
-                      OG FCFS
-                      <div
-                        onMouseEnter={() => handleMouseEnter('og')}
-                        onMouseLeave={() => handleMouseLeave('og')}
-                        className="text-light text-sm ml-3 border border-radius-50 border-light bg-secondary rounded-full px-3 w-5 h-6"
-                      >
-                        i
-                        <Tooltip
-                          showTooltip={showTooltipOG}
-                          tooltipText="OG Teddies 1 mint per wallet / 2 hour."
-                        />
-                      </div>
-                    </div>
-                    <div className="flex flew-row justify-center lg:px-2">
-                      <p className={"flex items-center xl:text-xl font-bold text-white bg-secondary py-2 px-6 md:px-2 lg:px-6 rounded-lg border border-gray-600 bg-opacity-60 md:h-[66px] xl:h-[74px] min-w-[160px] md:min-w-[80px] md:max-w-[90px] lg:min-w-[160px] xl:min-w-[180px]"}>
-                        <i className={`fas fa-circle pr-2 text-light text-sm animate-pulse ${guaranteed.status === 'Live' ? 'text-green-500' : 'text-red-500'}`}></i>
-                        {guaranteed.status}
-                      </p>
-                    </div>
-                    {guaranteed.status !== 'Ended' && (
-                      <div className="flex flex-col justify-end md:-ml-1.5 lg:ml-2 xl:ml-0 min-w-[170px] xl:min-w-[233px]">
-                        <div className="flex flex-col text-center text-md text-gray-400 bg-secondary py-2 px-6 rounded-lg border border-gray-600 bg-opacity-60">
-                          {guaranteed.status === 'Not Started' &&
-                            <>
-                              Live in
-                              <span className="text-white pl-2 xl:text-xl">
-                                <CountdownComponent deadline={guaranteed.start} />
-                              </span>
-                            </>
-                          }
-                          {guaranteed.status === 'Live' &&
-                            <>
-                              Ends in
-                              <span className="text-white pl-2 xl:text-xl">
-                                <CountdownComponent deadline={guaranteed.end} />
-                              </span>
-                            </>
-                          }
-                        </div>
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="flex flex-col md:flex-row items-center gap-4 lg:gap-2 xl:gap-10 p-4 bg-four rounded-lg border border-gray-600 justify-center md:justify-between">
-                    <div className="relative lg:text-lg xl:text-xl font-bold text-white">
-                      Whitelist FCFS
-                      <div
-                        onMouseEnter={() => handleMouseEnter('wl')}
-                        onMouseLeave={() => handleMouseLeave('wl')}
-                        className="text-light text-sm ml-3 border border-radius-50 border-light bg-secondary rounded-full px-3 w-5 h-6"
-                      >
-                        i
-                        <Tooltip
-                          showTooltip={showTooltipWL}
-                          tooltipText="1 mint per wallet / 1 hour."
-                        />
-                      </div>
-                    </div>
-                    <div className="flex flew-row justify-center lg:px-2">
-                      <div className={"flex items-center xl:text-xl font-bold text-white bg-secondary py-2 px-6 md:px-2 lg:px-6 rounded-lg border border-gray-600 bg-opacity-60 md:h-[66px] xl:h-[74px] min-w-[160px] md:min-w-[80px] md:max-w-[90px] lg:min-w-[160px] xl:min-w-[180px]"}>
-                        <i className={`fas fa-circle pr-2 text-light text-sm animate-pulse ${whitelistFCFS.status === 'Live' ? 'text-green-500' : 'text-red-500'}`}></i>
-                        {whitelistFCFS.status}
-                      </div>
-                    </div>
-                    {whitelistFCFS.status !== 'Ended' && (
-                      <div className="flex flex-col justify-end md:-ml-1.5 lg:ml-2 xl:ml-0 min-w-[170px] xl:min-w-[233px]">
-                        <div className="flex flex-col text-center text-md text-gray-400 bg-secondary py-2 px-6 rounded-lg border border-gray-600 bg-opacity-60">
-                          {whitelistFCFS.status === 'Not Started' &&
-                            <>
-                              Live in
-                              <span className="text-white pl-2 xl:text-xl">
-                                <CountdownComponent deadline={whitelistFCFS.start} />
-                              </span>
-                            </>
-                          }
-                          {whitelistFCFS.status === 'Live' &&
-                            <>
-                              Ends in
-                              <span className="text-white pl-2 xl:text-xl">
-                                <CountdownComponent deadline={whitelistFCFS.end} />
-                              </span>
-                            </>
-                          }
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                  <div className="flex flex-col md:flex-row items-center p-4 bg-four rounded-lg border border-gray-600 gap-4 md:gap-6 md:justify-between">
-                    <div className="relative lg:text-lg xl:text-xl font-bold text-white xl:mr-5">
-                      Public
-                      <div
-                        onMouseEnter={() => handleMouseEnter('public')}
-                        onMouseLeave={() => handleMouseLeave('public')}
-                        className="text-light text-sm ml-3 border border-radius-50 border-light bg-secondary rounded-full px-3 w-5 h-6"
-                      >
-                        i
-                        <Tooltip
-                          showTooltip={showTooltipPublic}
-                          tooltipText="24h to claim your NFTs."
-                        />
-                      </div>
-                    </div>
-                    <div className="flex flew-row justify-center lg:ml-2">
-                      <div className={"flex items-center xl:text-xl font-bold text-white bg-secondary py-2 px-6 md:px-2 lg:px-6 rounded-lg border border-gray-600 bg-opacity-60 md:h-[66px] xl:h-[74px] min-w-[160px] md:min-w-[80px] md:max-w-[90px] lg:min-w-[160px] xl:min-w-[180px]"}>
-                        <i className={`fas fa-circle pr-2 text-light text-sm animate-pulse ${publicSale.status === 'Live' ? 'text-green-500' : 'text-red-500'}`}></i>
-                        {publicSale.status}
-                      </div>
-                    </div>
-                    {publicSale.status !== "Ended" && (
-                      <div className="flex flex-col lg:justify-end min-w-[170px] xl:min-w-[233px]">
-                        <div className="flex flex-col text-center text-md text-gray-400 bg-secondary py-2 xl:py-2.5 px-6 rounded-lg border border-gray-600 bg-opacity-60">
-                          {publicSale.status === "Not Started" &&
-                            <>
-                              Live in
-                              <span className="text-white pl-2 xl:text-xl">
-                                <CountdownComponent deadline={publicSale.start} />
-                              </span>
-                            </>
-                          }
-                          {publicSale.status === "Live" &&
-                            <>
-                              Ends in
-                              <span className="text-white pl-2 xl:text-xl">
-                                <CountdownComponent deadline={publicSale.end} />
-                              </span>
-                            </>
-                          }
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-3 lg:flex flew-row gap-2 md:gap-4 lg:gap-6 xl:gap-11 w-full max-h-[70px] justify-between">
-                  {showInput && (
-                    <div className="flex justify-around items-center rounded-lg border border-gray-600 bg-secondary z-10">
-                      <button className="w-10 h-14 rounded-l-lg text-white text-2xl" onClick={handleDecrease}>
-                        -
-                      </button>
-                      <input
-                        type="number"
-                        className="w-4 md:w-6 lg:w-10 h-14 rounded-none bg-secondary text-white text-xl text-center"
-                        min={1}
-                        max={maxTickets}
-                        value={ticketCount || 1}
-                        onChange={(e) => {
-                          if (!isNaN(e.target.value)) {
-                            setTicketCount(parseInt(e.target.value));
-                          }
-                        }}
+                      )}
+                      <SaleButton
+                        isConnected={isConnected}
+                        waitingBuy={waitingBuy}
+                        hasBalance={hasBalance}
+                        address={address}
+                        isWhitelisted={isWhitelisted}
+                        isWinnerRaffle={isWinnerRaffle}
+                        whiteListMint={whiteListMint}
+                        buyTickets={buyTickets}
+                        checkWinner={checkWinner}
+                        winnerRaffleMint={winnerRaffleMint}
+                        appIsRaffleOver={appIsRaffleOver}
+                        setShowModalWinner={setShowModalWinner}
+                        showModalWinner={showModalWinner}
+                        setShowModalLooser={setShowModalLooser}
+                        showModalLooser={showModalLooser}
+                        setShowModalPending={setShowModalPending}
+                        showModalPending={showModalPending}
+                        setHasCheckedWinner={setHasCheckedWinner}
+                        hasCheckedWinner={hasCheckedWinner}
+                        holder={holder}
+                        guaranteed={guaranteed}
+                        whitelistFCFS={whitelistFCFS}
+                        publicSale={publicSale}
+                        remainingTickets={remainingTickets}
                       />
-                      <button className="w-10 h-14 rounded-r-lg text-white text-2xl" onClick={handleIncrease}>
-                        +
-                      </button>
+                      <TicketCounter
+                        isConnected={isConnected}
+                        availableToMint={availableToMint}
+                        ticketsBought={ticketsBought}
+                        publicSale={publicSale}
+                        hasCheckedWinner={hasCheckedWinner}
+                        winnerNbMint={winnerNbMint}
+                        totalRemainingTickets={totalRemainingTickets}
+                        triggerAnimation={triggerAnimation}
+                        resetTriggerAnimation={resetTriggerAnimation}
+                      />
                     </div>
-                  )}
-                  <SaleButton
-                    isConnected={isConnected}
-                    waitingBuy={waitingBuy}
-                    hasBalance={hasBalance}
-                    address={address}
-                    isWhitelisted={isWhitelisted}
-                    isWinnerRaffle={isWinnerRaffle}
-                    whiteListMint={whiteListMint}
-                    buyTickets={buyTickets}
-                    checkWinner={checkWinner}
-                    winnerRaffleMint={winnerRaffleMint}
-                    appIsRaffleOver={appIsRaffleOver}
-                    setShowModalWinner={setShowModalWinner}
-                    showModalWinner={showModalWinner}
-                    setShowModalLooser={setShowModalLooser}
-                    showModalLooser={showModalLooser}
-                    setShowModalPending={setShowModalPending}
-                    showModalPending={showModalPending}
-                    setHasCheckedWinner={setHasCheckedWinner}
-                    hasCheckedWinner={hasCheckedWinner}
-                    holder={holder}
-                    guaranteed={guaranteed}
-                    whitelistFCFS={whitelistFCFS}
-                    publicSale={publicSale}
-                    remainingTickets={remainingTickets}
-                  />
-                  <TicketCounter
-                    isConnected={isConnected}
-                    availableToMint={availableToMint}
-                    ticketsBought={ticketsBought}
-                    publicSale={publicSale}
-                    hasCheckedWinner={hasCheckedWinner}
-                    winnerNbMint={winnerNbMint}
-                    totalRemainingTickets={totalRemainingTickets}
-                    triggerAnimation={triggerAnimation}
-                    resetTriggerAnimation={resetTriggerAnimation}
-                  />
+                    <div className="flex flex-row justify-end mt-10 lg:mt-7 mr-2 md:mr-5">
+                      <p className="text-xl font-bold text-gray-400">Powered by <span className="text-light">Ogronex</span>
+                      </p>
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
-            <div className="flex flex-row justify-end mt-10 lg:mt-0 mr-2 md:mr-5">
-              <p className="text-xl font-bold text-gray-400">Powered by <span className="text-light">Ogronex</span>
-              </p>
             </div>
           </main>
         </div>

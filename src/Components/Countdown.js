@@ -19,7 +19,7 @@ const CountdownComponent = ({deadline}) => {
                 <div>
                     {days > 0 && `${days}D `}
                     {hours > 0 && `${hours}H `}
-                    {minutes >= 0 && `${minutes}m `}
+                    {minutes >= 0 && `${minutes}:`}
                     {seconds >= 0 && `${seconds}`}
                 </div>
             );
