@@ -13,7 +13,8 @@ import useContracts from "../Hooks/useContracts";
 import useTicketManagement from "../Hooks/useTicketManagement";
 import useWhitelistManagement from "../Hooks/useWhitelistManagement";
 import useRaffleWinnerManagement from "../Hooks/useRaffleWinnerManagement";
-
+import { TiTicket } from "react-icons/ti";
+import TicketCounter from "../Components/TicketCounter";
 
 export default function Home() {
 
@@ -37,7 +38,7 @@ export default function Home() {
 
   const { holder, guaranteed, whitelistFCFS, publicSale } = useContext(SaleStatusContext);
 
-  const { getTicketsBought, getTicketsSold, buyTickets, ticketsBought, ticketsSold } = useTicketManagement();
+  const { getTicketsBought, getTicketsSold, buyTickets, ticketsBought, ticketsSold, triggerAnimation, resetTriggerAnimation } = useTicketManagement();
   const { whiteListMint, isWhitelisted, remainingTickets, totalRemainingTickets } = useWhitelistManagement();
   const { winnerRaffleMint, checkWinner, waitingBuy, winnerNbMint, isWinnerRaffle, appIsRaffleOver } = useRaffleWinnerManagement();
   const { nftSupply, loading } = useContracts();
@@ -200,14 +201,19 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="flex flex-col md:flex-row justify-center lg:mt-10 sm:max-md:overflow-hidden lg:pb-10 xl:pb-12">
+            <div className="flex flex-col md:flex-row justify-center lg:mt-10 sm:max-md:overflow-hidden lg:pb-10 xl:pb-12 xl:gap-10">
               <div className="flex justify-center items-center w-full max-w-[400px] lg:min-w-[500px] xl:max-w-[600px] h-auto overflow-hidden md:overflow-visible pt-8 pb-12 lg:pb-8">
                 <img className="w-full scale-125" src="./Images/prize-maschine-infected-dalmatians.png" alt="maschine with a hook to grab prize" />
               </div>
-              <div className="flex flex-col md:mt-10 w-full md:max-w-[420px] lg:max-w-[510px] xl:max-w-[650px] z-10 gap-6">
+              <div className="flex flex-col md:mt-10 w-full md:max-w-[420px] lg:max-w-[510px] xl:max-w-[680px] z-10 gap-6">
 
                 <div className="flex flex-row py-4 px-2 md:p-4 xl:px-0 bg-secondary rounded-lg justify-around gap-3 md:gap-7 lg:gap-0 border border-gray-600 bg-opacity-60">
-                  <p className="flex flex-col xl:flex-row text-md lg:text-lg xl:text-xl font-bold text-white">Mint price:<span className=" text-sm md:text-md lg:text-lg xl:text-xl text-light">FREE</span><span className=" text-gray-400 text-xs lg:text-sm">+ 1 MATIC ticket fee</span>
+                  <p className="flex flex-col xl:flex-row text-md lg:text-lg xl:text-xl font-bold text-white">
+                    Mint price:
+                    <div className="relative flex flex-col">
+                      <span className=" text-sm md:text-md lg:text-lg xl:text-xl text-light">FREE</span>
+                      <span className=" text-gray-400 text-xs lg:text-sm xl:absolute xl:-top-4 xl:w-[200px] xl:ml-2">+ 1 MATIC ticket fee</span>
+                    </div>
                   </p>
                   <p className="flex flex-col xl:flex-row text-md lg:text-lg xl:text-xl font-bold text-white">Supply:<span className="text-center text-light"> {nftSupply} / 5000</span>
                   </p>
@@ -451,29 +457,17 @@ export default function Home() {
                     publicSale={publicSale}
                     remainingTickets={remainingTickets}
                   />
-
-                  <div className="flex flex-col justify-center items-center lg:min-w-[110px] pr-3">
-                    {isConnected && availableToMint !== undefined && (
-                      <div className="flex items-center lg:text-xl text-white sm:mt-3 md:mt-1">
-                        Available to mint:
-                        <span className="ml-12 md:ml-12 lg:ml-8 text-light ">
-                          {totalRemainingTickets}
-                        </span>
-                      </div>
-                    )}
-                    {isConnected && ticketsBought !== undefined && publicSale.status === 'Live' && (
-                      <p className="flex justify-content items-end lg:text-xl text-white leading-tight mt-2 xl:mt-0">
-                        Your tickets:
-                        <span className="ml-1 text-light">{ticketsBought}</span>
-                      </p>
-                    )}
-                    {isConnected && hasCheckedWinner && (
-                      <p className="flex items-center lg:text-xl text-white sm:mt-3 md:mt-1">
-                        Won:
-                        <span className="ml-12 md:ml-12 lg:ml-8 text-light ">{winnerNbMint}</span>
-                      </p>
-                    )}
-                  </div>
+                  <TicketCounter
+                    isConnected={isConnected}
+                    availableToMint={availableToMint}
+                    ticketsBought={ticketsBought}
+                    publicSale={publicSale}
+                    hasCheckedWinner={hasCheckedWinner}
+                    winnerNbMint={winnerNbMint}
+                    totalRemainingTickets={totalRemainingTickets}
+                    triggerAnimation={triggerAnimation}
+                    resetTriggerAnimation={resetTriggerAnimation}
+                  />
                 </div>
               </div>
             </div>

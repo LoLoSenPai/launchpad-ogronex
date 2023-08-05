@@ -9,6 +9,7 @@ export default function useTicketManagement() {
     const [ticketsBought, setTicketsBought] = useState(0);
     const [ticketsSold, setTicketsSold] = useState(0);
     const [waitingBuy, setWaitingBuy] = useState(false);
+    const [triggerAnimation, setTriggerAnimation] = useState(false);
 
     const { provider, contractRaffle } = useContracts();
     const { address, isConnected } = useAccount();
@@ -49,15 +50,25 @@ export default function useTicketManagement() {
             setWaitingBuy(true);
             const tx = await contractRaffle.buyTicket(ticketCount, { value: ethers.utils.parseEther((ticketCount * ticketPrice).toString()) });
             await provider.waitForTransaction(tx.hash);
+            setTriggerAnimation(true);
             toast.success("You're in the game! Good luck for the draw!");
             setWaitingBuy(false);
             await getTicketsBought();
             await getTicketsSold();
         } catch (error) {
-            toast.error("Transaction error! But don't worry, even the best stumble sometimes!");
+            if (error.code === 4001) {
+                // Erreur spécifique à Metamask pour les transactions rejetées par l'utilisateur
+                toast.error("Transaction cancelled by the user.");
+            } else {
+                toast.error("Transaction error! But don't worry, even the best stumble sometimes!");
+            }
             setWaitingBuy(false);
         }
-    }, [provider, contractRaffle, getTicketsBought, getTicketsSold, publicSale.status]);
+    }, [provider, contractRaffle, getTicketsBought, getTicketsSold, publicSale.status, setTriggerAnimation]);
 
-    return { getTicketsBought, buyTickets, getTicketsSold, waitingBuy, ticketsBought, ticketsSold };
+    const resetTriggerAnimation = useCallback(() => {
+        setTriggerAnimation(false);
+    }, []);
+
+    return { getTicketsBought, buyTickets, getTicketsSold, waitingBuy, ticketsBought, ticketsSold, triggerAnimation, resetTriggerAnimation };
 }

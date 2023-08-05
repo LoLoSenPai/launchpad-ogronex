@@ -34,7 +34,7 @@ root.render(
           appLogoUrl: "/big-logo-ogronex.png",
           appName: "Ogronex",
           environmentId: "e3820802-a4f1-4d39-9fa2-2608bb776301",
-          multiWallet: true,
+          multiWallet: false,
           evmNetworks,
           walletsFilter: SortWallets([
             "phantomevm",
@@ -46,7 +46,7 @@ root.render(
           newToWeb3WalletChainMap: {
             primary_chain: "evm",
             wallets: {
-              evm: "phantomevm",
+              evm: "metamask",
               solana: "phantom",
             },
           },
