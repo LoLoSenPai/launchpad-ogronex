@@ -1,57 +1,54 @@
 import { useState } from "react";
 import CountdownComponent from "./Countdown";
 import Tooltip from "./Tooltip";
+import { LuLock, LuUnlock } from "react-icons/lu";
 
-function PhaseCard({ title, status, start, end, tooltipText }) {
-
+function PhaseCard({ title, status, start, end, tooltipText, isAccessible }) {
     const [showTooltip, setShowTooltip] = useState(false);
 
-    const handleMouseEnter = () => {
-        setShowTooltip(true);
-    };
+    const handleMouseEnter = () => setShowTooltip(true);
+    const handleMouseLeave = () => setShowTooltip(false);
 
-    const handleMouseLeave = () => {
-        setShowTooltip(false);
-    };
+
 
     return (
-        <div className="flex flex-col md:flex-row items-center gap-4 lg:gap-2 xl:gap-10 p-4 bg-four rounded-lg border border-gray-600 justify-center md:justify-between">
-            <div className="flex flex-row space-x-10">
-                <div className="flex relative lg:text-lg xl:text-xl font-bold text-white">
-                    {title}
-                    <div
-                        onMouseEnter={handleMouseEnter}
-                        onMouseLeave={handleMouseLeave}
-                        className="flex items-center justify-center text-light text-sm ml-3 border border-radius-50 border-light bg-secondary rounded-full w-6 h-6"
-                    >
-                        i
-                    </div>
-                    <Tooltip
-                        showTooltip={showTooltip}
-                        tooltipText={tooltipText}
-                    />
+        <div className={`flex flex-col md:flex-row xl:gap-10 p-2 lg:p-4 bg-four rounded-lg border ${status === 'Live' ? 'border-light' : 'border-gray-600'} items-center md:justify-between`}>
+
+            {/* Phase */}
+            <div className="flex items-center xl:space-x-3 lg:text-lg xl:text-xl text-white mb-2 md:mb-0">
+                {title !== "Public Raffle" && (isAccessible ? <LuUnlock className="text-light mr-1" /> : <LuLock className="text-gray-400 mr-1" />)}
+                <span className="whitespace-nowrap text-lg">{title}</span>
+                <div
+                    onMouseEnter={handleMouseEnter}
+                    onMouseLeave={handleMouseLeave}
+                    className="flex items-center justify-center text-light text-sm mx-1 lg:ml-3 border border-radius-50 border-light bg-secondary rounded-full w-5 h-5 md:w-3 md:h-3 lg:w-6 lg:h-6"
+                >
+                    i
                 </div>
-                <div className="flex flew-row justify-center">
-                    <span className='relative inline-block overflow-hidden rounded-full p-[1px]'>
-                        <span className={`absolute inset-[-1000%] animate-[spin_2s_linear_infinite] ${status === 'Live' ? 'bg-[conic-gradient(from_90deg_at_50%_50%,#008000_0%,#00FF00_50%,#008000_100%)]' : 'bg-[conic-gradient(from_90deg_at_50%_50%,#800000_0%,#FF0000_50%,#800000_100%)]'}`} />
-                        <div className='inline-flex h-full w-full cursor-pointer items-center justify-center rounded-full bg-slate-950/90 px-3 py-1 text-sm font-medium text-white backdrop-blur-3xl'>
-                            <i className={`fas fa-circle pr-2 text-light text-[7px] animate-pulse ${status === 'Live' ? 'text-green-500' : 'text-red-500'}`}></i>
+                <Tooltip showTooltip={showTooltip} tooltipText={tooltipText} />
+            </div>
+
+            {/* Status */}
+            <div className="flex justify-center mb-2 md:mb-0">
+                <div className='relative inline-block overflow-hidden rounded-full p-[1px]'>
+                    <div className={`absolute inset-[-1000%] animate-[spin_2s_linear_infinite] ${status === 'Live' ? 'bg-[conic-gradient(from_90deg_at_50%_50%,#008000_0%,#02ffa7_50%,#008000_100%)]' : 'bg-[conic-gradient(from_90deg_at_50%_50%,#800000_0%,#ff3d3d_50%,#800000_100%)]'}`} />
+                    <div className='inline-flex h-full w-full cursor-default items-center justify-center rounded-full bg-secondary px-3 py-1 text-sm font-medium text-white backdrop-blur-3xl'>
+                        <i className={`fas fa-circle pr-2 ${status === 'Live' ? 'text-light' : 'text-red-500'} text-[7px] animate-pulse`}></i>
+                        <span className="whitespace-nowrap">
                             {status}
-                        </div>
-                    </span>
-                    {/* <p className={"flex items-center xl:text-lg font-bold text-white bg-secondary py-2 px-6 md:px-2 lg:px-6 rounded-lg border border-gray-600 bg-opacity-60"}>
-                    <i className={`fas fa-circle pr-2 text-light text-sm animate-pulse ${status === 'Live' ? 'text-green-500' : 'text-red-500'}`}></i>
-                    {status}
-                </p> */}
+                        </span>
+                    </div>
                 </div>
             </div>
+
+            {/* Countdown */}
             {status !== 'Ended' && (
-                <div className="flex flex-col justify-end md:-ml-1.5 lg:ml-2 xl:ml-0 min-w-[170px] xl:min-w-[233px]">
-                    <div className="flex flex-row text-center text-md justify-around items-center text-gray-400 bg-secondary py-2 px-6 rounded-lg border border-gray-600 bg-opacity-60">
+                <div className="flex justify-center md:justify-end mt-2 md:mt-0">
+                    <div className="flex text-center text-md justify-around items-center text-gray-400 bg-secondary py-2 lg:px-6 rounded-lg border border-gray-600 bg-opacity-60 min-w-[190px] md:min-w-[140px] lg:min-w-[170px] xl:min-w-[210px]">
                         {status === 'Not Started' &&
                             <>
                                 Live in
-                                <span className="text-white pl-2 xl:text-xl">
+                                <span className="text-white lg:pl-2 md:text-sm xl:text-xl">
                                     <CountdownComponent deadline={start} />
                                 </span>
                             </>
@@ -59,7 +56,7 @@ function PhaseCard({ title, status, start, end, tooltipText }) {
                         {status === 'Live' &&
                             <>
                                 Ends in
-                                <span className="text-white pl-2 xl:text-xl">
+                                <span className="text-white lg:pl-2 md:text-sm xl:text-xl">
                                     <CountdownComponent deadline={end} />
                                 </span>
                             </>
@@ -67,6 +64,7 @@ function PhaseCard({ title, status, start, end, tooltipText }) {
                     </div>
                 </div>
             )}
+
         </div>
     );
 }

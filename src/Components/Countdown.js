@@ -2,7 +2,7 @@ import { useState } from "react";
 import { default as Countdown } from "react-countdown";
 import classNames from "classnames";
 
-const CountdownComponent = ({deadline}) => {
+const CountdownComponent = ({ deadline }) => {
     const [isCompleted, setIsCompleted] = useState(false);
 
     const renderer = ({
@@ -16,11 +16,11 @@ const CountdownComponent = ({deadline}) => {
             return <div>Times up!</div>;
         } else {
             return (
-                <div>
-                    {days > 0 && `${days}D `}
-                    {hours > 0 && `${hours}H `}
-                    {minutes >= 0 && `${minutes}:`}
-                    {seconds >= 0 && `${seconds}`}
+                <div className="flex">
+                    {days > 0 && <span className="w-8 md:w-6 text-center">{String(days).padStart(2, '0')}D</span>}
+                    {hours > 0 && <span className="w-8 md:w-6 text-center">{String(hours).padStart(2, '0')}H</span>}
+                    {minutes >= 0 && <span className="w-8 md:w-6 text-center">{String(minutes).padStart(2, '0')} :</span>}
+                    {seconds >= 0 && <span className="w-8 md:w-6 text-start">{String(seconds).padStart(2, '0')}</span>}
                 </div>
             );
         }

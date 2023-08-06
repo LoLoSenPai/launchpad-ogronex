@@ -53,15 +53,7 @@
     ],
     "availableToMint": "6"
   },
-  {
-    "address": "0x3e9e6a4a46Adeb0316f52FC6001B275B570196B0",
-    "proof": [
-      "0x8be8168f5c5151e7d5112de91a1861b3ec3726981a5eeb4520e98b5cf3a430ca",
-      "0x78ac4e1003900fbaf655559897e9b4be175b41bc85fe4db753294ca9087f72f1",
-      "0x775514fde30b66ae73999aa0e62f7f707d5f6373a7af11d23f48c2f106443520"
-    ],
-    "availableToMint": "5"
-  },
+
   {
     "address": "0x5b9017407FDbbdE5E2b47C25A622aEcC700d8bC4",
     "proof": [

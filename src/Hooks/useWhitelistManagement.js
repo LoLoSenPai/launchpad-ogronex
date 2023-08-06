@@ -34,6 +34,35 @@ export default function useWhitelistManagement() {
         }
     }, [holder.status, guaranteed.status, whitelistFCFS.status]);
 
+    // const getAvailableToMint = useCallback((address) => {
+    //     const whitelistGuaranteed = dataWhiteListGuaranteed.reduce((obj, item) => ({ ...obj, [item.address]: item }), {});
+    //     const whitelistOG = dataWhiteListOG.reduce((obj, item) => ({ ...obj, [item.address]: item }), {});
+    //     const whitelistWL = dataWhiteListWL.reduce((obj, item) => ({ ...obj, [item.address]: item }), {});
+
+    //     if (holder.status === "Live") {
+    //         return whitelistGuaranteed[address].availableToMint;
+    //     } else if (guaranteed.status === "Live") {
+    //         return whitelistOG[address].availableToMint;
+    //     } else if (whitelistFCFS.status === "Live") {
+    //         return whitelistWL[address].availableToMint;
+    //     } else {
+    //         return 0;
+    //     }
+    // }, [holder.status, guaranteed.status, whitelistFCFS.status]);
+
+    const checkWhitelistedForPhase = useCallback(() => {
+        const whitelistGuaranteed = dataWhiteListGuaranteed.reduce((obj, item) => ({ ...obj, [item.address]: item }), {});
+        const whitelistOG = dataWhiteListOG.reduce((obj, item) => ({ ...obj, [item.address]: item }), {});
+        const whitelistWL = dataWhiteListWL.reduce((obj, item) => ({ ...obj, [item.address]: item }), {});
+    
+        return {
+            holder: Boolean(whitelistGuaranteed[address]),
+            guaranteed: Boolean(whitelistOG[address]),
+            whitelistFCFS: Boolean(whitelistWL[address])
+        };
+    }, [address]);
+    
+
 
     // const getTotalRemainingTickets = useCallback(async () => {
     //     let totalRemainingTickets = 0;
@@ -131,5 +160,5 @@ export default function useWhitelistManagement() {
 
 
 
-    return { whiteListMint, isWhitelisted, waitingBuy, totalRemainingTickets };
+    return { whiteListMint, isWhitelisted, waitingBuy, totalRemainingTickets, checkWhitelistedForPhase };
 }

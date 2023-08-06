@@ -13,7 +13,7 @@ import useWhitelistManagement from "../Hooks/useWhitelistManagement";
 import useRaffleWinnerManagement from "../Hooks/useRaffleWinnerManagement";
 import TicketCounter from "../Components/TicketCounter";
 import PhaseCard from "../Components/PhaseCard";
-import CardTilt from "../Components/CardTilt";
+// import CardTilt from "../Components/CardTilt";
 
 export default function Home() {
 
@@ -35,10 +35,11 @@ export default function Home() {
   const { holder, guaranteed, whitelistFCFS, publicSale } = useContext(SaleStatusContext);
 
   const { getTicketsBought, getTicketsSold, buyTickets, ticketsBought, ticketsSold, triggerAnimation, resetTriggerAnimation } = useTicketManagement();
-  const { whiteListMint, isWhitelisted, remainingTickets, totalRemainingTickets } = useWhitelistManagement();
+  const { whiteListMint, isWhitelisted, remainingTickets, totalRemainingTickets, checkWhitelistedForPhase } = useWhitelistManagement();
   const { winnerRaffleMint, checkWinner, waitingBuy, winnerNbMint, isWinnerRaffle, appIsRaffleOver } = useRaffleWinnerManagement();
   const { nftSupply, loading } = useContracts();
 
+  const whitelistStatus = checkWhitelistedForPhase(address);
   const ticketPrice = 1;
 
 
@@ -161,20 +162,22 @@ export default function Home() {
 
             <div className="flex flex-col md:flex-row justify-center lg:mt-10 sm:max-md:overflow-hidden lg:pb-10 xl:pb-12 xl:gap-10">
               <div className="flex justify-center items-center w-full max-w-[400px] lg:min-w-[500px] xl:max-w-[600px] h-auto overflow-hidden md:overflow-visible pt-8 pb-12 lg:pb-8">
-                {/* <img className="w-full scale-125" src="./Images/prize-maschine-infected-dalmatians.png" alt="maschine with a hook to grab prize" /> */}
-              <CardTilt />
+                <img className="w-full scale-125" src="./Images/prize-maschine-infected-dalmatians.png" alt="maschine with a hook to grab prize" />
+                {/* <CardTilt /> */}
               </div>
               <div className="flex flex-col md:mt-10 w-full md:max-w-[420px] lg:max-w-[510px] xl:max-w-[680px] z-10 gap-6">
 
                 <div className="flex flex-row py-4 px-2 md:p-4 xl:px-0 bg-secondary rounded-lg justify-around gap-3 md:gap-7 lg:gap-0 border border-gray-600 bg-opacity-60">
-                  <p className="flex flex-col xl:flex-row text-md lg:text-lg xl:text-xl font-bold text-white">
+                  <div className="flex flex-col xl:flex-row text-md lg:text-lg xl:text-xl font-bold text-white">
                     Mint price:
                     <div className="relative flex flex-col">
                       <span className=" text-sm md:text-md lg:text-lg xl:text-xl text-light">FREE</span>
                       <span className=" text-gray-400 text-xs lg:text-sm xl:absolute xl:-top-4 xl:w-[200px] xl:ml-2">+ 1 MATIC ticket fee</span>
                     </div>
-                  </p>
-                  <p className="flex flex-col xl:flex-row text-md lg:text-lg xl:text-xl font-bold text-white">Supply:<span className="text-center text-light"> {nftSupply} / 5000</span>
+                  </div>
+                  <p className="flex flex-col xl:flex-row text-md lg:text-lg xl:text-xl font-bold text-white">
+                    Supply:
+                    <span className="text-center text-light"> {nftSupply} / 5000</span>
                   </p>
                   <div className="flex flex-col xl:flex-row text-md lg:text-lg xl:text-xl font-bold text-white">
                     Tickets sold:
@@ -186,11 +189,11 @@ export default function Home() {
                 </div>
 
                 <div className="flex flex-col gap-3 lg:gap-6">
-                  <div className="flex flex-col gap-2 md:gap-4 lg:gap-6 w-full max-h-[70px] justify-between">
-                    <PhaseCard title="Holders" status={holder.status} start={holder.start} end={holder.end} tooltipText={'Boxbies and Dalmatians Holders'} />
-                    <PhaseCard title="OG FCFS" status={guaranteed.status} start={guaranteed.start} end={guaranteed.end} tooltipText={'1 mint per wallet'} />
-                    <PhaseCard title="WL FCFS" status={whitelistFCFS.status} start={whitelistFCFS.start} end={whitelistFCFS.end} tooltipText={'1 min per wallet'} />
-                    <PhaseCard title="Public Raffle" status={publicSale.status} start={publicSale.start} end={publicSale.end} tooltipText={'All winners will be drawn few minutes after the end'} />
+                  <div className="flex flex-col gap-2 md:gap-4 lg:gap-6 w-full justify-between">
+                    <PhaseCard title="Holders" status={holder.status} isAccessible={whitelistStatus.holder} start={holder.start} end={holder.end} tooltipText={'Boxbies and Dalmatians Holders'} />
+                    <PhaseCard title="OG FCFS" status={guaranteed.status} isAccessible={whitelistStatus.guaranteed} start={guaranteed.start} end={guaranteed.end} tooltipText={'1 mint per wallet'} />
+                    <PhaseCard title="WL FCFS" status={whitelistFCFS.status} isAccessible={whitelistStatus.whitelistFCFS} start={whitelistFCFS.start} end={whitelistFCFS.end} tooltipText={'1 min per wallet'} />
+                    <PhaseCard title="Public Raffle" status={publicSale.status} isAccessible={whitelistStatus.publicSale} start={publicSale.start} end={publicSale.end} tooltipText={'All winners will be drawn few minutes after the end'} />
 
                     <div className="flex flew-row gap-4 lg:gap-6 xl:gap-11 w-full max-h-[70px] justify-between">
                       {showInput && (
@@ -260,7 +263,8 @@ export default function Home() {
                       />
                     </div>
                     <div className="flex flex-row justify-end mt-10 lg:mt-7 mr-2 md:mr-5">
-                      <p className="text-xl font-bold text-gray-400">Powered by <span className="text-light">Ogronex</span>
+                      <p className="text-xl font-bold text-gray-400">Powered by
+                        <span className="text-light">Ogronex</span>
                       </p>
                     </div>
                   </div>
