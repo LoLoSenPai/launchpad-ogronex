@@ -89,7 +89,7 @@ export default function useWhitelistManagement() {
         }
 
         setTotalRemainingTickets(totalRemainingTickets);
-    }, [holder.status, guaranteed.status, whitelistFCFS.status]);
+    }, [holder.status, guaranteed.status, whitelistFCFS.status, address]);
 
 
 

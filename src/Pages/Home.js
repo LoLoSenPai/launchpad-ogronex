@@ -2,19 +2,18 @@ import React, { useState, useEffect, useContext } from "react";
 import { DynamicWidget } from "@dynamic-labs/sdk-react";
 import { useAccount, useBalance } from "wagmi";
 import { ethers } from "ethers";
-import CountdownComponent from "../Components/Countdown";
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { SaleStatusContext } from "../Context/SaleStatusContext";
 import SaleButton from "../Components/SaleButton";
 import TermsAndConditions from "../Modals/TermsAndConditions";
-import Tooltip from "../Components/Tooltip";
 import useContracts from "../Hooks/useContracts";
 import useTicketManagement from "../Hooks/useTicketManagement";
 import useWhitelistManagement from "../Hooks/useWhitelistManagement";
 import useRaffleWinnerManagement from "../Hooks/useRaffleWinnerManagement";
 import TicketCounter from "../Components/TicketCounter";
 import PhaseCard from "../Components/PhaseCard";
+import CardTilt from "../Components/CardTilt";
 
 export default function Home() {
 
@@ -162,7 +161,8 @@ export default function Home() {
 
             <div className="flex flex-col md:flex-row justify-center lg:mt-10 sm:max-md:overflow-hidden lg:pb-10 xl:pb-12 xl:gap-10">
               <div className="flex justify-center items-center w-full max-w-[400px] lg:min-w-[500px] xl:max-w-[600px] h-auto overflow-hidden md:overflow-visible pt-8 pb-12 lg:pb-8">
-                <img className="w-full scale-125" src="./Images/prize-maschine-infected-dalmatians.png" alt="maschine with a hook to grab prize" />
+                {/* <img className="w-full scale-125" src="./Images/prize-maschine-infected-dalmatians.png" alt="maschine with a hook to grab prize" /> */}
+              <CardTilt />
               </div>
               <div className="flex flex-col md:mt-10 w-full md:max-w-[420px] lg:max-w-[510px] xl:max-w-[680px] z-10 gap-6">
 
@@ -192,15 +192,18 @@ export default function Home() {
                     <PhaseCard title="WL FCFS" status={whitelistFCFS.status} start={whitelistFCFS.start} end={whitelistFCFS.end} tooltipText={'1 min per wallet'} />
                     <PhaseCard title="Public Raffle" status={publicSale.status} start={publicSale.start} end={publicSale.end} tooltipText={'All winners will be drawn few minutes after the end'} />
 
-                    <div className="grid grid-cols-3 lg:flex flew-row gap-2 md:gap-4 lg:gap-6 xl:gap-11 w-full max-h-[70px] justify-between">
+                    <div className="flex flew-row gap-4 lg:gap-6 xl:gap-11 w-full max-h-[70px] justify-between">
                       {showInput && (
                         <div className="flex justify-around items-center rounded-lg border border-gray-600 bg-secondary z-10">
-                          <button className="w-10 h-14 rounded-l-lg text-white text-2xl" onClick={handleDecrease}>
-                            -
+                          <button
+                            className="min-w-[25px] md:w-10 h-14 rounded-l-lg text-white text-2xl transition-colors duration-300 ease-in-out hover:bg-[#10282db0] active:bg-[#10282d93]"
+                            onClick={handleDecrease}
+                          >
+                            <div className="transition-all transform active:scale-150 duration-300 ease-in-out">-</div>
                           </button>
                           <input
                             type="number"
-                            className="w-4 md:w-6 lg:w-10 h-14 rounded-none bg-secondary text-white text-xl text-center"
+                            className="md:w-6 lg:w-10 h-14 rounded-none bg-secondary text-white text-xl text-center"
                             min={1}
                             max={maxTickets}
                             value={ticketCount || 1}
@@ -210,8 +213,11 @@ export default function Home() {
                               }
                             }}
                           />
-                          <button className="w-10 h-14 rounded-r-lg text-white text-2xl" onClick={handleIncrease}>
-                            +
+                          <button
+                            className="min-w-[25px] md:w-10 h-14 rounded-r-lg text-white text-2xl transition-colors duration-300 ease-in-out hover:bg-[#10282db0] active:bg-[#10282d93]"
+                            onClick={handleIncrease}
+                          >
+                            <div className="transition-all transform active:scale-150 duration-300 ease-in-out">+</div>
                           </button>
                         </div>
                       )}
