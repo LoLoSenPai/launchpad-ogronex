@@ -263,7 +263,7 @@ export default function Home() {
                       />
                     </div>
                     <div className="flex flex-row justify-end mt-10 lg:mt-7 mr-2 md:mr-5">
-                      <p className="text-xl font-bold text-gray-400">Powered by
+                      <p className="text-xl font-bold text-gray-400 mr-2">Powered by
                         <span className="text-light">Ogronex</span>
                       </p>
                     </div>

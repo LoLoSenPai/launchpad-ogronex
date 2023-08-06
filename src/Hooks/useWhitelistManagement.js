@@ -150,7 +150,7 @@ export default function useWhitelistManagement() {
                 toast.error("Unexpected error occurred. Please try again.");
             }
         }
-    }, [provider, contractNft, isWhitelisted, address, holder.status, guaranteed.status, whitelistFCFS.status, getTotalRemainingTickets]);
+    }, [provider, contractNft, isWhitelisted, address, getTotalRemainingTickets, ]);
 
 
 

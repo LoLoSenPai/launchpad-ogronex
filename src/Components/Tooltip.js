@@ -22,7 +22,7 @@ const Tooltip = ({ onMouseEnter, onMouseLeave, showTooltip, children, tooltipTex
           color: "white",
           padding: 15,
           borderRadius: 7,
-          zIndex: 30,
+          zIndex: 50,
           minWidth: 300,
           textAlign: "center",
         }}
