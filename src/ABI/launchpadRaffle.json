@@ -382,12 +382,69 @@
 	},
 	{
 		"inputs": [],
+		"name": "numWinnersToSelect",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
 		"name": "owner",
 		"outputs": [
 			{
 				"internalType": "address",
 				"name": "",
 				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"name": "players",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "idPlayer",
+				"type": "uint256"
+			},
+			{
+				"internalType": "address",
+				"name": "addressPlayer",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "ticketsBought",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "nbOfWin",
+				"type": "uint256"
+			},
+			{
+				"internalType": "bool",
+				"name": "isWinner",
+				"type": "bool"
+			},
+			{
+				"internalType": "bool",
+				"name": "playerExist",
+				"type": "bool"
 			}
 		],
 		"stateMutability": "view",
@@ -502,6 +559,19 @@
 		"inputs": [
 			{
 				"internalType": "uint256",
+				"name": "_numWinners",
+				"type": "uint256"
+			}
+		],
+		"name": "setNumWinnersToSelect",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
 				"name": "_startDate",
 				"type": "uint256"
 			},
@@ -520,10 +590,17 @@
 		"inputs": [
 			{
 				"internalType": "uint256",
-				"name": "_numberOfWinners",
+				"name": "_totalWinners",
 				"type": "uint256"
 			}
 		],
+		"name": "setTotalWinners",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
 		"name": "setWinners",
 		"outputs": [],
 		"stateMutability": "nonpayable",
@@ -556,6 +633,19 @@
 		"type": "function"
 	},
 	{
+		"inputs": [],
+		"name": "totalWinners",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
 		"inputs": [
 			{
 				"internalType": "address",
@@ -566,6 +656,19 @@
 		"name": "transferOwnership",
 		"outputs": [],
 		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "winnerSelectionStartIndex",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
 		"type": "function"
 	},
 	{
