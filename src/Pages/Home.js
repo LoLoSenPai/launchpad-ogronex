@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useMemo } from "react";
 import { DynamicWidget } from "@dynamic-labs/sdk-react";
 import { useAccount, useBalance } from "wagmi";
 import { ethers } from "ethers";
@@ -79,7 +79,10 @@ export default function Home() {
 
 
   useEffect(() => {
-    if (!isConnected) return;
+    if (!isConnected) {
+      setHasBalance(false);
+      return;
+    }
     if (balance.data && typeof ticketCount === 'number' && typeof ticketPrice === 'number') {
       const userBalanceInWei = balance.data.value;
       const ticketCostInWei = ethers.utils.parseEther((ticketCount * ticketPrice).toString());
@@ -90,18 +93,20 @@ export default function Home() {
   }, [address, ticketCount, ticketPrice, balance.data, isConnected]);
 
 
-  let maxTickets = 1;
-  let showInput = true;
-  if (holder.status === 'Live') {
-    maxTickets = remainingTickets;
-  }
-  else if (publicSale.status === 'Live') {
-    maxTickets = 100000;
-  }
-  else if (publicSale.status === 'Ended') {
-    maxTickets = winnerNbMint;
-    showInput = false;
-  }
+  const [maxTickets, showInput] = useMemo(() => {
+    let maxTickets = 1;
+    let showInput = true;
+    if (holder.status === 'Live') {
+      maxTickets = remainingTickets;
+    } else if (publicSale.status === 'Live') {
+      maxTickets = 100000;
+    } else if (publicSale.status === 'Ended') {
+      maxTickets = winnerNbMint;
+      showInput = false;
+    }
+    return [maxTickets, showInput];
+  }, [holder.status, publicSale.status, remainingTickets, winnerNbMint]);
+
 
   return (
     <>

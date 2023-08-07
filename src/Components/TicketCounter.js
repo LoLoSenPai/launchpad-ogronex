@@ -1,25 +1,19 @@
 import { useEffect, useState } from "react";
 import { TiTicket } from "react-icons/ti";
-import { motion, useAnimation } from "framer-motion";
+import AnimatedTickets from "./AnimatedTickets";
 
-function TicketCounter({ isConnected, availableToMint, ticketsBought, publicSale, hasCheckedWinner, winnerNbMint, totalRemainingTickets, triggerAnimation, resetTriggerAnimation }) {
+function TicketCounter({ isConnected, availableToMint, ticketsBought, publicSale, hasCheckedWinner, winnerNbMint, totalRemainingTickets }) {
     const [prevTicketsBought, setPrevTicketsBought] = useState(ticketsBought);
-    const controls = useAnimation();
+    const [triggerAnimation, setTriggerAnimation] = useState(false);
 
-    const variants = {
-        initial: { scale: 1 },
-        animate: { scale: [1, 1.2, 1], transition: { duration: 0.5 } },
-    };
+    const resetTriggerAnimation = () => {
+        setTriggerAnimation(false);
+    }    
 
-    useEffect(() => {
-        if (triggerAnimation) {
-            controls.start("animate");
-            resetTriggerAnimation();
-        }
-    }, [triggerAnimation, resetTriggerAnimation, controls]);
 
     useEffect(() => {
         if (ticketsBought !== prevTicketsBought) {
+            setTriggerAnimation(true);
             setPrevTicketsBought(ticketsBought);
         }
     }, [ticketsBought, prevTicketsBought]);
@@ -28,6 +22,7 @@ function TicketCounter({ isConnected, availableToMint, ticketsBought, publicSale
         <div className="flex flex-col justify-center items-center lg:min-w-[110px] space-y-4">
             {isConnected && availableToMint !== undefined && (
                 <div className="flex space-x-4">
+                    <AnimatedTickets triggerAnimation={triggerAnimation} resetTriggerAnimation={resetTriggerAnimation} />
                     <TiTicket className="text-3xl text-light" />
                     <span className=" text-light text-xl ">
                         {totalRemainingTickets}
@@ -37,15 +32,8 @@ function TicketCounter({ isConnected, availableToMint, ticketsBought, publicSale
             {isConnected && ticketsBought !== undefined && publicSale.status === 'Live' && (
                 <>
                     <div className="flex space-x-4">
-                        <motion.div
-                            className="flex space-x-4"
-                            animate={controls}
-                            initial="initial"
-                            variants={variants}
-                        >
                             <TiTicket className="text-3xl text-white" />
                             <span className="text-light">{ticketsBought}</span>
-                        </motion.div>
                     </div>
                 </>
             )}

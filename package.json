@@ -58,6 +58,7 @@
   "author": "LoLo-Labs",
   "license": "ISC",
   "devDependencies": {
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "css-loader": "^6.8.1",
     "postcss-loader": "^7.3.3",
     "source-map-loader": "^4.0.1",
