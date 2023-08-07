@@ -33,6 +33,8 @@ export default function SaleButton(props) {
         winnerNbMint,
         remainingTickets,
         availableToMint,
+        ticketCount,
+        ticketPrice
     } = props;
 
     const [textButton, setTextButton] = useState("Waiting for next phase");
@@ -54,19 +56,19 @@ export default function SaleButton(props) {
             newTextButton = "All NFTs are minted";
         } else if (isWhitelisted(address) && holder && holder.status === 'Live') {
             newTextButton = "Holder Mint";
-            newButtonOnClick = () => whiteListMint();
+            newButtonOnClick = () => whiteListMint(ticketCount);
         } else if (isWhitelisted(address) && guaranteed && guaranteed.status === 'Live') {
             newTextButton = "OG Mint! Hurry up!";
-            newButtonOnClick = () => whiteListMint();
+            newButtonOnClick = () => whiteListMint(ticketCount);
         } else if (isWhitelisted(address) && whitelistFCFS && whitelistFCFS.status === 'Live') {
             newTextButton = "Whitelist Mint! Hurry up!";
-            newButtonOnClick = () => whiteListMint();
+            newButtonOnClick = () => whiteListMint(ticketCount);
         } else if (!hasBalance && publicSale && publicSale.status === 'Live') {
             newButtonDisabled = true;
             newTextButton = "Insufficient Balance";
         } else if (publicSale && publicSale.status === 'Live') {
             newTextButton = "Buy Tickets";
-            newButtonOnClick = () => buyTickets();
+            newButtonOnClick = () => buyTickets(ticketCount,ticketPrice);
         } else if (publicSale && publicSale.status === 'Ended' && !hasCheckedWinner && isConnected) {
             newTextButton = "Verify";
             newButtonOnClick = async () => {

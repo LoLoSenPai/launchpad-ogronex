@@ -254,6 +254,8 @@ export default function Home() {
                         whitelistFCFS={whitelistFCFS}
                         publicSale={publicSale}
                         remainingTickets={remainingTickets}
+                        ticketCount={ticketCount}
+                        ticketPrice={ticketPrice}
                       />
                       <TicketCounter
                         isConnected={isConnected}
