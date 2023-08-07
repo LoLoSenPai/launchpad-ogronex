@@ -3,6 +3,9 @@ import { toast } from "react-toastify";
 import { useAccount } from "wagmi";
 import { SaleStatusContext } from "../Context/SaleStatusContext";
 import useContracts from './useContracts';
+import { CONTRACT_NFT } from '../Lib/constants';
+import { ethers } from 'ethers';
+import NftABI from "../ABI/Infected_NFT.json";
 
 export default function useRaffleWinnerManagement() {
     const [isWinnerRaffle, setIsWinnerRaffle] = useState(false);
@@ -22,7 +25,10 @@ export default function useRaffleWinnerManagement() {
                 return;
             }
             setWaitingBuy(true);
-            const tx = await contractNft.winnerRaffleSaleMint();
+            const provider = new ethers.providers.Web3Provider(window.ethereum);
+            const signer = provider.getSigner();
+            const contractNftConnect = new ethers.Contract(CONTRACT_NFT, NftABI, signer);
+            const tx = await contractNftConnect.winnerRaffleSaleMint();
             await provider.waitForTransaction(tx.hash);
             toast.success("Success Mint !");
         } catch (error) {

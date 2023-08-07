@@ -7,6 +7,8 @@ import { ethers } from 'ethers';
 import dataWhiteListGuaranteed from '../Lib/dataWhiteListGuaranteed.json';
 import dataWhiteListOG from '../Lib/dataWhiteListOG.json';
 import dataWhiteListWL from '../Lib/dataWhiteListWL.json';
+import { CONTRACT_NFT } from '../Lib/constants';
+import NftABI from "../ABI/Infected_NFT.json";
 
 export default function useWhitelistManagement() {
 
@@ -122,13 +124,16 @@ export default function useWhitelistManagement() {
 
 
 
-    const whiteListMint = useCallback(async () => {
+    const whiteListMint = useCallback(async (ticketCount) => {
         if (!provider || !contractNft) return;
         try {
             // conditionner la WL en fonction de la phase (holder, og and wl)
             setWaitingBuy(true);
             const whitelistObject = isWhitelisted(address);
-            const tx = await contractNft.whitelistMint(1, whitelistObject.proof, 1, { value: ethers.utils.parseEther((1 * 0.5).toString()) });
+            const provider = new ethers.providers.Web3Provider(window.ethereum);
+            const signer = provider.getSigner();
+            const contractNftConnect = new ethers.Contract(CONTRACT_NFT, NftABI, signer);
+            const tx = await contractNftConnect.whitelistMint(Number(whitelistObject.availableToMint), whitelistObject.proof, ticketCount, { value: ethers.utils.parseEther((ticketCount * 0).toString()) });
             await provider.waitForTransaction(tx.hash);
             setWaitingBuy(false);
             toast.success("Success Mint !");

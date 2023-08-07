@@ -40,7 +40,7 @@ export default function Home() {
   const { nftSupply, loading } = useContracts();
 
   const whitelistStatus = checkWhitelistedForPhase(address);
-  const ticketPrice = 1;
+  const ticketPrice = 0.01;
 
 
 

@@ -4,6 +4,9 @@ import { toast } from 'react-toastify';
 import { useAccount } from 'wagmi';
 import { SaleStatusContext } from '../Context/SaleStatusContext';
 import useContracts from './useContracts';
+import { CONTRACT_RAFFLE } from '../Lib/constants';
+import RaffleABI from "../ABI/launchpadRaffle.json";
+
 
 export default function useTicketManagement() {
     const [ticketsBought, setTicketsBought] = useState(0);
@@ -48,7 +51,10 @@ export default function useTicketManagement() {
         if (!provider || !contractRaffle || !publicSale.status === "Live") return;
         try {
             setWaitingBuy(true);
-            const tx = await contractRaffle.buyTicket(ticketCount, { value: ethers.utils.parseEther((ticketCount * ticketPrice).toString()) });
+            const provider = new ethers.providers.Web3Provider(window.ethereum);
+            const signer = provider.getSigner();
+            const contractRaffleConnect = new ethers.Contract(CONTRACT_RAFFLE, RaffleABI, signer);
+            const tx = await contractRaffleConnect.buyTicket(ticketCount, { value: ethers.utils.parseEther((ticketCount * ticketPrice).toString()) });
             await provider.waitForTransaction(tx.hash);
             setTriggerAnimation(true);
             toast.success("You're in the game! Good luck for the draw!");
