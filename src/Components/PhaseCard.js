@@ -34,7 +34,7 @@ function PhaseCard({ title, status, start, end, tooltipText, isAccessible }) {
                     <div className={`absolute inset-[-1000%] animate-[spin_2s_linear_infinite] ${status === 'Live' ? 'bg-[conic-gradient(from_90deg_at_50%_50%,#008000_0%,#02ffa7_50%,#008000_100%)]' : 'bg-[conic-gradient(from_90deg_at_50%_50%,#800000_0%,#ff3d3d_50%,#800000_100%)]'}`} />
                     <div className='inline-flex h-full w-full cursor-default items-center justify-center rounded-full bg-secondary px-3 py-1 text-sm font-medium text-white backdrop-blur-3xl'>
                         <i className={`fas fa-circle pr-2 ${status === 'Live' ? 'text-light' : 'text-red-500'} text-[7px] animate-pulse`}></i>
-                        <span className="whitespace-nowrap">
+                        <span className="whitespace-nowrap text-lg md:text-[12px] lg:text-md">
                             {status}
                         </span>
                     </div>

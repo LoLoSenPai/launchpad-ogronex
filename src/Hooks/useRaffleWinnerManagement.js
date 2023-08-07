@@ -6,14 +6,15 @@ import useContracts from './useContracts';
 import { CONTRACT_NFT } from '../Lib/constants';
 import { ethers } from 'ethers';
 import NftABI from "../ABI/Infected_NFT.json";
+import { useWaitingBuy } from '../Context/WaitingBuyContext';
 
 export default function useRaffleWinnerManagement() {
     const [isWinnerRaffle, setIsWinnerRaffle] = useState(false);
     const [winnerNbMint, setWinnerNbMint] = useState(0);
     const [hasNotMinted, setHasNotMinted] = useState(false);
-    const [waitingBuy, setWaitingBuy] = useState(false);
+    const { waitingBuy, setWaitingBuy } = useWaitingBuy();
 
-    const { provider, contractNft } = useContracts();
+    const { contractNft } = useContracts();
     const { publicSale } = useContext(SaleStatusContext);
     const { address, isConnected } = useAccount();
 
@@ -36,7 +37,7 @@ export default function useRaffleWinnerManagement() {
         } finally {
             setWaitingBuy(false);
         }
-    }, [isConnected, isWinnerRaffle, hasNotMinted, contractNft, provider]);
+    }, [isConnected, isWinnerRaffle, hasNotMinted]);
 
     const checkWinner = useCallback(async () => {
         if (!isConnected && publicSale.status === "End") return false;

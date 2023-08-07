@@ -68,7 +68,7 @@ export default function SaleButton(props) {
             newTextButton = "Insufficient Balance";
         } else if (publicSale && publicSale.status === 'Live') {
             newTextButton = "Buy Tickets";
-            newButtonOnClick = () => buyTickets(ticketCount,ticketPrice);
+            newButtonOnClick = () => buyTickets(ticketCount, ticketPrice);
         } else if (publicSale && publicSale.status === 'Ended' && !hasCheckedWinner && isConnected) {
             newTextButton = "Verify";
             newButtonOnClick = async () => {
@@ -99,16 +99,22 @@ export default function SaleButton(props) {
         setTextButton(newTextButton);
         setButtonOnClick(() => newButtonOnClick);
         setButtonDisabled(newButtonDisabled);
-    }, [isConnected, waitingBuy, hasBalance, address, isWhitelisted, isWinnerRaffle, hasCheckedWinner,holder, guaranteed, whitelistFCFS, publicSale, appIsRaffleOver, remainingTickets, availableToMint, whiteListMint, buyTickets, checkWinner, winnerRaffleMint, setHasCheckedWinner, setShowModalWinner, setShowModalPending, setShowModalLooser]);
+    }, [isConnected, waitingBuy, hasBalance, address, isWhitelisted, isWinnerRaffle, hasCheckedWinner, holder, guaranteed, whitelistFCFS, publicSale, appIsRaffleOver, remainingTickets, availableToMint, whiteListMint, buyTickets, checkWinner, winnerRaffleMint, setHasCheckedWinner, setShowModalWinner, setShowModalPending, setShowModalLooser, ticketCount, ticketPrice]);
 
     return (
         <>
             <button
-                className={`lg:py-2 px-4 xl:min-w-[300px] rounded-lg text-xl xl:text-2xl bg-light font-bold text-black col-span-2 min-h-[60px] max-h-[80px] md:max-h-auto btn-shadow ${buttonDisabled ? 'opacity-50' : ''} flex justify-center items-center`}
+                className={`lg:py-2 px-4 xs:min-w-[150px] sm:min-w-[200px] md:min-w-[160px] lg:min-w-[200px] xl:min-w-[300px] rounded-lg text-lg sm:text-xl xl:text-2xl bg-light font-bold text-black col-span-2 min-h-[60px] max-h-[80px] md:max-h-auto btn-shadow ${buttonDisabled ? 'opacity-50' : ''} flex justify-center items-center`}
                 onClick={buttonOnClick}
                 disabled={buttonDisabled}
             >
-                {textButton}
+                {waitingBuy ?
+                    <div style={{ width: '150px', height: '20px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                        <PuffLoader color="#000" />
+                    </div>
+                    :
+                    textButton
+                }
             </button>
             {showModalWinner && createPortal(<ModalWinner closeModal={() => setShowModalWinner(false)} winnerNbMint={winnerNbMint} />, document.body)}
             {showModalPending && createPortal(<ModalPending closeModal={() => setShowModalPending(false)} />, document.body)}

@@ -6,12 +6,13 @@ import { SaleStatusContext } from '../Context/SaleStatusContext';
 import useContracts from './useContracts';
 import { CONTRACT_RAFFLE } from '../Lib/constants';
 import RaffleABI from "../ABI/launchpadRaffle.json";
+import { useWaitingBuy } from '../Context/WaitingBuyContext';
 
 
 export default function useTicketManagement() {
     const [ticketsBought, setTicketsBought] = useState(0);
     const [ticketsSold, setTicketsSold] = useState(0);
-    const [waitingBuy, setWaitingBuy] = useState(false);
+    const { waitingBuy, setWaitingBuy } = useWaitingBuy();
     const [triggerAnimation, setTriggerAnimation] = useState(false);
 
     const { provider, contractRaffle } = useContracts();
@@ -30,7 +31,7 @@ export default function useTicketManagement() {
     }, [contractRaffle, provider]);
 
     const getTicketsBought = useCallback(async () => {
-        if (!isConnected || !contractRaffle || !publicSale.status === "Live") return;
+        if (!isConnected || !contractRaffle || publicSale.status !== "Live" || !address) return;
         try {
             const idPlayer = await contractRaffle.idByAddress(address);
             const player = await contractRaffle.playersList(idPlayer);
@@ -42,35 +43,43 @@ export default function useTicketManagement() {
             }
         } catch (error) {
             console.error("Error getting tickets bought:", error);
+            if (error.code === 4001) {
+                toast.error("Transaction cancelled by the user");
+            } else {
+                toast.error("An error occured");
+            }
         }
     }, [address, isConnected, contractRaffle, publicSale.status]);
 
 
     const buyTickets = useCallback(async (ticketCount, ticketPrice) => {
-        // Code pour acheter des tickets ici
-        if (!provider || !contractRaffle || !publicSale.status === "Live") return;
+        if (!provider || !contractRaffle || publicSale.status !== "Live") return;
         try {
             setWaitingBuy(true);
             const provider = new ethers.providers.Web3Provider(window.ethereum);
             const signer = provider.getSigner();
             const contractRaffleConnect = new ethers.Contract(CONTRACT_RAFFLE, RaffleABI, signer);
+            console.log('Before buying tickets'); // debug log
             const tx = await contractRaffleConnect.buyTicket(ticketCount, { value: ethers.utils.parseEther((ticketCount * ticketPrice).toString()) });
+            console.log('After buying tickets, before waiting for transaction'); // debug log
             await provider.waitForTransaction(tx.hash);
+            console.log('After waiting for transaction'); // debug log
             setTriggerAnimation(true);
             toast.success("You're in the game! Good luck for the draw!");
-            setWaitingBuy(false);
             await getTicketsBought();
             await getTicketsSold();
         } catch (error) {
             if (error.code === 4001) {
-                // Erreur spécifique à Metamask pour les transactions rejetées par l'utilisateur
                 toast.error("Transaction cancelled by the user.");
             } else {
                 toast.error("Transaction error! But don't worry, even the best stumble sometimes!");
             }
+        } finally {
+            console.log('In finally block'); // debug log
             setWaitingBuy(false);
         }
     }, [provider, contractRaffle, getTicketsBought, getTicketsSold, publicSale.status, setTriggerAnimation]);
+
 
     const resetTriggerAnimation = useCallback(() => {
         setTriggerAnimation(false);

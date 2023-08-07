@@ -13,7 +13,6 @@ import useWhitelistManagement from "../Hooks/useWhitelistManagement";
 import useRaffleWinnerManagement from "../Hooks/useRaffleWinnerManagement";
 import TicketCounter from "../Components/TicketCounter";
 import PhaseCard from "../Components/PhaseCard";
-// import CardTilt from "../Components/CardTilt";
 
 export default function Home() {
 
@@ -42,11 +41,11 @@ export default function Home() {
   const whitelistStatus = checkWhitelistedForPhase(address);
   const ticketPrice = 0.01;
 
-
-
   const handleIncrease = () => {
     const numericTicketCount = parseInt(ticketCount, 10);
-    setTicketCount((numericTicketCount || 0) + 1);
+    if (numericTicketCount < maxTickets) {
+      setTicketCount((numericTicketCount || 0) + 1);
+    }
   };
 
   const handleDecrease = () => {
@@ -92,12 +91,11 @@ export default function Home() {
     }
   }, [address, ticketCount, ticketPrice, balance.data, isConnected]);
 
-
   const [maxTickets, showInput] = useMemo(() => {
     let maxTickets = 1;
     let showInput = true;
     if (holder.status === 'Live') {
-      maxTickets = remainingTickets;
+      maxTickets = totalRemainingTickets;
     } else if (publicSale.status === 'Live') {
       maxTickets = 100000;
     } else if (publicSale.status === 'Ended') {
@@ -105,7 +103,8 @@ export default function Home() {
       showInput = false;
     }
     return [maxTickets, showInput];
-  }, [holder.status, publicSale.status, remainingTickets, winnerNbMint]);
+  }, [holder.status, publicSale.status, totalRemainingTickets, winnerNbMint]);
+
 
 
   return (
@@ -168,7 +167,6 @@ export default function Home() {
             <div className="flex flex-col md:flex-row justify-center lg:mt-10 sm:max-md:overflow-hidden lg:pb-10 xl:pb-12 xl:gap-10">
               <div className="flex justify-center items-center w-full max-w-[400px] lg:min-w-[500px] xl:max-w-[600px] h-auto overflow-hidden md:overflow-visible pt-8 pb-12 lg:pb-8">
                 <img className="w-full scale-125" src="./Images/prize-maschine-infected-dalmatians.png" alt="maschine with a hook to grab prize" />
-                {/* <CardTilt /> */}
               </div>
               <div className="flex flex-col md:mt-10 w-full md:max-w-[420px] lg:max-w-[510px] xl:max-w-[680px] z-10 gap-6">
 
@@ -200,7 +198,7 @@ export default function Home() {
                     <PhaseCard title="WL FCFS" status={whitelistFCFS.status} isAccessible={whitelistStatus.whitelistFCFS} start={whitelistFCFS.start} end={whitelistFCFS.end} tooltipText={'1 min per wallet'} />
                     <PhaseCard title="Public Raffle" status={publicSale.status} isAccessible={whitelistStatus.publicSale} start={publicSale.start} end={publicSale.end} tooltipText={'All winners will be drawn few minutes after the end'} />
 
-                    <div className="flex flew-row gap-4 lg:gap-6 xl:gap-11 w-full max-h-[70px] justify-between">
+                    <div className="flex flew-row w-full max-h-[70px] justify-between">
                       {showInput && (
                         <div className="flex justify-around items-center rounded-lg border border-gray-600 bg-secondary z-10">
                           <button
@@ -211,14 +209,13 @@ export default function Home() {
                           </button>
                           <input
                             type="number"
-                            className="md:w-6 lg:w-10 h-14 rounded-none bg-secondary text-white text-xl text-center"
+                            className="w-10 md:w-6 lg:w-10 h-14 rounded-none bg-secondary text-white text-xl text-center"
                             min={1}
                             max={maxTickets}
                             value={ticketCount || 1}
                             onChange={(e) => {
-                              if (!isNaN(e.target.value)) {
-                                setTicketCount(parseInt(e.target.value));
-                              }
+                              const value = e.target.value;
+                              setTicketCount(value ? parseInt(value) : 0);
                             }}
                           />
                           <button
@@ -269,9 +266,29 @@ export default function Home() {
                         resetTriggerAnimation={resetTriggerAnimation}
                       />
                     </div>
+                    <div className="multiplicator space-x-2">
+                      <button
+                        className="bg-secondary rounded-full p-1 border border-gray-600 text-white text-lg font-bold transition-colors duration-300 ease-in-out hover:bg-[#10282db0] active:bg-[#10282d93]"
+                        onClick={() => {
+                          const newValue = ticketCount + 10;
+                          setTicketCount(newValue > maxTickets ? maxTickets : newValue);
+                        }}
+                      >
+                        +10
+                      </button>
+                      <button
+                        className="bg-secondary rounded-full p-1 border border-gray-600 text-white text-lg font-bold transition-colors duration-300 ease-in-out hover:bg-[#10282db0] active:bg-[#10282d93]"
+                        onClick={() => {
+                          const newValue = ticketCount + 50;
+                          setTicketCount(newValue > maxTickets ? maxTickets : newValue);
+                        }}
+                      >
+                        +50
+                      </button>
+                    </div>
                     <div className="flex flex-row justify-end mt-10 lg:mt-7 mr-2 md:mr-5">
-                      <p className="text-xl font-bold text-gray-400 mr-2">Powered by
-                        <span className="text-light">Ogronex</span>
+                      <p className="text-xl font-bold text-gray-400">Powered by
+                        <span className="text-light ml-2">Ogronex</span>
                       </p>
                     </div>
                   </div>

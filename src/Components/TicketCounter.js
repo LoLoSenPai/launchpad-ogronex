@@ -20,8 +20,8 @@ function TicketCounter({ isConnected, availableToMint, ticketsBought, publicSale
 
     return (
         <div className="flex flex-col justify-center items-center lg:min-w-[110px] space-y-4">
-            {isConnected && availableToMint !== undefined && (
-                <div className="flex space-x-4">
+            {isConnected && availableToMint !== undefined && publicSale.status !== 'Live' && (
+                <div className="flex flex-col md:flex-row space-x-4">
                     <AnimatedTickets triggerAnimation={triggerAnimation} resetTriggerAnimation={resetTriggerAnimation} />
                     <TiTicket className="text-3xl text-light" />
                     <span className=" text-light text-xl ">
