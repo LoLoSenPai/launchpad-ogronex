@@ -31,14 +31,14 @@ export const SaleStatusProvider = ({ children }) => {
             try {
                 const blockTimestamp = Math.floor(Date.now() / 1000); // Get current timestamp in seconds
 
-                const dateStartNftHolder = 1691417700;
-                const dateEndtNftHolder = 1691418600;
-                const dateStartNft = 1691418600;
-                const dateEndtNftGuaranteed = 1691419500;
-                const whitelistFcfsStart = 1691419500;
-                const whitelistFcfsEnd = 1691420400;
-                const startTime = 1691420400;
-                const deadline = 1691431200;
+                const dateStartNftHolder = 1691424000;
+                const dateEndtNftHolder = 1691442000;
+                const dateStartNft = 1691442000;
+                const dateEndtNftGuaranteed = 1691496000;
+                const whitelistFcfsStart = 1691496000;
+                const whitelistFcfsEnd = 1691506800;
+                const startTime = 1691506800;
+                const deadline = 1691593200;
 
                 let holderStatus = '';
                 if (blockTimestamp < dateStartNftHolder) {
