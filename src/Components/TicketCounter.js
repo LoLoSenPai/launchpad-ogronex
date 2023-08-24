@@ -22,7 +22,7 @@ function TicketCounter({ isConnected, availableToMint, ticketsBought, publicSale
         if (ticketsBought !== prevTicketsBought) {
             setPrevTicketsBought(ticketsBought);
         }
-    }, [ticketsBought]);
+    }, [ticketsBought, prevTicketsBought]);
 
     return (
         <div className="flex flex-col justify-center items-center lg:min-w-[110px] space-y-4">
