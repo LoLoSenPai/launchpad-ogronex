@@ -37,7 +37,7 @@ export default function useRaffleWinnerManagement() {
         } finally {
             setWaitingBuy(false);
         }
-    }, [isConnected, isWinnerRaffle, hasNotMinted]);
+    }, [isConnected, isWinnerRaffle, hasNotMinted, setWaitingBuy]);
 
     const checkWinner = useCallback(async () => {
         if (!isConnected && publicSale.status === "End") return false;

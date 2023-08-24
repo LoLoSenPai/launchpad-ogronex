@@ -3,7 +3,8 @@ import { TiTicket } from "react-icons/ti";
 import { motion, useAnimation } from "framer-motion";
 
 function AnimatedTickets({ triggerAnimation, resetTriggerAnimation }) {
-    const [showAnimatedTicket, setShowAnimatedTicket] = useState(false);
+    console.log("AnimatedTickets rendered")
+    const [showAnimatedTicket, setShowAnimatedTicket] = useState(true);
     const controls = useAnimation();
 
     const delays = [0.2, 0.4, 0.6, 0.8, 1.0];
@@ -46,7 +47,7 @@ function AnimatedTickets({ triggerAnimation, resetTriggerAnimation }) {
             y: randomBetween(-15, 15),
             rotate: randomBetween(-15, 15)
         }));
-    }, []);
+    }, []);    
 
     const [ticketOffsets, setTicketOffsets] = useState(generateRandomOffsets());
 
@@ -58,17 +59,20 @@ function AnimatedTickets({ triggerAnimation, resetTriggerAnimation }) {
 
     useEffect(() => {
         if (triggerAnimation) {
-            controls.start("animate");
-            resetTriggerAnimation();
-            setTicketOffsets(generateRandomOffsets());
-            setTimeout(() => {
-                setShowAnimatedTicket(false);
-            }, 2500);
+            requestAnimationFrame(() => {
+                setShowAnimatedTicket(true);
+                controls.start("animate");
+                resetTriggerAnimation();
+                setTicketOffsets(generateRandomOffsets());
+                setTimeout(() => {
+                    setShowAnimatedTicket(false);
+                }, 2500);
+            });
         }
-    }, [triggerAnimation, resetTriggerAnimation, controls, generateRandomOffsets]);
+    }, [triggerAnimation, setShowAnimatedTicket, controls, resetTriggerAnimation, setTicketOffsets, generateRandomOffsets]);    
 
     return (
-        <div className="absolute">
+        <div className="absolute z-50">
             {Array.from({ length: 5 }).map((_, index) => (
                 <motion.div
                     custom={index}
@@ -89,4 +93,5 @@ function AnimatedTickets({ triggerAnimation, resetTriggerAnimation }) {
     );
 }
 
-export default AnimatedTickets;
+export default React.memo(AnimatedTickets);
+

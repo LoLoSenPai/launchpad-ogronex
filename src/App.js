@@ -1,14 +1,17 @@
 import Home from './Pages/Home';
 import { SaleStatusProvider } from './Context/SaleStatusContext';
 import { WaitingBuyProvider } from './Context/WaitingBuyContext';
+import { AnimationProvider } from './Context/AnimationContext';
 
 function App() {
   return (
     <>
       <WaitingBuyProvider>
-        <SaleStatusProvider>
-          <Home />
-        </SaleStatusProvider>
+        <AnimationProvider>
+          <SaleStatusProvider>
+            <Home />
+          </SaleStatusProvider>
+        </AnimationProvider>
       </WaitingBuyProvider>
     </>
   );

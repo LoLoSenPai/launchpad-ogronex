@@ -7,14 +7,14 @@ import useContracts from './useContracts';
 import { CONTRACT_RAFFLE } from '../Lib/constants';
 import RaffleABI from "../ABI/launchpadRaffle.json";
 import { useWaitingBuy } from '../Context/WaitingBuyContext';
+import { useAnimation } from '../Context/AnimationContext';
 
 
 export default function useTicketManagement() {
     const [ticketsBought, setTicketsBought] = useState(0);
     const [ticketsSold, setTicketsSold] = useState(0);
     const { waitingBuy, setWaitingBuy } = useWaitingBuy();
-    const [triggerAnimation, setTriggerAnimation] = useState(false);
-
+    const { triggerAnimation, setTriggerAnimation, resetTriggerAnimation } = useAnimation();
     const { provider, contractRaffle } = useContracts();
     const { address, isConnected } = useAccount();
     const { publicSale } = useContext(SaleStatusContext);
@@ -64,10 +64,10 @@ export default function useTicketManagement() {
             console.log('After buying tickets, before waiting for transaction'); // debug log
             await provider.waitForTransaction(tx.hash);
             console.log('After waiting for transaction'); // debug log
-            setTriggerAnimation(true);
             toast.success("You're in the game! Good luck for the draw!");
             await getTicketsBought();
             await getTicketsSold();
+            setTriggerAnimation(true);
         } catch (error) {
             if (error.code === 4001) {
                 toast.error("Transaction cancelled by the user.");
@@ -78,12 +78,7 @@ export default function useTicketManagement() {
             console.log('In finally block'); // debug log
             setWaitingBuy(false);
         }
-    }, [provider, contractRaffle, getTicketsBought, getTicketsSold, publicSale.status, setTriggerAnimation]);
-
-
-    const resetTriggerAnimation = useCallback(() => {
-        setTriggerAnimation(false);
-    }, []);
+    }, [provider, contractRaffle, getTicketsBought, getTicketsSold, publicSale.status, setTriggerAnimation, setWaitingBuy]);
 
     return { getTicketsBought, buyTickets, getTicketsSold, waitingBuy, ticketsBought, ticketsSold, triggerAnimation, resetTriggerAnimation };
 }

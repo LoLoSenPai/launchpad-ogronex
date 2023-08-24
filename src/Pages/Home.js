@@ -13,6 +13,7 @@ import useWhitelistManagement from "../Hooks/useWhitelistManagement";
 import useRaffleWinnerManagement from "../Hooks/useRaffleWinnerManagement";
 import TicketCounter from "../Components/TicketCounter";
 import PhaseCard from "../Components/PhaseCard";
+import { TiTicket } from "react-icons/ti";
 
 export default function Home() {
 
@@ -254,17 +255,18 @@ export default function Home() {
                         ticketCount={ticketCount}
                         ticketPrice={ticketPrice}
                       />
-                      <TicketCounter
-                        isConnected={isConnected}
-                        availableToMint={availableToMint}
-                        ticketsBought={ticketsBought}
-                        publicSale={publicSale}
-                        hasCheckedWinner={hasCheckedWinner}
-                        winnerNbMint={winnerNbMint}
-                        totalRemainingTickets={totalRemainingTickets}
-                        triggerAnimation={triggerAnimation}
-                        resetTriggerAnimation={resetTriggerAnimation}
-                      />
+                      <div className="flex flex-row justify-around items-center lg:min-w-[110px] ">
+                        <TiTicket className="text-3xl text-light" />
+                        <TicketCounter
+                          isConnected={isConnected}
+                          availableToMint={availableToMint}
+                          ticketsBought={ticketsBought}
+                          publicSale={publicSale}
+                          hasCheckedWinner={hasCheckedWinner}
+                          winnerNbMint={winnerNbMint}
+                          totalRemainingTickets={totalRemainingTickets}
+                        />
+                      </div>
                     </div>
                     <div className="multiplicator space-x-2">
                       <button
@@ -295,9 +297,10 @@ export default function Home() {
                 </div>
               </div>
             </div>
-          </main>
-        </div>
-      )}
+          </main >
+        </div >
+      )
+      }
     </>
   )
 }

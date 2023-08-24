@@ -1,29 +1,25 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import { TiTicket } from "react-icons/ti";
 import AnimatedTickets from "./AnimatedTickets";
+import { useAnimation } from "../Context/AnimationContext";
 
 function TicketCounter({ isConnected, availableToMint, ticketsBought, publicSale, hasCheckedWinner, winnerNbMint, totalRemainingTickets }) {
-    const [prevTicketsBought, setPrevTicketsBought] = useState(ticketsBought);
-    const [triggerAnimation, setTriggerAnimation] = useState(false);
+    const prevTicketsBoughtRef = useRef(ticketsBought);
 
-    const resetTriggerAnimation = () => {
-        setTriggerAnimation(false);
-    }    
-
+    const { triggerAnimation, setTriggerAnimation, resetTriggerAnimation } = useAnimation();
 
     useEffect(() => {
-        if (ticketsBought !== prevTicketsBought) {
+        if (ticketsBought !== prevTicketsBoughtRef.current) {
             setTriggerAnimation(true);
-            setPrevTicketsBought(ticketsBought);
+            prevTicketsBoughtRef.current = ticketsBought;
         }
-    }, [ticketsBought, prevTicketsBought]);
+    }, [ticketsBought, setTriggerAnimation]);
 
     return (
-        <div className="flex flex-col justify-center items-center lg:min-w-[110px] space-y-4">
+        <div className="flex flex-col justify-center items-center space-y-4">
             {isConnected && availableToMint !== undefined && publicSale.status !== 'Live' && (
                 <div className="flex flex-col md:flex-row space-x-4">
                     <AnimatedTickets triggerAnimation={triggerAnimation} resetTriggerAnimation={resetTriggerAnimation} />
-                    <TiTicket className="text-3xl text-light" />
                     <span className=" text-light text-xl ">
                         {totalRemainingTickets}
                     </span>
@@ -32,8 +28,9 @@ function TicketCounter({ isConnected, availableToMint, ticketsBought, publicSale
             {isConnected && ticketsBought !== undefined && publicSale.status === 'Live' && (
                 <>
                     <div className="flex space-x-4">
-                            <TiTicket className="text-3xl text-white" />
-                            <span className="text-light">{ticketsBought}</span>
+                        <AnimatedTickets triggerAnimation={triggerAnimation} resetTriggerAnimation={resetTriggerAnimation} />
+                        <TiTicket className="text-3xl text-white" />
+                        <span className="text-light">{ticketsBought}</span>
                     </div>
                 </>
             )}
@@ -47,4 +44,4 @@ function TicketCounter({ isConnected, availableToMint, ticketsBought, publicSale
     );
 }
 
-export default TicketCounter;
+export default React.memo(TicketCounter);

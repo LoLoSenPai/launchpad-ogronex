@@ -10,12 +10,14 @@ import dataWhiteListWL from '../Lib/dataWhiteListWL.json';
 import { CONTRACT_NFT } from '../Lib/constants';
 import NftABI from "../ABI/Infected_NFT.json";
 import { useWaitingBuy } from '../Context/WaitingBuyContext';
+import { useAnimation } from '../Context/AnimationContext';
 
 export default function useWhitelistManagement() {
 
     const { waitingBuy, setWaitingBuy } = useWaitingBuy();
     const [totalRemainingTickets, setTotalRemainingTickets] = useState(0);
 
+    const { setTriggerAnimation } = useAnimation();
     const { provider, contractNft } = useContracts();
     const { holder, guaranteed, whitelistFCFS } = useContext(SaleStatusContext);
     const { address } = useAccount();
@@ -114,6 +116,7 @@ export default function useWhitelistManagement() {
             setWaitingBuy(false);
             toast.success("Success Mint !");
             await getTotalRemainingTickets();
+            setTriggerAnimation(true);
         } catch (error) {
             console.log(error);
             setWaitingBuy(false);
@@ -133,7 +136,7 @@ export default function useWhitelistManagement() {
                 toast.error("Unexpected error occurred. Please try again.");
             }
         }
-    }, [provider, contractNft, isWhitelisted, address, getTotalRemainingTickets, setWaitingBuy]);
+    }, [provider, contractNft, isWhitelisted, address, getTotalRemainingTickets, setWaitingBuy, setTriggerAnimation]);
 
 
 
