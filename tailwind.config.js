@@ -49,6 +49,12 @@ module.exports = {
       }
     },
   },
+  variants: {
+    extend: {
+      scale: ['active'],
+      transform: ['active']
+    },
+  },
   plugins: [
     require("@tailwindcss/aspect-ratio"),
   ],

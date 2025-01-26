@@ -1,5 +1,4 @@
 import React, { createContext, useState, useEffect } from 'react';
-import { Network, Alchemy } from 'alchemy-sdk';
 
 export const SaleStatusContext = createContext();
 
@@ -30,66 +29,48 @@ export const SaleStatusProvider = ({ children }) => {
     useEffect(() => {
         const interval = setInterval(async () => {
             try {
-                //only fetch block.timestamp no mor data when user not connected
-                const settings = {
-                    apiKey: "kKaUsI3UwlljF-I3np_9fWNG--9i9RlF",
-                    network: Network.MATIC_MAINNET,
-                };
+                const blockTimestamp = Math.floor(Date.now() / 1000); // Get current timestamp in seconds
 
-                const alchemy = new Alchemy(settings);
-                const maticProvider = await alchemy.config.getProvider();
-                const block = await maticProvider.getBlock();
-
-                // holder sale
-                const dateStartNftHolder = 1690977600; //     Wed Aug 02 2023 12:00:00 GMT+0 START HOLDERS PHASE
-                const dateEndtNftHolder = 1690988400; //     Wed Aug 02 2023 15:00:00 GMT+0 END HOLDERS PHASE
-                // OG fcfs
-                const dateStartNft = 1690988400; //     Wed Aug 02 2023 15:00:00 GMT+0 START OG PHASE
-                const dateEndtNftGuaranteed = 1690992000; //     Wed Aug 02 2023 16:00:00 GMT+0 END OG PHASE
-                // whitelist fcfs
-                const whitelistFcfsStart =1690992000; //     Wed Aug 02 2023 16:00:00 GMT+0 START WL PHASE
-                const whitelistFcfsEnd = 1690995600; //    Wed Aug 02 2023 17:00:00 GMT+0 END WL PHASE
-                // public sale
-                const startTime = 1690995600; //    Wed Aug 02 2023 17:00:00 GMT+0 START PUBLIC PHASE
-                const deadline = 1691006400; //     Wed Aug 02 2023 20:00:00 GMT+0 END PUBLIC
-                // const dateStartNft = await contractNft.saleStartTime();
-                // const dateEndtNftGuaranteed = await contractNft.endTimeGuaranteed();
-                // const whitelistFcfsStart = await contractNft.saleStartTime();
-                // const whitelistFcfsEnd = await contractNft.endTimeGuaranteed();
-                // const startTime = await contractRaffleBeforeConnection.startDate();
-                // const deadline = await contractRaffleBeforeConnection.deadline();
+                const dateStartNftHolder = 1691175606;
+                const dateEndtNftHolder = 1691240406;
+                const dateStartNft = 1691240406;
+                const dateEndtNftGuaranteed = 1691326806;
+                const whitelistFcfsStart = 1691326806;
+                const whitelistFcfsEnd = 1691413206;
+                const startTime = 1691413206;
+                const deadline = 1691499606;
 
                 let holderStatus = '';
-                if (block.timestamp < dateStartNftHolder) {
+                if (blockTimestamp < dateStartNftHolder) {
                     holderStatus = "Not Started";
-                } else if (block.timestamp >= dateStartNftHolder && block.timestamp <= dateEndtNftHolder) {
+                } else if (blockTimestamp >= dateStartNftHolder && blockTimestamp <= dateEndtNftHolder) {
                     holderStatus = "Live";
                 } else {
                     holderStatus = "Ended";
                 }
 
                 let guaranteedStatus = '';
-                if (block.timestamp < dateStartNft) {
+                if (blockTimestamp < dateStartNft) {
                     guaranteedStatus = "Not Started";
-                } else if (block.timestamp >= dateStartNft && block.timestamp <= dateEndtNftGuaranteed) {
+                } else if (blockTimestamp >= dateStartNft && blockTimestamp <= dateEndtNftGuaranteed) {
                     guaranteedStatus = "Live";
                 } else {
                     guaranteedStatus = "Ended";
                 }
 
                 let whitelistStatus = '';
-                if (block.timestamp < whitelistFcfsStart) {
+                if (blockTimestamp < whitelistFcfsStart) {
                     whitelistStatus = "Not Started";
-                } else if (block.timestamp >= whitelistFcfsStart && block.timestamp <= whitelistFcfsEnd) {
+                } else if (blockTimestamp >= whitelistFcfsStart && blockTimestamp <= whitelistFcfsEnd) {
                     whitelistStatus = "Live";
                 } else {
                     whitelistStatus = "Ended";
                 }
 
                 let publicSaleStatus = '';
-                if (block.timestamp < startTime) {
+                if (blockTimestamp < startTime) {
                     publicSaleStatus = "Not Started";
-                } else if (block.timestamp >= startTime && block.timestamp <= deadline) {
+                } else if (blockTimestamp >= startTime && blockTimestamp <= deadline) {
                     publicSaleStatus = "Live";
                 } else {
                     publicSaleStatus = "Ended";

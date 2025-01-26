@@ -41,7 +41,7 @@ export default function SaleButton(props) {
 
     useEffect(() => {
         let newTextButton = "Waiting for next phase";
-        let newButtonOnClick = () => {};
+        let newButtonOnClick
         let newButtonDisabled = false;
 
         if (waitingBuy) {
@@ -97,12 +97,12 @@ export default function SaleButton(props) {
         setTextButton(newTextButton);
         setButtonOnClick(() => newButtonOnClick);
         setButtonDisabled(newButtonDisabled);
-    }, [isConnected, waitingBuy, hasBalance, address, isWhitelisted, isWinnerRaffle, hasCheckedWinner,holder, guaranteed, whitelistFCFS, publicSale, appIsRaffleOver, remainingTickets, availableToMint]);
+    }, [isConnected, waitingBuy, hasBalance, address, isWhitelisted, isWinnerRaffle, hasCheckedWinner,holder, guaranteed, whitelistFCFS, publicSale, appIsRaffleOver, remainingTickets, availableToMint, whiteListMint, buyTickets, checkWinner, winnerRaffleMint, setHasCheckedWinner, setShowModalWinner, setShowModalPending, setShowModalLooser]);
 
     return (
         <>
             <button
-                className={`lg:py-2 w-full rounded-lg text-xl xl:text-2xl bg-light font-bold text-black col-span-2 min-h-[60px] max-h-[80px] md:max-h-auto btn-shadow ${buttonDisabled ? 'opacity-50' : ''} flex justify-center items-center`}
+                className={`lg:py-2 px-4 xl:min-w-[300px] rounded-lg text-xl xl:text-2xl bg-light font-bold text-black col-span-2 min-h-[60px] max-h-[80px] md:max-h-auto btn-shadow ${buttonDisabled ? 'opacity-50' : ''} flex justify-center items-center`}
                 onClick={buttonOnClick}
                 disabled={buttonDisabled}
             >

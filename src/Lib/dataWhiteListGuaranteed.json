@@ -1,5 +1,5 @@
 [
-    {
+{
         "address": "0x506A76dEb6aFC9b0aed5B25ffFeeD0C90a596dBA",
         "proof": [
             "0xe91ad7903a282a7c6b705094a24e3fc24e683ea48fed71b485baff648aebad30",
@@ -59,6 +59,6 @@
             "0xdfdd0f2d0244c32a4abce98861cff94bcc9f38e83cb6fab833fa5aacfaa9e706",
             "0xec913f21ab6ff4f869246296b6784b6e754e6d98f1697dbdecd68d3c69823674"
         ],
-        "availableToMint": "7"
+        "availableToMint": "3"
     }
 ]

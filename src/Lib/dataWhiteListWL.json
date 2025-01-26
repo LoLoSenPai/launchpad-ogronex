@@ -1,0 +1,66 @@
+[
+{
+    "address": "0x506A76dEb6aFC9b0aed5B25ffFeeD0C90a596dBA",
+    "proof": [
+      "0x8dc3f6e4704c419e92bf7c49ede22ae2228b8488632a95236977788be7629469",
+      "0x236e1aea4be77c0845e10c6c3bdc148520f7a295e0517827ed50dd9b6ab2f6ee",
+      "0xac8bb84b142dc4e8647fdd669a1b234771ead431599e33f1243c9fb996276c64"
+    ],
+    "availableToMint": "1"
+  },
+  {
+    "address": "0xBBb6a61E719B9C99005f7b628f969168B0d92e83",
+    "proof": [
+      "0x4bccbc468b2970f7e50ee896de5768a15847523d1ea52eb623d0b90d1fc670b0",
+      "0xe9461a7f35161ef4dc9e004f488823049d744774add9c30aa21576dc3673a1cc",
+      "0x775514fde30b66ae73999aa0e62f7f707d5f6373a7af11d23f48c2f106443520"
+    ],
+    "availableToMint": "2"
+  },
+  {
+    "address": "0x5fFc198dAab1f1DBaD63f5eb090B42Eb13E1028e",
+    "proof": [
+      "0xbc587fbb6330d5dbf4a66b2a6d6a3fa2d96525a9369e736635814ec6574dde6e",
+      "0x236e1aea4be77c0845e10c6c3bdc148520f7a295e0517827ed50dd9b6ab2f6ee",
+      "0xac8bb84b142dc4e8647fdd669a1b234771ead431599e33f1243c9fb996276c64"
+    ],
+    "availableToMint": "3"
+  },
+  {
+    "address": "0x1c6c7A828452A0366574594315E13995ade342a6",
+    "proof": [
+      "0x098db470812a842bbda5ca17f377c9725db542c2f54d6af0630c289fab1424d9",
+      "0xe9461a7f35161ef4dc9e004f488823049d744774add9c30aa21576dc3673a1cc",
+      "0x775514fde30b66ae73999aa0e62f7f707d5f6373a7af11d23f48c2f106443520"
+    ],
+    "availableToMint": "4"
+  },
+  {
+    "address": "0x5B38Da6a701c568545dCfcB03FcB875f56beddC4",
+    "proof": [
+      "0xe91ad7903a282a7c6b705094a24e3fc24e683ea48fed71b485baff648aebad30",
+      "0x40091a3b09842d4d3e7ef3db20abcffe3bcc73c0c658ac0fdf112519c0018ea5",
+      "0xac8bb84b142dc4e8647fdd669a1b234771ead431599e33f1243c9fb996276c64"
+    ],
+    "availableToMint": "5"
+  },
+  {
+    "address": "0x2b956d5bEf8c5A87a3D3aBcE1Be497245F473C06",
+    "proof": [
+      "0xf461c5c7c902ee702110af30f6c737c55ae9bae3cd7a50711366454690739b2d",
+      "0x40091a3b09842d4d3e7ef3db20abcffe3bcc73c0c658ac0fdf112519c0018ea5",
+      "0xac8bb84b142dc4e8647fdd669a1b234771ead431599e33f1243c9fb996276c64"
+    ],
+    "availableToMint": "6"
+  },
+
+  {
+    "address": "0x5b9017407FDbbdE5E2b47C25A622aEcC700d8bC4",
+    "proof": [
+      "0x615a3287f8e4a8e53578cfc4e62e0f596e82001196d5fa97b1ec8d297bf30c39",
+      "0x78ac4e1003900fbaf655559897e9b4be175b41bc85fe4db753294ca9087f72f1",
+      "0x775514fde30b66ae73999aa0e62f7f707d5f6373a7af11d23f48c2f106443520"
+    ],
+    "availableToMint": "8"
+  }
+]

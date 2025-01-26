@@ -23,6 +23,21 @@ const evmNetworks = [
     shortName: "MATIC",
     vanityName: "Polygon",
   },
+  {
+    blockExplorerUrls: ["https://sepolia.abscan.org/"],
+    chainId: 11124,
+    chainName: "Abstract Testnet",
+    iconUrls: ["https://app.dynamic.xyz/assets/networks/abstract.svg"],
+    nativeCurrency: {
+      decimals: 18,
+      name: "ETH",
+      symbol: "ETH",
+    },
+    networkId: 11124,
+    rpcUrls: ["https://api.testnet.abs.xyz"],
+    shortName: "ABS",
+    vanityName: "Abstract",
+  },
 ];
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
@@ -34,10 +49,9 @@ root.render(
           appLogoUrl: "/big-logo-ogronex.png",
           appName: "Ogronex",
           environmentId: "e3820802-a4f1-4d39-9fa2-2608bb776301",
-          multiWallet: true,
+          multiWallet: false,
           evmNetworks,
           walletsFilter: SortWallets([
-            "phantomevm",
             "metamask",
             "walletconnect",
             "coinbase",
@@ -46,8 +60,7 @@ root.render(
           newToWeb3WalletChainMap: {
             primary_chain: "evm",
             wallets: {
-              evm: "phantomevm",
-              solana: "phantom",
+              evm: "metamask",
             },
           },
         }}

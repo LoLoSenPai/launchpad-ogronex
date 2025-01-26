@@ -1,5 +1,5 @@
 [
-    {
+   {
         "address": "0x506A76dEb6aFC9b0aed5B25ffFeeD0C90a596dBA",
         "proof": [
             "0xaa1f9022d09d4645cb69638d1921769a8011c243e38c610b583391ddb1a123a9",
@@ -42,7 +42,7 @@
             "0xc4b745cb6e4a4097e860b3420db9cf64b1f0ba6d84b20ac42cc64bf7c6b5117a",
             "0xca17442fa16625db724415532d6b2c57c78fb7a52d62f980b1705f2ff1b59c04"
         ],
-        "availableToMint": "5"
+        "availableToMint": "4"
     },
     {
         "address": "0x2b956d5bEf8c5A87a3D3aBcE1Be497245F473C06",
