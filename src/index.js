@@ -23,6 +23,21 @@ const evmNetworks = [
     shortName: "MATIC",
     vanityName: "Polygon",
   },
+  {
+    blockExplorerUrls: ["https://sepolia.abscan.org/"],
+    chainId: 11124,
+    chainName: "Abstract Testnet",
+    iconUrls: ["https://app.dynamic.xyz/assets/networks/abstract.svg"],
+    nativeCurrency: {
+      decimals: 18,
+      name: "ETH",
+      symbol: "ETH",
+    },
+    networkId: 11124,
+    rpcUrls: ["https://api.testnet.abs.xyz"],
+    shortName: "ABS",
+    vanityName: "Abstract",
+  },
 ];
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
@@ -37,7 +52,6 @@ root.render(
           multiWallet: false,
           evmNetworks,
           walletsFilter: SortWallets([
-            "phantomevm",
             "metamask",
             "walletconnect",
             "coinbase",
@@ -47,7 +61,6 @@ root.render(
             primary_chain: "evm",
             wallets: {
               evm: "metamask",
-              solana: "phantom",
             },
           },
         }}

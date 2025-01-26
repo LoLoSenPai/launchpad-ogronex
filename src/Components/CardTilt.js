@@ -44,7 +44,7 @@ const CardTilt = () => {
     >
       <div className='group relative flex h-full w-full select-none items-center justify-center'>
         <div className='duration-600 absolute -inset-0.5 -z-10 rounded-lg transition group-hover:opacity-75' />
-          <img className="w-full scale-125" src="./Images/prize-maschine-infected-dalmatians.png" alt="maschine with a hook to grab prize" />
+          <img className="w-full scale-125" src="./Images/prize-maschine.png" alt="maschine with a hook to grab prize" />
         </div>
     </div>
   );
